@@ -104,6 +104,7 @@ public class PMemberMgr {
 			return flag;
 		}
 		
+		//PMember Update
 		public void updatePMember(HttpServletRequest req) {
 			Connection con = null;
 			PreparedStatement pstmt = null;
