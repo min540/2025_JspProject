@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 Manifest-Version: 1.0
 Class-Path: 
 
+=======
+Manifest-Version: 1.0
+Class-Path: 
+
+>>>>>>> branch 'main' of https://github.com/dtada11/2025_JspProject_dtada11.git

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>2025_JspProject</name>
+	<name>2025_JspProject</name>  <!-- 프로젝트 이름을 하나로 결정 -->
 	<comment></comment>
 	<projects>
 	</projects>
