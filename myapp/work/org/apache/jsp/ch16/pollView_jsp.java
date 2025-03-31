@@ -150,7 +150,7 @@ public final class pollView_jsp extends org.apache.jasper.runtime.HttpJspBase
 		// 어떤 설문
 		PollListBean plBean = mgr.getPoll(listNum);
 		// item, count
-		Vector<String> vlist = mgr.getItemList(listNum);
+		Vector<PollItemBean> vlist = mgr.getView(listNum);
 		// 현재 설문에 sum Count
 		int sumCnt = mgr.sumCount(listNum);
 		// 현재 설문에 가장 높은 투표수
