@@ -1,0 +1,12 @@
+12/30
+이클립스에서 html, css, javascript를 개발하기
+1.JDK 설치 (Ver.22)
+ - C:/Java/ 이 위치에 설치
+2.Tomcat 설치 (Ver.9)
+ - C:/Jsp/
+3.Eclipse 설치
+ - C:/Java/ 이 위치에 설치
+-> Hello World 출력
+4.이클립스 실행 -> workspace 지정
+ - C:/Web/ 으로 지정
+ - File > Dynamic Web Project 선택

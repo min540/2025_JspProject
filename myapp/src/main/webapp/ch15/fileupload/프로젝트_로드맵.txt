@@ -1,0 +1,31 @@
+1. Front
+- html
+- css
+- JavaScript
+
+2. Java
+- Oracle(RDBMS)
++AWT
+
+3. 1차 프로젝트
+- 4명
+- 1등만 뽑는다. (스스로)
+
+4. JSP
+- mysql(RDBMS) : SQL문을 배운다고 생각.
+
+5. Flutter(App)
+
+6. 2차 프로젝트
+- 4~5명
+
+7. Python(Flask)
+- MongoDB (BigData)
+- AI
+
+8. Spring
+
+9. 3차 프로젝트
+- 
+
+모든 비번은 1234

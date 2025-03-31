@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>보라색 테이블</title>
+    <style>
+        body {
+            background: url('https://lrl.kr/data/editor/2012/1608011704.3617sunset-horizon-scenery-landscape-art-uhdpaper.com-4K-178.jpg') no-repeat center center/cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            image-rendering: pixelated;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .table-container {
+            padding: 20px;
+            display: none; /* 처음에는 숨김 */
+            position: absolute; /* 절대 위치 설정 */
+            cursor: move; /* 마우스 커서 모양을 드래그 모드로 변경 */
+        }
+
+        .table-container table {
+    width: 300px;
+    border-collapse: collapse;
+    background: rgba(80, 40, 90, 0.6); /* 명도와 채도를 낮춘 어두운 보라색 */
+    box-shadow: 0 0 8px rgba(80, 40, 90, 0.8); /* 어두운 보라색의 네온 효과 */
+}
+
+			.table-header {
+			    background: rgba(90, 50, 100, 0.7); /* 헤더의 색상도 명도와 채도를 낮춰 어두운 보라색 */
+			}
+
+
+        .table-container th, .table-container td {
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            color: #fff;
+        }
+
+        .table-container th {
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #6a1b9a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #9c4dcc;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="toggleTable()">테이블 보이기/숨기기</button>
+
+    <div class="table-container" id="tableContainer">
+        <table>
+            <tr class="table-header">
+                <th>아이템</th>
+                <th>수량</th>
+            </tr>
+            <tr>
+                <td>마법 수정</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>보라빛 포션</td>
+                <td>2</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function toggleTable() {
+            const tableContainer = document.getElementById('tableContainer');
+            if (tableContainer.style.display === 'none' || tableContainer.style.display === '') {
+                tableContainer.style.display = 'inline-block'; // 테이블 보이기
+            } else {
+                tableContainer.style.display = 'none'; // 테이블 숨기기
+            }
+        }
+
+        // 드래그 기능을 위한 변수들
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        const tableContainer = document.getElementById('tableContainer');
+
+        tableContainer.addEventListener('mousedown', function(event) {
+            isDragging = true;
+            offsetX = event.clientX - tableContainer.offsetLeft;
+            offsetY = event.clientY - tableContainer.offsetTop;
+            tableContainer.style.cursor = 'grabbing'; // 드래그 중에 커서 모양을 바꿈
+        });
+
+        document.addEventListener('mousemove', function(event) {
+            if (isDragging) {
+                const x = event.clientX - offsetX;
+                const y = event.clientY - offsetY;
+                tableContainer.style.left = `${x}px`;
+                tableContainer.style.top = `${y}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            tableContainer.style.cursor = 'move'; // 드래그가 끝나면 커서 모양을 원래대로
+        });
+    </script>
+</body>
+</html>

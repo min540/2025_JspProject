@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+	function send() {
+		// alter(1234);
+		f = document.frm;
+		if(f.msg.value.length==0){
+			alert("msg을 입력하세요.");
+			f.msg.focus();
+			return; //function 빠져나감
+		}
+		f.action = "simpleBean2.jsp";
+		f.method = "post";
+		f.submit();
+	}
+</script>
+</head>
+<body>
+<h1>빈즈 액션 태그 Example</h1>
+<form name="frm" action="simpleBean2.jsp">
+msg : <input name="msg" value="빈을 만들자."><br/>
+cnt : <input name="cnt" value="10"><br/>
+<input type="submit" value="Send1">
+<button type="button" onclick="send()">Send2</button>
+</form>
+</body>
+</html>

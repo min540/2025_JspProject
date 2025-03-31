@@ -1,0 +1,8 @@
+스마트에디터
+SmartEditor2.html -> postProc.jsp
+
+파일업로드 원리
+1.팝업 : photo_uploader.jsp
+2.이미지를 선택하고 file_uploader.jsp 전송
+3.파일저장위치 : C:/Jsp/myapp/src/main/webapp/se2/upload
+4.업로드된 이미지 주소값이 textarea에 전송되는 기능

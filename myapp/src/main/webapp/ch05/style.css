@@ -1,0 +1,62 @@
+@charset "UTF-8";
+
+body {
+    height: 100%;
+    margin: 0;
+    background: linear-gradient(45deg, #87CEEB, #4682B4); /* 밝은 하늘색 → 진한 파랑 */
+    font-family: sans-serif;
+    font-weight: 100;
+    color: #fff;
+    text-align: center;
+}
+
+.gugu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+table {
+    width: 800px;
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 0, 50, 0.3); /* 파란빛 그림자 */
+    background: rgba(255, 255, 255, 0.3); /* 반투명한 흰색 */
+    border-radius: 10px;
+    backdrop-filter: blur(5px); /* 유리 같은 효과 */
+}
+
+th, td {
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.3); /* 반투명 흰색 */
+    color: #003366; /* 깊은 바다색 */
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+thead th {
+    background-color: #3883cf; /* 진한 바다색 */
+    font-weight: bold;
+    color: #FFFFFF; /* 흰색 */
+    transition: background-color 0.3s ease-in-out; /* 부드러운 효과 */
+}
+
+tbody tr:hover {
+    background-color: #c2e0ff;
+}
+
+tbody td {
+    position: relative;
+}
+
+tbody td:hover::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -9999px;
+    bottom: -9999px;
+    background-color: #71b3f5; /* 바다색 오버 효과 */
+    z-index: -1;
+}
