@@ -2,6 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,java
 
 # 파일 제외
+.classpath
+.project
+
 /src/main/java/ch03/*
 /src/main/java/ch05/*
 /src/main/java/ch07/*
