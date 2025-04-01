@@ -15,7 +15,7 @@ public class UpdatePostServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		JspMgr jmgr = new JspMgr();
 		if(jmgr.updateUser(request)) {
-			response.sendRedirect("main.jsp");
+			response.sendRedirect("mainScreen.jsp");
 		}else {
 			response.sendRedirect("login.jsp");
 		}
