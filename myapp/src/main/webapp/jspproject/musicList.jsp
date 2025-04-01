@@ -7,53 +7,168 @@
 <title>배경 선택</title>
  <style>
     .music-container {
-	    position: absolute;
-	    left: 10vw;
-	    top: 10vh;
-	    display: flex;
-        width: 75%;
-        height: 900px;
-        background: #1d102d;
-        color: white;
-        border-radius: 15px;
-    }
+    position: absolute;
+    left: 18vw;
+    top: 9.5vh;
+    display: flex;
+    width: 70%;
+    height: 74.5vh;
+    background-color: rgba(29, 16, 45, 0.7); /* 기존 #1d102d = rgb(29,16,45) */
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.4);
+	}
+
+	.music-tab {
+    display: flex;
+    gap: 10px;
+    padding: 5px 10px;
+    background-color: transparent;
+    margin-bottom: 10px;
+	}
+	
+	.tab-btn {
+	    background: none;
+	    border: none;
+	    color: #fff;
+	    padding: 5px 12px;
+	    cursor: pointer;
+	    margin-bottom: 10px;
+	    transition: 0.2s;
+	    font-family: 'PFStarDust', sans-serif;
+    	font-weight: bold;
+   	 	font-size: 1vw;
+	}
+	
+	.tab-btn.active {
+	    font-weight: bold;
+	    border-bottom: 2px solid white;
+	}
 
     .music-left {
-        flex: 2;
-        padding: 20px;
+        flex: 8;
+        padding: 10px;
         overflow-y: auto;
+        justify-content: space-between; /* 위-아래 분리 */
         border-right: 2px solid #311e4f;
     }
 
     .music-right {
-        flex: 1;
+   	 	position: relative; /* 기준점 잡아줌 */
+        flex: 3;
         padding: 20px;
-        background-color: #2a1245;
+        background-color: rgba(42, 18, 69, 0.5);
         display: flex;
+    	border-top-right-radius: 15px;
+    	border-bottom-right-radius: 15px;
         flex-direction: column;
         justify-content: space-between;
     }
 
-    .music-header, .music-list, .music-footer {
+    .music-header, .music-list{
         margin-bottom: 15px;
     }
 
     .music-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    font-family: 'PFStarDust', sans-serif;
+    font-weight: bold;
+   	 font-size: 1vw;
+	}
+    
+    .music-header input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: white;
 
-    .music-header input[type="text"] {
-        flex: 1;
-        padding: 8px;
-        border-radius: 5px;
+    vertical-align: middle;
+    margin-top: -1px; /* ✅ 살짝 위로 올림 */
+	}
+	
+	/* 체크된 상태 */
+	.music-header input[type="checkbox"]:checked {
+	    background-color: black;       /* 체크 시 검정색 채우기 */
+	    border-color: white;
+	}
+	
+	/* 체크된 상태에 체크 모양 (✓ 표시용) */
+	.music-header input[type="checkbox"]:checked::after {
+	    content: '✓';
+	    color: white;
+	    font-size: 11px;
+	    font-weight: bold;
+	    position: absolute;
+	    top: 50%;
+   	 	left: 50%;
+    	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
+	}
+    
+    /* 왼쪽 영역 고정 */
+	.music-left {
+    flex: 8;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid #311e4f;
+    overflow: hidden; /* ← 중요: 전체 스크롤 막기 */
+	}
+	
+	/* 오른쪽 요소 오른쪽 끝으로 밀기 */
+	.header-right {
+	    display: flex;
+	    align-items: center;
+	    gap: 10px;
+	}
+	
+	.music-list {
+	    flex: 1;
+	    overflow-y: auto;
+	    max-height: 100%; /* ← 최대 높이로 설정 */
+	    padding-right: 4px;
+	    margin-bottom: 10px;
+	}
+	
+	/* 하단 버튼 박스 */
+	.music-footer {
+	    display: flex;
+	    margin-top: 10px;
+	    justify-content: space-between; /* 양쪽 끝으로 배치 */
+	}
+	
+	@font-face {
+	    font-family: 'PFStarDust';
+	    src: url('../fonts/PFStarDust-Bold.ttf') format('truetype');
+	    font-weight: bold;
+	    font-style: normal;
+	}
+	
+	.music-footer button {
+	 	width: 15%;
+        margin: 5px;
+        padding: 10px;
+        border-radius: 8px;
         border: none;
+        cursor: pointer;
+        font-family: 'PFStarDust', sans-serif;
+    	font-weight: bold;
+   	 	font-size: 1vw;
     }
-
+	
     .music-list-item {
         background-color: #3c1e5c;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         padding: 10px;
         border-radius: 8px;
         display: flex;
@@ -61,8 +176,35 @@
     }
 
     .music-list-item input[type="checkbox"] {
-        margin-right: 10px;
-    }
+    appearance: none;              /* 기본 브라우저 스타일 제거 */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;            /* 둥근 모서리 */
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: white;       /* 기본 배경 */
+	}
+	
+	/* 체크된 상태 */
+	.music-list-item input[type="checkbox"]:checked {
+	    background-color: black;       /* 체크 시 검정색 채우기 */
+	    border-color: white;
+	}
+	
+	/* 체크된 상태에 체크 모양 (✓ 표시용) */
+	.music-list-item input[type="checkbox"]:checked::after {
+	    content: '✓';
+	    color: white;
+	    font-size: 11px;
+	    font-weight: bold;
+	    position: absolute;
+	    top: 50%;
+   	 	left: 50%;
+    	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
+	}
 
     .music-preview img {
         width: 100%;
@@ -116,6 +258,41 @@
         background-color: #b00020;
         color: white;
     }
+    
+    .iconMusic2 {
+	    width: 3.2vw;
+	    height: 3.2vw;
+    }
+    
+    .iconMusicList {
+    width: 2vw;
+	height: 2vw;
+	cursor: pointer;
+	}
+	
+	/* 검색창 크기 조절 */
+	.music-search {
+	    padding: 4px 8px;
+	    font-size: 13px;
+	    border-radius: 4px;
+	    border: none;
+	}
+	
+	/* 오른쪽 상단 고정 */
+	.preview-icons {
+	    position: absolute;
+	    top: 12px;
+	    right: 12px;
+	    display: flex;
+	    gap: 8px;
+	}
+	
+	.music-preview {
+    padding-top: 60px; /* 👈 아이콘 높이만큼 위에 여유 공간 줌 */
+    text-align: center;
+	}
+	
+	
 </style>
         
 </head>
@@ -124,43 +301,60 @@
 <div class="music-container">
     <!-- 왼쪽 영역 -->
     <div class="music-left">
+    	<!-- 🎵 음악 목록 / 재생 목록 탭 -->
+		<div class="music-tab">
+	    	<button class="tab-btn active">음악 목록</button>
+	    	<button class="tab-btn">재생 목록</button>
+		</div>
+    
         <div class="music-header">
-            <input type="checkbox" id="selectAll"> 전체 선택
-            <button>↓</button>
-            <button>↑</button>
-            <input type="text" placeholder="음악 제목 검색" />
-            <button>🔍</button>
-        </div>
+		    <!-- 왼쪽: 전체 선택 -->
+		    <div class="header-left">
+		        <input type="checkbox" id="selectAll">
+		        <label for="selectAll">전체 선택</label>
+		    </div>
+		
+		    <!-- 오른쪽: 정렬/검색 -->
+		    <div class="header-right">
+		        <img class="iconMusicList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" >
+		        <img class="iconMusicList" src="icon/아이콘_오래된순_최신순_1.png" alt="오래된 순 최신 순 정렬" >
+		        <input class="music-search" type="text" placeholder="음악 제목 검색" />
+		        <img class="iconMusicList" src="icon/아이콘_검색_1.png" alt="검색" >
+		    </div>
+		</div>
+
 
         <div class="music-list">
+        	<%for (int i = 0; i < 20; i++) {%>
             <div class="music-list-item">
                 <input type="checkbox" />
-                <span>음악 제목 1</span>
+                <span>음악 제목1</span>
             </div>
-            <div class="music-list-item">
-                <input type="checkbox" />
-                <span>음악 제목 2</span>
-            </div>
-            <!-- 반복 -->
+            <% } %>
         </div>
 
         <div class="music-footer">
-            <button class="btn-dark">추가</button>
+            <button class="btn-purple">추가</button>
             <button class="btn-red">삭제</button>
         </div>
     </div>
 
     <!-- 오른쪽 영역 -->
     <div class="music-right">
+    	<div class="preview-icons">
+    		<img class="iconMusicList" src="icon/아이콘_수정_1.png" alt="수정" >
+    		<img class="iconMusicList" src="icon/아이콘_삭제_1.png" alt="삭제" >
+		</div>
+		
         <div class="music-preview">
-            <img src="musicImg/sample.gif" alt="음악 이미지">
+            <img src="musicImg/music1.gif" alt="음악 이미지">
             <h2 style="text-align:center;">음악 제목</h2>
         </div>
 
         <div class="music-controls">
-            <span>⏮️</span>
-            <span>▶️</span>
-            <span>⏭️</span>
+            <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
+            <span><img class = "iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > </span>
+            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
         </div>
 
         <div class="music-description">
