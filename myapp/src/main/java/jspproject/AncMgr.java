@@ -15,6 +15,7 @@ public class AncMgr {
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
 	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
 	
+	
 	public AncMgr() {
 		pool = DBConnectionMgr.getInstance();
 	}
