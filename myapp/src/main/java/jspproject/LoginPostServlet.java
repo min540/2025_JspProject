@@ -13,8 +13,8 @@ public class LoginPostServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
-		JspMgr jmgr = new JspMgr();
-		if(jmgr.loginJoin(request)) {
+		LoginMgr lmgr = new LoginMgr();
+		if(lmgr.loginJoin(request)) {
 			response.sendRedirect("mainScreen.jsp");
 		}else {
 			response.sendRedirect("login.jsp");

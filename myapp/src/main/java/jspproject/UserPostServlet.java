@@ -13,8 +13,8 @@ public class UserPostServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
-		JspMgr jmgr = new JspMgr();
-		if(jmgr.insertUser(request)) {
+		LoginMgr lmgr = new LoginMgr();
+		if(lmgr.insertUser(request)) {
 			response.sendRedirect("login.jsp");
 		}else {
 			response.sendRedirect("register.jsp");
