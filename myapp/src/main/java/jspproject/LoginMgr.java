@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
-import jspproject.DBConnectionMgr;
+
 
 public class LoginMgr {
 	
 	private DBConnectionMgr pool;
 	//세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
-	public static final String  SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+	public static final String  SAVEFOLDER = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/img";
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 5*1024*1024;
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
@@ -72,7 +72,7 @@ public class LoginMgr {
 		boolean flag = false;
 		try {
 			con = pool.getConnection();
-			sql = "select id from user where id = ? and pwd = ?";
+			sql = "select user_id from user where user_id = ? and user_pwd = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, req.getParameter("user_id"));
 			pstmt.setString(2, req.getParameter("user_pwd"));
