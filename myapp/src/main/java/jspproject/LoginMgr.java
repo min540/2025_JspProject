@@ -14,7 +14,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import ch19.DBConnectionMgr;
 
-public class JspMgr {
+public class LoginMgr {
 	
 	private DBConnectionMgr pool;
 	//세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
@@ -24,7 +24,7 @@ public class JspMgr {
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
 	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
 	
-	public JspMgr() {
+	public LoginMgr() {
 		pool = DBConnectionMgr.getInstance();
 	}
 	
@@ -127,14 +127,15 @@ public class JspMgr {
 		}
 		return flag;
 	}
-	//회원삭제
+	
+	//회원 탈퇴(삭제)
 	public void deleteUser(String user_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "delete from user where uesr_id = ?";
+			sql = "delete from user where user_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			pstmt.executeUpdate();
@@ -144,7 +145,8 @@ public class JspMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
-	//회원정보수정
+	
+	//아이디 중복 확인
 	public boolean idChk(String user_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -163,9 +165,10 @@ public class JspMgr {
 		} finally {
 			pool.freeConnection(con, pstmt, rs);
 		}
-		return !flag; //중복이 되지 않으면 true 중복이 되면 false반환
+		return !flag; //중복되지 않으면 true 반환, 중복이 있으면 false 반환
 	}
-	//전화번호 중복체크
+	
+	//전화번호 중복 체크(이미 저장된 전화번호면 true 반환)
 	public boolean phoneChk(String user_phone) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -187,7 +190,8 @@ public class JspMgr {
 		}
 		return flag;
 	}
-	//접속시작
+	
+	//접속 시작
 	public void userIn(String user_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -198,14 +202,14 @@ public class JspMgr {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			pstmt.executeUpdate();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			pool.freeConnection(con, pstmt);
 		}
 	}
-	//동시 접속 확인
+	
+	//동시 접속 확인(이미 접속해있으면 true)
 	public boolean userCheck(String user_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -227,6 +231,7 @@ public class JspMgr {
 		}
 		return flag;
 	}
+	
 	//접속 종료
 	public void userOut(String user_id) {
 		Connection con = null;
@@ -238,11 +243,13 @@ public class JspMgr {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			pstmt.executeUpdate();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	
+	
 }
