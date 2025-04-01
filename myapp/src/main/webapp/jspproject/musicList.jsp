@@ -56,7 +56,7 @@
     .music-right {
    	 	position: relative; /* 기준점 잡아줌 */
         flex: 3;
-        padding: 20px;
+        padding: 10px;
         background-color: rgba(42, 18, 69, 0.5);
         display: flex;
     	border-top-right-radius: 15px;
@@ -75,10 +75,9 @@
     align-items: center;
     border-bottom: 1px solid #555;
     padding-bottom: 8px;
-    margin-bottom: 20px;
     font-family: 'PFStarDust', sans-serif;
     font-weight: bold;
-   	 font-size: 1vw;
+   	font-size: 1vw;
 	}
     
     .music-header input[type="checkbox"] {
@@ -87,6 +86,7 @@
     height: 18px;
     border: 2px solid #ccc;
     border-radius: 4px;
+    margin-left: 14px;
     margin-right: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -114,6 +114,27 @@
    	 	left: 50%;
     	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
 	}
+	
+	.music-search {
+    padding: 10px 14px;
+    font-size: 15px;
+    width: 300px;
+    height: 37px; /* 👈 높이를 명시적으로 지정 */
+    border: none;
+    border-radius: 6px;
+    background-color: #000;
+    color: white;
+    box-shadow: 0 0 8px rgba(123, 44, 191, 0.6);
+    outline: none;
+    transition: 0.2s ease;
+    box-sizing: border-box; /* padding 포함한 크기 계산 */
+    margin-top: 2px;
+	}
+
+	.music-search::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+	}
+
     
     /* 왼쪽 영역 고정 */
 	.music-left {
@@ -173,6 +194,7 @@
         border-radius: 8px;
         display: flex;
         align-items: center;
+        gap: 5px;
     }
 
     .music-list-item input[type="checkbox"] {
@@ -205,44 +227,99 @@
    	 	left: 50%;
     	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
 	}
+	
+	.music-list::-webkit-scrollbar {
+	    width: 10px; /* 스크롤바 너비 */
+	}
+	
+	.music-list::-webkit-scrollbar-track {
+	    background: transparent; /* 트랙은 안 보이게 */
+	}
+	
+	.music-list::-webkit-scrollbar-thumb {
+	    background-color: white;  /* 스크롤바 색상 */
+	    border-radius: 10px;
+	    border: 2px solid transparent;
+	    background-clip: content-box; /* 부드러운 느낌 */
+	}
+	
+	.music-list::-webkit-scrollbar-button {
+	    display: none; /* 🔥 위아래 화살표 제거 */
+	}
 
-    .music-preview img {
-        width: 100%;
-        border-radius: 10px;
-        margin-bottom: 10px;
-    }
+	.musicImg {
+	    width: 85%;           /* 부모 너비 꽉 채움 */
+	    height: 270px;         /* 원하는 고정 높이 지정 */
+	    object-fit: cover;     /* 이미지 비율 유지하며 꽉 채우고 넘치는 부분은 잘라냄 */
+	    border-radius: 10px;   /* 둥근 테두리 유지 (선택 사항) */
+	    box-shadow: 0 0 12px rgba(123, 44, 191, 0.6);
+	}
 
     .music-controls {
         display: flex;
         justify-content: center;
         gap: 20px;
         font-size: 24px;
-        margin: 10px 0;
     }
 
     .music-description textarea {
-        width: 100%;
-        height: 100px;
-        resize: none;
-        border-radius: 10px;
-        padding: 10px;
-        border: none;
-    }
+    width: 100%;
+    height: 100px;
+    resize: none;
+    border-radius: 10px;
+    border: none;
+    align-items: center;         /* 세로 가운데 */
+    justify-content: center;     /* 가로 가운데 (텍스트 기준) */
+    padding: 0;
+    text-align: center;
+    line-height: 100px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
 
-    .music-right-buttons {
-        display: flex;
-        justify-content: space-between;
-    }
+    /* ✅ 다크 스타일 추가 */
+    background-color: #2e2e2e;   /* 짙은 회색 */
+    color: white;                /* 흰 글자 */
+    font-size: 14px;
+    font-family: 'PFStarDust', sans-serif;
+    box-shadow: 0 0 12px rgba(123, 44, 191, 0.4);  /* 살짝 보라빛 glow */
+	}
 
-    .music-right-buttons button {
-        flex: 1;
-        margin: 5px;
-        padding: 10px;
-        border-radius: 8px;
-        border: none;
-        font-weight: bold;
-        cursor: pointer;
-    }
+    .music-cancel-button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+	}
+	
+	.music-cancel-button button {
+	    width: 80%;
+	    height:40px;
+	    padding: 12px;
+	    border-radius: 8px;
+	    border: none;
+	    font-weight: bold;
+	    font-size: 0.7vw;
+	    cursor: pointer;
+	    background-color: #7b2cbf;
+	    color: white;
+	    box-shadow: 0 0 8px rgba(123, 44, 191, 0.4);
+	}
+	
+	/* 기존 버튼 영역 아래 좌우 배치 */
+	.music-right-buttons {
+	    display: flex;
+	    justify-content: space-between;
+	}
+	
+	.music-right-buttons button {
+	    width: 30%;
+	    height:40px;
+	    padding: 5px;
+	    border-radius: 8px;
+	    border: 2px solid white;
+	    background: none;
+	    color: white;
+	    font-weight: bold;
+	    font-size: 0.9vw;
+	    cursor: pointer;
+	}
 
     .btn-purple {
         background-color: #7b2cbf;
@@ -260,8 +337,9 @@
     }
     
     .iconMusic2 {
-	    width: 3.2vw;
-	    height: 3.2vw;
+	    width: 2.5vw;
+	    height: 2.5vw;
+	    cursor: pointer;
     }
     
     .iconMusicList {
@@ -292,6 +370,11 @@
     text-align: center;
 	}
 	
+	.music-preview h2 {
+    margin-top: 20px;     /* 줄이거나 0으로 설정 가능 */
+    margin-bottom: -3px;
+    font-size: 1.1vw;    /* 사이즈도 적당히 */
+	}
 	
 </style>
         
@@ -347,7 +430,7 @@
 		</div>
 		
         <div class="music-preview">
-            <img src="musicImg/music1.gif" alt="음악 이미지">
+            <img class = "musicImg" src="musicImg/music1.gif" alt="음악 이미지">
             <h2 style="text-align:center;">음악 제목</h2>
         </div>
 
@@ -361,11 +444,17 @@
             <textarea>음악 설명</textarea>
         </div>
 
-        <div class="music-right-buttons">
-            <button class="btn-purple">음악 취소</button>
-            <button class="btn-dark">수정</button>
-            <button class="btn-purple">적용</button>
-        </div>
+        <!-- 가운데 위 버튼 -->
+		<div class="music-cancel-button">
+		    <button class="btn-purple">음악 취소</button>
+		</div>
+		
+		<!-- 아래 좌우 버튼 -->
+		<div class="music-right-buttons">
+		    <button class="btn-dark">수정</button>
+		    <button class="btn-purple">적용</button>
+		</div>
+
     </div>
 </div>
 
