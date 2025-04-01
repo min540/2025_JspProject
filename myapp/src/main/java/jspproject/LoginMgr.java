@@ -248,7 +248,4 @@ public class LoginMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
-	
-	
-	
 }
