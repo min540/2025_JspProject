@@ -19,7 +19,7 @@ public class AncMgr {
 		pool = DBConnectionMgr.getInstance();
 	}
 	
-	//공지사랑 리스트
+	//공지사항 리스트
 	public Vector<AncBean> listAnc() {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -28,7 +28,7 @@ public class AncMgr {
 		Vector<AncBean> vlist = new Vector<AncBean>();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by num desc";
+			sql = "select * from anc order by anc_id desc";
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -46,7 +46,7 @@ public class AncMgr {
 		} finally {
 			pool.freeConnection(con, pstmt, rs);
 		}
-		return	vlist;
+		return vlist;
 	}
 	
 	//공지사항 작성(관리자만사용)

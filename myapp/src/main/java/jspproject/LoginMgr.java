@@ -52,7 +52,6 @@ public class LoginMgr {
 			pstmt.setString(4, multi.getParameter("user_email"));
 			pstmt.setString(5, multi.getParameter("user_phone"));
 			pstmt.setString(6, User_icon);
-			pstmt.executeUpdate();
 			if(pstmt.executeUpdate()==1)
 				flag = true;
 		} catch (Exception e) {
