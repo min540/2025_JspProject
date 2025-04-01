@@ -1,23 +1,21 @@
 package jspproject;
 
-public class ObjBena {
+public class ObjBean {
 	private int obj_id;
 	private String user_id;
 	private String obj_title;
-	private String obj_cnt;
 	private int obj_check;
 	private String obj_regdate;
 	private String obj_sdate;
 	private String obj_edate;
 	
-	public ObjBena() {}
+	public ObjBean() {}
 	
-	public ObjBena(int obj_id, String user_id, String obj_title, String obj_cnt, int obj_check, String obj_regdate,
+	public ObjBean(int obj_id, String user_id, String obj_title, int obj_check, String obj_regdate,
 			String obj_sdate, String obj_edate) {
 		this.obj_id = obj_id;
 		this.user_id = user_id;
 		this.obj_title = obj_title;
-		this.obj_cnt = obj_cnt;
 		this.obj_check = obj_check;
 		this.obj_regdate = obj_regdate;
 		this.obj_sdate = obj_sdate;
@@ -41,12 +39,6 @@ public class ObjBena {
 	}
 	public void setObj_title(String obj_title) {
 		this.obj_title = obj_title;
-	}
-	public String getObj_cnt() {
-		return obj_cnt;
-	}
-	public void setObj_cnt(String obj_cnt) {
-		this.obj_cnt = obj_cnt;
 	}
 	public int getObj_check() {
 		return obj_check;

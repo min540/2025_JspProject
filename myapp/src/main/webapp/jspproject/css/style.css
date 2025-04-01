@@ -1,0 +1,148 @@
+@charset "UTF-8";
+
+/*배경화면 설정*/
+body {
+    background-image: url('../tema/tema1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*프로필 아이콘  관련 설정*/
+.iconLeftUp {
+	position: absolute;
+    left: 0.1vw;
+    top: 0.1vh;
+	width: 5vw;
+    height: 5vw;
+}
+
+/*오른쪽 상단 아이콘*/
+.icon-container {
+    position: absolute;
+    left: 77.5vw;
+    top: 2.4vh;
+    display: flex;
+    align-items: center;
+    height: 3.13vh;
+}
+
+.iconRightUp {
+	width: 3.2vw;
+    height: 3.2vw;
+}
+
+.iconRightUp.allscreen { 
+    width: 2.8vw;
+    height: 2.8vw;
+    margin-right: 1vw;
+}
+
+.iconRightUp.notifi { 
+    width: 3.2vw;
+    height: 3.2vw;
+    margin-right: 0.8vw;
+}
+
+.iconRightUp.tema { 
+    width: 3.2vw;
+    height: 3.2vw;
+    margin-right: 0.8vw;
+}
+
+.iconRightUp.darkmode { 
+	width: 3.2vw;
+    height: 3.2vw;
+    margin-right: 0.5vw;
+}
+
+.iconRightUp.uioff {
+	width: 3.2vw;
+    height: 3.2vw;
+    margin-right: 0.4vw;
+}
+
+
+/*여기서부터 뮤직바*/
+.iconMusic-container {
+    position: absolute;
+    left: 0.1vw;
+    top: 88vh;
+    display: flex;
+    align-items: center;
+    gap: 0.7vw;
+    height: 3.13vh;
+}
+
+.iconMusic {
+    width: 3.2vw;
+    height: 3.2vw;
+}
+
+/*음악 볼륨바 관련*/
+.iconMusicVolumbar-container{
+	position: absolute;
+    left: 23vw;
+    top: 87vh;
+    display: flex;
+    align-items: center;
+    height: 5vh;
+}
+
+.iconMusicVolum{
+	width: 1.56vw;
+	height: 5.5vh;
+}
+
+
+/*왼쪽 아래 음악 제목 관련*/
+@font-face {
+    font-family: 'PFStarDust';
+    src: url('../fonts/PFStarDust-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.musicTitle {
+    position: absolute;
+    left: 1vw;
+    top: 94vh;
+    display: flex;
+    color: white;
+    font-family: 'PFStarDust', sans-serif;
+    font-weight: bold;
+    font-size: 2.08vw;
+}
+
+
+/*오른쪽 하단 아이콘 관련*/
+.icon-container2 {
+    position: absolute;
+    left: 69vw;
+    top: 90vh;
+    display: flex;
+    align-items: center;
+    gap: 1.3vw;
+    height: 3.13vh;
+}
+
+.iconRightDown {
+    width: 4.7vw;
+    height: 4.7vw;
+}
+
+.iconRightDown.obj {
+    width: 4vw;
+    height: 4vw;
+    margin-left: 0.3vw;
+}
+
+.iconRightDown.diary {
+    width: 4.4vw;
+    height: 4.4vw;
+}
+
+
+
+
+

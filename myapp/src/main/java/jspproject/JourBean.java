@@ -4,16 +4,16 @@ public class JourBean {
 	private int jour_id;
 	private String user_id;
 	private String jour_title;
-	private String user_cnt;
+	private String jour_cnt;
 	private String jour_regdate;
 	
 	public JourBean() {}
 	
-	public JourBean(int jour_id, String user_id, String jour_title, String user_cnt, String jour_regdate) {
+	public JourBean(int jour_id, String user_id, String jour_title, String jour_cnt, String jour_regdate) {
 		this.jour_id = jour_id;
 		this.user_id = user_id;
 		this.jour_title = jour_title;
-		this.user_cnt = user_cnt;
+		this.jour_cnt = jour_cnt;
 		this.jour_regdate = jour_regdate;
 	}
 
@@ -35,11 +35,11 @@ public class JourBean {
 	public void setJour_title(String jour_title) {
 		this.jour_title = jour_title;
 	}
-	public String getUser_cnt() {
-		return user_cnt;
+	public String getJour_cnt() {
+		return jour_cnt;
 	}
-	public void setUser_cnt(String user_cnt) {
-		this.user_cnt = user_cnt;
+	public void setJour_cnt(String jour_cnt) {
+		this.jour_cnt = jour_cnt;
 	}
 	public String getJour_regdate() {
 		return jour_regdate;
