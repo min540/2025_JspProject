@@ -7,17 +7,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/jspproject/loginPost")
-public class LoginPost extends HttpServlet {
+@WebServlet("/jspproject/userPost")
+public class UserPostServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
 		JspMgr jmgr = new JspMgr();
-		if(jmgr.loginJoin(request)) {
-			response.sendRedirect("main.jsp");
-		}else {
+		if(jmgr.insertUser(request)) {
 			response.sendRedirect("login.jsp");
+		}else {
+			response.sendRedirect("register.jsp");
 		}
 	}
 
