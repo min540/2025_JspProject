@@ -14,7 +14,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import ch19.DBConnectionMgr;
 
-public class JspMgr {
+public class LoginMgr {
 	
 	private DBConnectionMgr pool;
 	//세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
@@ -24,7 +24,7 @@ public class JspMgr {
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
 	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
 	
-	public JspMgr() {
+	public LoginMgr() {
 		pool = DBConnectionMgr.getInstance();
 	}
 	

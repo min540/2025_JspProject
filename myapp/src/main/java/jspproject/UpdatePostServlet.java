@@ -13,8 +13,8 @@ public class UpdatePostServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
-		JspMgr jmgr = new JspMgr();
-		if(jmgr.updateUser(request)) {
+		LoginMgr lmgr = new LoginMgr();
+		if(lmgr.updateUser(request)) {
 			response.sendRedirect("mainScreen.jsp");
 		}else {
 			response.sendRedirect("login.jsp");
