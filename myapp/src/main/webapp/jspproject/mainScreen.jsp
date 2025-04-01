@@ -112,5 +112,4 @@
         var musicDiv = document.getElementById("musicListWrapper");
         musicDiv.style.display = (musicDiv.style.display === "none") ? "block" : "none";
     }
-
 </script>
