@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
-import ch19.DBConnectionMgr;
+import jspproject.DBConnectionMgr;
 
 public class LoginMgr {
 	
@@ -44,7 +44,7 @@ public class LoginMgr {
 					new DefaultFileRenamePolicy());
 			User_icon = multi.getFilesystemName("User_icon");
 			con = pool.getConnection();
-			sql = "insert user values(?, ?, ?, ?, ?, null, ?)";
+			sql = "insert user values(?, ?, ?, ?, ?, 1, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, multi.getParameter("user_id"));
 			pstmt.setString(2, multi.getParameter("user_pwd"));
@@ -248,7 +248,4 @@ public class LoginMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
-	
-	
-	
 }
