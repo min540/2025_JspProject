@@ -1,6 +1,6 @@
 package jspproject;
 
-public class ObjBena {
+public class ObjBean {
 	private int obj_id;
 	private String user_id;
 	private String obj_title;
@@ -10,9 +10,9 @@ public class ObjBena {
 	private String obj_sdate;
 	private String obj_edate;
 	
-	public ObjBena() {}
+	public ObjBean() {}
 	
-	public ObjBena(int obj_id, String user_id, String obj_title, String obj_cnt, int obj_check, String obj_regdate,
+	public ObjBean(int obj_id, String user_id, String obj_title, String obj_cnt, int obj_check, String obj_regdate,
 			String obj_sdate, String obj_edate) {
 		this.obj_id = obj_id;
 		this.user_id = user_id;
