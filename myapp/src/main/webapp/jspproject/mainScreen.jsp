@@ -9,7 +9,7 @@
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
-    <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" > 
+    <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
     <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
     <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
@@ -55,9 +55,9 @@
 
 <!-- JavaScript 함수 -->
 <script>
+
 	let uiVisible = true;
-	
-	function toggleUI() {
+	function toggleUI() { /* UI 껐다 키는 기능 */
 	    // 숨기고 싶은 UI 요소들을 선택
 	    const uiElements = document.querySelectorAll('.iconLeftUp, .iconRightUp:not(.uioff), .iconMusic, .iconMusicVolumbar-container, .musicTitle, .iconRightDown, .icon-container2');
 	
@@ -71,9 +71,12 @@
 	        uiElements.forEach(element => {
 	            element.style.visibility = 'hidden';
 	        });
-	        // uioff와 로그아웃 버튼은 항상 보이게 설정 (position은 고정)
+	        // uioff와 로그아웃 버튼만 보이게 하기
 	        uioffButton.style.visibility = 'visible';
 	        logoutButton.style.visibility = 'visible';
+	
+	        // UI 키기 아이콘으로 변경
+	        uioffButton.src = "icon/아이콘_UI키기_1.png";
 	        uiVisible = false; // UI가 숨겨졌다는 상태로 설정
 	    } else {
 	        // 모든 UI 요소 다시 보이게 하기
@@ -83,7 +86,19 @@
 	        // uioff와 로그아웃 버튼은 계속 보이게 유지
 	        uioffButton.style.visibility = 'visible';
 	        logoutButton.style.visibility = 'visible';
+	
+	        // UI 끄기 아이콘으로 변경
+	        uioffButton.src = "icon/아이콘_UI끄기_1.png";
 	        uiVisible = true; // UI가 보인다는 상태로 설정
 	    }
 	}
+	
+	function toggleFullScreen() { /* 전체화면 껐다 키는 기능 */
+		if (!document.fullscreenElement) { // 전체화면 모드가 아닌 경우
+		    document.documentElement.requestFullscreen(); // HTML 요소를 전체화면 모드로
+		} else { // 전체화면 모드인 경우
+		    document.exitFullscreen();
+		}
+	}
+
 </script>
