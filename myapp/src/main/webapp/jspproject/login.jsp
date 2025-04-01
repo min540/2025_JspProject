@@ -121,10 +121,10 @@ body, html {
 			<h2 class="login-box_title" >로그인</h2>
 			<div class="line"></div>
 			<h2 class= "login-box_text">어서와!</h2>
-			<form action="" method="post">
-			<input type="text"  placeholder="이메일" class="input-field">
-			<input type="password"  placeholder="비밀번호" class="input-field">
-			<a href="" class="signup-button">회원가입</a>
+			<form action="/2025_JspProject/jspproject/loginPost" method="post">
+			<input type="text"  name="user_id" placeholder="이메일" class="input-field">
+			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field">
+			<a href="register.jsp" class="signup-button">회원가입</a>
 			<button type="submit" class="login-btn">로그인</button>
 			</form>
 			
