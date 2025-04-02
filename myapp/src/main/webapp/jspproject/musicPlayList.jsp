@@ -659,7 +659,6 @@
 	    });
 	});
 		
-	// + 버튼 누르면 새로운 playlist-box 추가 (ChatGpt가 짜줌)
 	function addPlaylistBox() {
 	    const musicLeft = document.querySelector('.music-left2');
 	    const addButton = document.querySelector('.add-playlist2');
@@ -671,12 +670,24 @@
 	    newBox.innerHTML =
 	        '<img src="mplistImg/tema1.gif" alt="">' +
 	        '<div class="playlist-name2">예시' + playlistCount + '</div>' +
-	        '<div class="playlist-count2">n곡</div>';
+	        '<div class="playlist-count2">n곡</div>' +
+	        '<img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">';
 
-	    // add-playlist 버튼 앞에 넣기
 	    musicLeft.insertBefore(newBox, addButton);
 	}
-	
+
+	// ✅ 페이지 로드 시 한 번만 등록: 기존 + 새로 생긴 박스 모두 대응
+	document.addEventListener("DOMContentLoaded", function () {
+	    const musicLeft = document.querySelector(".music-left2");
+
+	    musicLeft.addEventListener("click", function (e) {
+	        if (e.target.classList.contains("iconDelete2")) {
+	            const box = e.target.closest(".playlist-box2");
+	            if (box) box.remove();
+	        }
+	    });
+	});
+
 	function switchToMusicList() {
 	    const musicListContainer = document.querySelector('.music-container');
 	    const playListContainer = document.querySelector('#musicPlayListWrapper');

@@ -168,6 +168,7 @@
     }
 	
     .music-list-item {
+    	position: relative;
         background-color: #3c1e5c;
         margin-bottom: 12px;
         padding: 10px;
@@ -225,6 +226,24 @@
 	
 	.music-list::-webkit-scrollbar-button {
 	    display: none; /* 🔥 위아래 화살표 제거 */
+	}
+	
+	/* 삭제 아이콘 */
+	.music-list-item .iconPlusPlay {
+	    position: absolute;
+	    top: 8px;
+	    left: 96%;
+	    width: 25px;
+	    height: 25px;
+	    opacity: 0;
+	    transition: opacity 0.2s ease;
+	    cursor: pointer;
+	    z-index: 2;
+	}
+	
+	/* 마우스 오버 시 나타남 */
+	.music-list-item:hover .iconPlusPlay {
+	    opacity: 1;
 	}
 	
 	.music-right {
@@ -372,6 +391,102 @@
 	    display: none;
 	}
 	
+.add-playlist-container {
+  position: absolute !important; /* ✅ 요게 꼭 필요! */
+  top: 0; /* 기본값은 없어도 되고 JS에서 제어 */
+  left: 0;
+  width: 200px;
+  background-color: #2c1845;
+  border: 2px solid #69c3ff;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: 'sans-serif';
+  color: white;
+}
+
+.add-playlist-title {
+  font-weight: bold;
+  font-size: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 10px;
+  font-family: 'PFStarDust', sans-serif;
+  font-weight: bold;
+}
+
+.add-playlist-list {
+  max-height: 160px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.playlist-item input[type="checkbox"] {
+  	appearance: none;              /* 기본 브라우저 스타일 제거 */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;            /* 둥근 모서리 */
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: white;       /* 기본 배경 */
+}
+
+/* 체크된 상태 */
+.playlist-item input[type="checkbox"]:checked {
+	background-color: black;       /* 체크 시 검정색 채우기 */
+	border-color: white;
+}
+	
+/* 체크된 상태에 체크 모양 (✓ 표시용) */
+.playlist-item input[type="checkbox"]:checked::after {
+	content: '✓';
+	color: white;
+	font-size: 11px;
+	font-weight: bold;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
+}
+
+.add-playlist-list::-webkit-scrollbar {
+	width: 10px; /* 스크롤바 너비 */
+}
+	
+.add-playlist-list::-webkit-scrollbar-track {
+	background: transparent; /* 트랙은 안 보이게 */
+}
+	
+.add-playlist-list::-webkit-scrollbar-thumb {
+	background-color: white;  /* 스크롤바 색상 */
+	border-radius: 10px;
+	border: 2px solid transparent;
+	background-clip: content-box; /* 부드러운 느낌 */
+}
+	
+.add-playlist-list::-webkit-scrollbar-button {
+	display: none; /* 🔥 위아래 화살표 제거 */
+}
+
+.add-playlist-btn {
+  width: 100%;
+  padding: 8px 0;
+  background-color: #1e0035;
+  color: white;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'PFStarDust', sans-serif;
+  font-weight: bold;
+}
+	
 </style>
         
 </head>
@@ -401,12 +516,12 @@
 		    </div>
 		</div>
 
-
         <div class="music-list" id="musicList">
         	<% for (int i = 0; i < 20; i++) { %>
 			    <div class="music-list-item">
 			        <input type="checkbox" />
 			        <span>음악 제목<%= i + 1 %></span>
+			        <img class="iconPlusPlay" src="icon/아이콘_플레이리스트추가_1.png" alt="추가">
 			    </div>
 			<% } %>
         </div>
@@ -457,7 +572,6 @@
 <div id="musicPlayListWrapper">
     <jsp:include page="musicPlayList.jsp" />
 </div>
-
 
 </body>
 </html>
@@ -527,6 +641,59 @@
 	        }
 	    }
 	}
+	
+	document.addEventListener("DOMContentLoaded", function () {
+		  const musicList = document.getElementById("musicList");
 
+		  musicList.addEventListener("click", function (e) {
+		    if (e.target.classList.contains("iconPlusPlay")) {
+		      const existing = document.querySelector(".add-playlist-container");
+		      if (existing) existing.remove();
+
+		      const rect = e.target.getBoundingClientRect();
+		      const x = rect.left + window.scrollX;
+		      const y = rect.bottom + window.scrollY + 5;
+
+		      fetch('musicListAdd.jsp')
+		        .then(res => res.text())
+		        .then(html => {
+		          const temp = document.createElement('div');
+		          temp.innerHTML = html;
+
+		          const popup = temp.querySelector('.add-playlist-container');
+		          if (!popup) {
+		            console.error('popup 못 찾음');
+		            return;
+		          }
+
+		          // 💡 body에 붙이고 렌더링 기다린 다음 위치 지정
+		          document.body.appendChild(popup);
+
+		          popup.style.display = "block"; // ✅ 이거 먼저!
+
+		          requestAnimationFrame(() => {
+		        	  popup.style.cssText = `
+		        	    position: absolute !important;
+		        	    top: ${y}px !important;
+		        	    left: ${x}px !important;
+		        	    z-index: 9999 !important;
+		        	    display: block !important;
+		        	  `;
+		        	});
+
+		          // 외부 클릭 시 제거
+		          setTimeout(() => {
+		            document.addEventListener("click", function handler(ev) {
+		              if (!popup.contains(ev.target) && ev.target !== e.target) {
+		                popup.remove();
+		                document.removeEventListener("click", handler);
+		              }
+		            });
+		          }, 0);
+		        })
+		        .catch(err => console.error('Include 실패:', err));
+		    }
+		  });
+		});
 
 </script>
