@@ -20,7 +20,7 @@ body {
 /*오른쪽 상단 아이콘*/
 .icon-container {
     position: absolute;
-    left: 77.5vw;
+    left: 74vw;
     top: 2.4vh;
     display: flex;
     align-items: center;
