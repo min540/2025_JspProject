@@ -190,6 +190,29 @@ public class LoginMgr {
 		return flag;
 	}
 	
+	//이메일 중복 체크(이미 저장된 이메일이면 true 반환)
+	public boolean emailChk(String user_email) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		boolean flag = false;
+		try {
+			con = pool.getConnection();
+			sql = "select user_email from user where user_email = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, user_email);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+				flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return flag;
+	}
+	
 	//접속 시작
 	public void userIn(String user_id) {
 		Connection con = null;
