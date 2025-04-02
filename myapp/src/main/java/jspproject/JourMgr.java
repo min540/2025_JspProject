@@ -12,7 +12,6 @@ public class JourMgr {
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 5*1024*1024;
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
-	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
 	public JourMgr() {
 		
 		pool = DBConnectionMgr.getInstance();
@@ -26,7 +25,7 @@ public class JourMgr {
 		Vector<JourBean> vlist = new Vector<JourBean>();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by jour_id desc";
+			sql = "select * from jour order by jour_id desc";
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -53,10 +52,11 @@ public class JourMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "insert Jour values(null, ?, ?, now())";
+			sql = "insert jour values(null, ?, ?, ?, now())";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1,bean.getJour_title());
-			pstmt.setString(2, bean.getJour_cnt());
+			pstmt.setString(1, bean.getUser_id());
+			pstmt.setString(2,bean.getJour_title());
+			pstmt.setString(3, bean.getJour_cnt());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,7 +95,7 @@ public class JourMgr {
 			con = pool.getConnection();
 			sql = "delete from jour where jour_id = ?";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, jour_id);
+			pstmt.setInt(1,jour_id);
 			pstmt.executeUpdate();
 
 		} catch (Exception e) {
