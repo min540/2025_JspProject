@@ -113,7 +113,7 @@ public class PMemberMgr {
 			MultipartRequest multi = null;
 			String profile = null;
 			try {
-				multi = new MultipartRequest(req, SAVEFOLDER,MAXSIZE, ENCTYPE,
+				multi = new MultipartRequest(req, SAVEFOLDER, MAXSIZE, ENCTYPE,
 						new DefaultFileRenamePolicy());
 				profile = multi.getFilesystemName("profile");
 				con = pool.getConnection();
