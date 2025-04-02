@@ -42,7 +42,7 @@ body, html {
 	background-color: #4A3C6E;
 	border-radius: 10px;
 	width: 458px;
-	height: 628px;
+	height: 668px;
 	margin-top: 20px;/*세로*/
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -111,10 +111,26 @@ body, html {
   margin: 18px auto;
   width: 400px;
 }
+.check-msg{
+/*  margin-top: px; */ 
+ color: #ffc107; 
+ font-size: 10px;
+ margin-left: 30px;
+}
+.login-btn:disabled {
+	background-color: #999999;
+	cursor: not-allowed;
+	opacity: 0.6;
+}
 </style>
 </head>
 <script>
-function checkId() {
+let isIdValid = false;
+let isPhoneValid = false; 
+let isPwdMatched = false;
+let isEmailValid = false;
+
+function checkId() {//중복확인
 	  const userId = document.querySelector('[name="user_id"]').value;
 
 	  if (!userId.trim()) {
@@ -122,16 +138,122 @@ function checkId() {
 	    return;
 	  }
 
-	  fetch("/2025_JspProject/jspproject/IdCheckServlet?user_id=" + encodeURIComponent(userId))
+	  fetch("/2025_JspProject/jspproject/idCheckServlet?user_id=" + encodeURIComponent(userId))
 	    .then(res => res.text())
 	    .then(result => {
 	      if (result === "true") {
 	        alert("사용 가능한 아이디입니다!");
+	        isIdValid = true;
 	      } else {
 	        alert("이미 사용중인 아이디입니다.");
+	        isIdValid = false;
 	      }
+	      updateSubmitButton();
 	    });
-	}</script>
+	}
+let phoneCheckTimer;
+let phoneMsgTimer;
+function checkPhoneRealtime(phone) {// 전화번호 실시간 중복확인
+    clearTimeout(phoneCheckTimer); // 입력 중일 때 너무 많은 요청 방지
+    clearTimeout(phoneMsgTimer);// 기존메세지 제거 타이머초기화
+
+    // 딜레이 후 실행 (300ms 정도)
+    phoneCheckTimer = setTimeout(() => {
+        if (!phone.trim()) {
+            document.getElementById("phone-check-msg").innerText = "";
+            return;
+        }
+
+        fetch("/2025_JspProject/jspproject/phoneCheckServlet?user_phone=" + encodeURIComponent(phone))
+            .then(res => res.text())
+            .then(result => {
+                const msgDiv = document.getElementById("phone-check-msg");
+
+                if (result === "true") {
+                    msgDiv.innerText = "이미 사용 중인 전화번호입니다.";
+                    msgDiv.style.color = "#dc3545"; // 빨강색
+                    isPhoneValid = false;
+                } else {
+                    msgDiv.innerText = "사용 가능한 전화번호입니다!";
+                    msgDiv.style.color = "#28a745"; // 초록색
+                    isPhoneValid = true;
+                }
+                updateSubmitButton();
+                //4초 후 메세지 제거
+                phoneMsgTimer = setTimeout(()=> {
+                	msgDiv.innerText ="";
+                }, 4000);
+                
+            });
+    }, 300);
+}
+let emailCheckTimer;
+let emailMsgTimer;
+function checkEmail(){//이메일 중복체크 실시간
+	clearTimeout(emailCheckTimer);
+    clearTimeout(emailMsgTimer);
+    
+	const email = document.getElementById("user_email").value;
+	const msgDiv = document.getElementById("email-msg");
+
+	emailCheckTimer = setTimeout(() => {
+        if (!email.trim()) {
+            document.getElementById("email-msg").innerText = "";
+            return;
+        }
+        
+	  fetch("/2025_JspProject/jspproject/emailCheckServlet?user_email=" + encodeURIComponent(email))
+	  .then(res => res.text())
+	   .then(result => {
+		   if(result.trim() === "true"){
+			   msgDiv.innerText = "이미 사용 중인 이메일입니다.";
+			   msgDiv.style.color = "#dc3545"; // 빨강색
+			   isEmailValid = false;
+		   }else{
+			   msgDiv.innerText = "사용 가능한 이메일입니다!";
+               msgDiv.style.color = "#28a745"; // 초록색
+               isEmailValid = true;
+		   }
+		   updateSubmitButton();
+		   emailMsgTimer = setTimeout(()=> {
+           	msgDiv.innerText ="";
+           }, 4000);
+	   });
+	}, 300);
+}
+let pwdMsgTimer;
+function checkPwd() {
+	clearTimeout(phoneMsgTimer);
+	const pwd = document.getElementById("user_pwd").value;
+	const confirmPwd = document.getElementById("user_pwd_confirm").value;
+	const msgDiv = document.getElementById("pwd-check-msg");
+	
+	if(!confirmPwd){
+		msgDiv.innerText = "";
+		return;
+	}
+	
+	if(pwd==confirmPwd){
+		msgDiv.innerText = "비밀번호가 일치합니다.";
+		msgDiv.style.color = "#28a745"; // 초록색
+		 isPwdMatched = true;
+	}else{
+		msgDiv.innerText = "비밀번호가 일치하지 않습니다.";
+		msgDiv.style.color = "#dc3545"; // 빨강색
+		 isPwdMatched = false;
+	}
+	pwdmsgTimer = setTimeout(() => {
+		msgDiv.innerText ="";
+	}, 4000);
+	   updateSubmitButton();
+}
+
+function  updateSubmitButton() {
+	const submitBtn = document.querySelector('.login-btn');
+	submitBtn.disabled = !(isIdValid && isPhoneValid && isPwdMatched && isEmailValid);
+}
+
+</script>
 <body>
 <div class="container">
 	<div class="left-half"></div>
@@ -148,12 +270,15 @@ function checkId() {
     <input type="text" name="user_id" placeholder="아이디" class="input-field " required  style="width: 290px;" value="<%= request.getParameter("user_id") != null ? request.getParameter("user_id") : "" %>">
     <button type="button" onclick="checkId()" class="check-btn" style="width: 100px; height: 50px; font-size: 14px;">중복확인</button>
     </div>
-    <input type="password" name="user_pwd" placeholder="비밀번호" class="input-field form-item" required>
-    <input type="password" name="user_pwd_confirm" placeholder="비밀번호 확인" class="input-field form-item" required>
+    <input type="password" name="user_pwd" id="user_pwd" oninput="checkPwd()" placeholder="비밀번호" class="input-field form-item" required>
+    <input type="password" name="user_pwd_confirm" id="user_pwd_confirm" oninput="checkPwd()" placeholder="비밀번호 확인" class="input-field form-item" required>
+    <div id="pwd-check-msg" class="check-msg"></div>
     <input type="text" name="user_name" placeholder="이름" class="input-field form-item" required>
-    <input type="text" name="user_email" placeholder="이메일" class="input-field form-item" required>
-    <input type="text" name="user_phone" placeholder="전화번호" class="input-field form-item" required>
-    <button type="submit" class="login-btn">회원가입</button>
+    <input type="text" name="user_email" id="user_email" placeholder="이메일" class="input-field form-item" required  oninput="checkEmail(this.value)">
+    <div id="email-msg" class="check-msg"></div>
+    <input type="text" name="user_phone" placeholder="전화번호" class="input-field form-item" required  oninput="checkPhoneRealtime(this.value)">
+    <div id="phone-check-msg" class="check-msg"></div>
+    <button type="submit" class="login-btn" disabled>회원가입</button>
 </form>
 
 		</div><!-- 로그인 박스 -->
