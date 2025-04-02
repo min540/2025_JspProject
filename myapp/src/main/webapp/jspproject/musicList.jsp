@@ -45,14 +45,6 @@
 	    border-bottom: 2px solid white;
 	}
 
-    .music-left {
-        flex: 8;
-        padding: 10px;
-        overflow-y: auto;
-        justify-content: space-between; /* 위-아래 분리 */
-        border-right: 2px solid #311e4f;
-    }
-    
     .music-header, .music-list{
         margin-bottom: 15px;
     }
@@ -128,7 +120,7 @@
 	.music-left {
     flex: 8;
     padding: 20px;
-    display: flex;
+    display: flex; /* 이거 꼭 추가 */
     flex-direction: column;
     border-right: 2px solid #311e4f;
     overflow: hidden; /* ← 중요: 전체 스크롤 막기 */
@@ -158,7 +150,7 @@
 	
 	@font-face {
 	    font-family: 'PFStarDust';
-	    src: url('../fonts/PFStarDust-Bold.ttf') format('truetype');
+	    src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
 	    font-weight: bold;
 	    font-style: normal;
 	}
@@ -376,6 +368,10 @@
     font-size: 1.1vw;    /* 사이즈도 적당히 */
 	}
 	
+	#musicPlayListWrapper {
+	    display: none;
+	}
+	
 </style>
         
 </head>
@@ -387,7 +383,7 @@
     	<!-- 🎵 음악 목록 / 재생 목록 탭 -->
 		<div class="music-tab">
 	    	<button class="tab-btn active">음악 목록</button>
-	    	<button class="tab-btn">재생 목록</button>
+	    	<button class="tab-btn" onclick="switchToPlayList()">재생 목록</button>
 		</div>
     
         <div class="music-header">
@@ -400,7 +396,6 @@
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
 		        <img class="iconMusicList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" >
-		        <img class="iconMusicList" src="icon/아이콘_오래된순_최신순_1.png" alt="오래된 순 최신 순 정렬" >
 		        <input class="music-search" type="text" placeholder="음악 제목 검색" />
 		        <img class="iconMusicList" src="icon/아이콘_검색_1.png" alt="검색" >
 		    </div>
@@ -458,6 +453,12 @@
     </div>
 </div>
 
+<!-- 재생목록 리스트 영역 (처음엔 숨김) -->
+<div id="musicPlayListWrapper">
+    <jsp:include page="musicPlayList.jsp" />
+</div>
+
+
 </body>
 </html>
 
@@ -509,5 +510,23 @@
 	        selectAll.checked = false;
 	    });
 	});
+	
+	function switchToPlayList() {
+	    const musicListContainer = document.querySelector('.music-container');
+	    const playListContainer = document.querySelector('#musicPlayListWrapper');
+
+	    if (musicListContainer && playListContainer) {
+	        // 음악 목록 숨기고, 재생 목록 보이기
+	        musicListContainer.style.display = 'none';
+	        playListContainer.style.display = 'flex';
+
+	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
+	        const container2 = playListContainer.querySelector('.music-container2');
+	        if (container2) {
+	            container2.style.display = 'flex';
+	        }
+	    }
+	}
+
 
 </script>
