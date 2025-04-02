@@ -5,6 +5,7 @@ public class MplistMgrBean {
 	private int mplist_id;
 	private int bgm_id;
 	private String user_id;
+	private String mplistmgr_name;
 	
 	public MplistMgrBean() {}
 	
@@ -38,5 +39,11 @@ public class MplistMgrBean {
 	}
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
+	}
+	public String getMplistmgr_name() {
+		return mplistmgr_name;
+	}
+	public void setMplistmgr_name(String mplistmgr_name) {
+		this.mplistmgr_name = mplistmgr_name;
 	}
 }
