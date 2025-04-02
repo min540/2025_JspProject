@@ -96,20 +96,48 @@ body, html {
 </style>
 </head>
 <script>
-  function handleGoogleLogin() {
-    google.accounts.id.initialize({
-      client_id: "905257669393-cvm17lf3qkaov5bveekbdbb9ao5r1f63.apps.googleusercontent.com",
-      callback: handleCredential
-    });
-
-    google.accounts.id.prompt();
-  }
-
   function handleCredential(response) {
     console.log("✅ 구글 로그인 성공:", response.credential);
 
     // 여기서 JWT 토큰을 서버로 보내거나 처리하면 됨
   }
+  function parseJwt(token) {
+	  const base64Url = token.split('.')[1];
+	  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+	    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	  }).join(''));
+
+	  return JSON.parse(jsonPayload);
+	}
+	function handleCredential(response) {
+	  const userInfo = parseJwt(response.credential);
+
+	  fetch("/2025_JspProject/jspproject/googleLoginServlet", {
+	    method: "POST",
+	    headers: { "Content-Type": "application/json" },
+	    body: JSON.stringify({
+	      user_id: "google_" + userInfo.sub,
+	      user_pwd: "google_login",
+	      user_name: userInfo.name,
+	      user_email: userInfo.email,
+	      user_icon: userInfo.picture
+	    })
+	  })
+	  .then(res => res.json())
+	  .then(data => {
+	    if (data.status === "ok") {
+	      // 로그인 성공 → 메인 페이지로 이동
+	      window.location.href = "/2025_JspProject/jspproject/mainScreen.jsp";
+	    } else {
+	      alert("구글 로그인에 실패했습니다.");
+	    }
+	  })
+	  .catch(err => {
+	    console.error("Google login error:", err);
+	    alert("서버 오류가 발생했습니다.");
+	  });
+	}
 </script>
 <body>
 <div class="container">
