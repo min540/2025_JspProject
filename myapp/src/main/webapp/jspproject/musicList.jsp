@@ -52,19 +52,7 @@
         justify-content: space-between; /* 위-아래 분리 */
         border-right: 2px solid #311e4f;
     }
-
-    .music-right {
-   	 	position: relative; /* 기준점 잡아줌 */
-        flex: 3;
-        padding: 10px;
-        background-color: rgba(42, 18, 69, 0.5);
-        display: flex;
-    	border-top-right-radius: 15px;
-    	border-bottom-right-radius: 15px;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
+    
     .music-header, .music-list{
         margin-bottom: 15px;
     }
@@ -246,6 +234,18 @@
 	.music-list::-webkit-scrollbar-button {
 	    display: none; /* 🔥 위아래 화살표 제거 */
 	}
+	
+	.music-right {
+   	 	position: relative; /* 기준점 잡아줌 */
+        flex: 3;
+        padding: 10px;
+        background-color: rgba(42, 18, 69, 0.5);
+        display: flex;
+    	border-top-right-radius: 15px;
+    	border-bottom-right-radius: 15px;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
 	.musicImg {
 	    width: 85%;           /* 부모 너비 꽉 채움 */
@@ -407,18 +407,18 @@
 		</div>
 
 
-        <div class="music-list">
-        	<%for (int i = 0; i < 20; i++) {%>
-            <div class="music-list-item">
-                <input type="checkbox" />
-                <span>음악 제목1</span>
-            </div>
-            <% } %>
+        <div class="music-list" id="musicList">
+        	<% for (int i = 0; i < 20; i++) { %>
+			    <div class="music-list-item">
+			        <input type="checkbox" />
+			        <span>음악 제목<%= i + 1 %></span>
+			    </div>
+			<% } %>
         </div>
 
         <div class="music-footer">
-            <button class="btn-purple">추가</button>
-            <button class="btn-red">삭제</button>
+            <button class="btn-purple" onclick="addMusicItem()" >추가</button>
+            <button class="btn-red delete-selected">삭제</button>
         </div>
     </div>
 
@@ -426,7 +426,7 @@
     <div class="music-right">
     	<div class="preview-icons">
     		<img class="iconMusicList" src="icon/아이콘_수정_1.png" alt="수정" >
-    		<img class="iconMusicList" src="icon/아이콘_삭제_1.png" alt="삭제" >
+    		<img class="iconMusicList" src="icon/아이콘_삭제_1.png" alt="삭제">
 		</div>
 		
         <div class="music-preview">
@@ -460,3 +460,54 @@
 
 </body>
 </html>
+
+<script>
+	// 음악 리스트 추가하는 간략한 코드 (ChatGpt가 짜줌)
+	function addMusicItem() {
+	    // 1. 음악 리스트 DOM 가져오기
+	    const musicList = document.getElementById('musicList');
+	    // 2. 새 항목 만들기
+	    const newItem = document.createElement('div');
+	    newItem.className = 'music-list-item';
+	    newItem.innerHTML =
+	        '<input type="checkbox" />' +
+	        '<span>음악 제목' + (musicList.children.length + 1) + '</span>';
+	    // 3. 리스트에 추가
+	    musicList.appendChild(newItem);
+	}
+	
+	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)
+	document.addEventListener('DOMContentLoaded', function () {
+	    const selectAll = document.getElementById('selectAll');
+	    const musicList = document.getElementById('musicList');
+	    const deleteBtn = document.querySelector('.delete-selected'); // 버튼 하나만 선택!
+	
+	    // 전체 선택 체크박스
+	    selectAll.addEventListener('change', function () {
+	        const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+	    });
+	
+	    // 개별 체크박스 변경 → 전체 선택 상태 갱신
+	    musicList.addEventListener('change', function (e) {
+	        if (e.target.type === 'checkbox') {
+	            const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+	            selectAll.checked = checkedCount === checkboxes.length;
+	        }
+	    });
+	
+	    // ✅ 삭제 버튼 하나에만 기능 적용
+	    deleteBtn.addEventListener('click', function () {
+	        const items = musicList.querySelectorAll('.music-list-item');
+	        items.forEach(item => {
+	            const checkbox = item.querySelector('input[type="checkbox"]');
+	            if (checkbox && checkbox.checked) {
+	                item.remove();
+	            }
+	        });
+	        selectAll.checked = false;
+	    });
+	});
+
+</script>
