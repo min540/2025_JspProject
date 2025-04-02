@@ -6,17 +6,17 @@ public class AncBean {
 	private String anc_title;
 	private String anc_cnt;
 	private String anc_regdate;
-	private String anc_image;
+	private String anc_img;
 	
 	public AncBean() {}
 	
-	public AncBean(int anc_id, String user_id, String anc_title, String anc_cnt, String anc_regdate, String anc_image) {
+	public AncBean(int anc_id, String user_id, String anc_title, String anc_cnt, String anc_regdate, String anc_img) {
 		this.anc_id = anc_id;
 		this.user_id = user_id;
 		this.anc_title = anc_title;
 		this.anc_cnt = anc_cnt;
 		this.anc_regdate = anc_regdate;
-		this.anc_image = anc_image;
+		this.anc_img = anc_img;
 	}
 
 	public int getAnc_id() {
@@ -49,10 +49,10 @@ public class AncBean {
 	public void setAnc_regdate(String anc_regdate) {
 		this.anc_regdate = anc_regdate;
 	}
-	public String getAnc_image() {
-		return anc_image;
+	public String getAnc_img() {
+		return anc_img;
 	}
-	public void setAnc_image(String anc_image) {
-		this.anc_image = anc_image;
+	public void setAnc_img(String anc_img) {
+		this.anc_img = anc_img;
 	}
 }

@@ -13,7 +13,7 @@ public class AncMgr {
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 5*1024*1024;
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
-	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
+	
 	
 	
 	public AncMgr() {
@@ -39,7 +39,7 @@ public class AncMgr {
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
 				bean.setAnc_regdate(rs.getString("anc_regdate"));
-				bean.setAnc_image(rs.getString("anc_image"));
+				bean.setAnc_img(rs.getString("anc_image"));
 				vlist.addElement(bean);
 			}
 		} catch (Exception e) {
@@ -63,7 +63,7 @@ public class AncMgr {
 			pstmt.setString(1, bean.getUser_id());
 			pstmt.setString(2, bean.getAnc_title());
 			pstmt.setString(3, bean.getAnc_cnt());
-			pstmt.setString(4, bean.getAnc_image());
+			pstmt.setString(4, bean.getAnc_img());
 			pstmt.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -80,11 +80,11 @@ public class AncMgr {
 		try {
 			if(grade !=null && grade.equals("1")) {
 			con = pool.getConnection();
-			sql = "update anc set anc_title=?, anc_cnt=?, anc_image=? where anc_id = ?";
+			sql = "update anc set anc_title=?, anc_cnt=?, anc_img=? where anc_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getAnc_title());
 			pstmt.setString(2, bean.getAnc_cnt());
-			pstmt.setString(3, bean.getAnc_image());
+			pstmt.setString(3, bean.getAnc_img());
 			pstmt.setInt(4, bean.getAnc_id());
 			pstmt.executeUpdate();
 			}

@@ -61,7 +61,36 @@ public class LoginMgr {
 		}
 		return flag;
 	}
-		
+	
+	//구글 로그인
+	public boolean insertGoogleUser(String id, String pwd, String name, String email,
+        String phone, int grade, String icon) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		boolean flag = false;
+
+		try {
+			con = pool.getConnection();
+			sql = "INSERT INTO user (user_id, user_pwd, user_name, user_email, user_phone, grade, user_icon) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?)";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.setString(2, pwd); // "google_login"
+			pstmt.setString(3, name);
+			pstmt.setString(4, email);
+			pstmt.setString(5, phone); // 기본값 "" 가능
+			pstmt.setInt(6, grade);    // 보통 0
+			pstmt.setString(7, icon);  // 구글 프로필 URL
+			if (pstmt.executeUpdate() == 1)
+				flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+		return flag;
+	}
 	
 	//로그인
 	public boolean loginJoin(HttpServletRequest req) {
@@ -179,6 +208,29 @@ public class LoginMgr {
 			sql = "select user_phone from user where user_phone = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_phone);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+				flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return flag;
+	}
+	
+	//이메일 중복 체크(이미 저장된 이메일이면 true 반환)
+	public boolean emailChk(String user_email) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		boolean flag = false;
+		try {
+			con = pool.getConnection();
+			sql = "select user_email from user where user_email = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, user_email);
 			rs = pstmt.executeQuery();
 			if(rs.next())
 				flag = true;
