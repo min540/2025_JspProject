@@ -50,12 +50,17 @@
 	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" >
 	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" >
-	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" >
+	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
 </div>
 
 <!-- 음악 리스트 영역 (처음엔 숨김) -->
 <div id="musicListWrapper" style="display:none;">
     <jsp:include page="musicList.jsp" />
+</div>
+
+<!-- 일지 설정 영역 (처음엔 숨김) -->
+<div id="journalWrapper" style="display:none;">
+    <jsp:include page="journal.jsp" />
 </div>
 
 <!-- JavaScript 함수 -->
@@ -112,4 +117,12 @@
         var musicDiv = document.getElementById("musicListWrapper");
         musicDiv.style.display = (musicDiv.style.display === "none") ? "block" : "none";
     }
+	
+	// 음악 리스트 on/off
+	function toggleJournalList() {
+        var journalDiv = document.getElementById("journalWrapper");
+        journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	
 </script>
