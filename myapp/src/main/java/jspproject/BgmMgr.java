@@ -18,7 +18,7 @@ public class BgmMgr {
 	//세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
 	public static final String  SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
 	public static final String ENCTYPE = "UTF-8";
-	public static int MAXSIZE = 5*1024*1024;
+	public static int MAXSIZE = 10*1024*1024;
 	
 	public BgmMgr() {
 		pool = DBConnectionMgr.getInstance();
@@ -155,6 +155,7 @@ public class BgmMgr {
 		}
 	}
 	
+	//배경음악 삭제
 	public void deleteBgm(int bgm_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -172,4 +173,169 @@ public class BgmMgr {
 		}
 	}
 	
+	//mplist 리스트 불러오기
+	public Vector<MplistBean> getMplist(String user_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		Vector<MplistBean> vlist = new Vector<MplistBean>();
+		try {
+			con = pool.getConnection();
+			sql = "SELECT * FROM mplist WHERE user_id = ? ORDER BY mplist_id DESC";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, user_id);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				MplistBean bean = new MplistBean();
+				bean.setMplist_id(rs.getInt("mplist_id"));
+				bean.setMplist_name(rs.getString("mplist_name"));
+				bean.setUser_id(rs.getString("user_id"));
+				bean.setMplist_cnt(rs.getString("mplist_cnt"));
+				bean.setMplist_img(rs.getString("mplist_img"));
+				vlist.add(bean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return vlist;
+	}
+	
+	//mplist 추가
+	public boolean insertMplist(HttpServletRequest req) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		MultipartRequest multi = null;
+		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+		int maxSize = 10*1024*1024;
+		try {
+			multi = new MultipartRequest(req, imagePath, maxSize, ENCTYPE, new DefaultFileRenamePolicy());
+			String mplist_name = multi.getParameter("mplist_name");
+			int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
+			String user_id = multi.getParameter("user_id");
+			String mplist_cnt = multi.getParameter("mplist_cnt");
+			String mplist_img = multi.getFilesystemName("mplist_img");
+			
+			con = pool.getConnection();
+			sql = "INSERT INTO mplist (mplist_name, user_id, mplist_cnt, mplist_img) VALUES (?, ?, ?, ?)";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, mplist_name);
+			pstmt.setString(2, user_id);
+			pstmt.setString(3, mplist_cnt);
+			pstmt.setString(4, mplist_img);
+			pstmt.executeUpdate();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
+	
+	//mplist 수정
+	public void updateMplist(HttpServletRequest req) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		MultipartRequest multi = null;
+		String mplist_img = null;
+		try {
+			multi = new MultipartRequest(req, SAVEFOLDER, MAXSIZE, ENCTYPE,
+					new DefaultFileRenamePolicy());
+			mplist_img = multi.getFilesystemName("mplist_img");
+			con = pool.getConnection();
+			if(mplist_img!=null&&!mplist_img.equals("")) {
+				sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ?, mplist_img = ? WHERE mplist_id = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, multi.getParameter("mplist_name"));
+				pstmt.setString(2, multi.getParameter("mplist_cnt"));
+				pstmt.setString(3, mplist_img);
+				pstmt.setInt(4, Integer.parseInt(multi.getParameter("mplist_id")));
+			}else {
+				sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ? WHERE mplist_id = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, multi.getParameter("mplist_name"));
+				pstmt.setString(2, multi.getParameter("mplist_cnt"));
+				pstmt.setInt(3, Integer.parseInt(multi.getParameter("mplist_id")));
+			}
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
+	
+	//mplist 삭제
+	public void deleteMplist(int mplist_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		try {
+			con = pool.getConnection();
+			sql = "DELETE FROM mplist WHERE mplist_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, mplist_id);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
+	
+	//mplistmgr 리스트
+	public Vector<BgmBean> MplistMgrList(int mplist_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		Vector<BgmBean> vlist = new Vector<>();
+		try {
+			con = pool.getConnection();
+			sql = "SELECT b.* FROM mplistmgr m " +
+				  "JOIN bgm b ON m.bgm_id = b.bgm_id " +
+				  "WHERE m.mplist_id = ? " +
+				  "ORDER BY m.mplistmgr_id ASC";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, mplist_id);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				BgmBean bean = new BgmBean();
+				bean.setBgm_id(rs.getInt("bgm_id"));
+				bean.setBgm_name(rs.getString("bgm_name"));
+				bean.setBgm_music(rs.getString("bgm_music"));
+				bean.setBgm_image(rs.getString("bgm_image"));
+				bean.setBgm_cnt(rs.getString("bgm_cnt"));
+				vlist.add(bean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return vlist;
+	}
+	
+	//mplistmgr 삭제
+	public void deletemplistmgr(int mplistmgr_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		try {
+			con = pool.getConnection();
+			sql = "DELETE FROM mplistmgr WHERE mplistmgr_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, mplistmgr_id);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
 }
