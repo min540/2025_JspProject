@@ -34,7 +34,7 @@ public class JourMgr {
 			bean.setUser_id(rs.getString("user_id"));
 			bean.setJour_title(rs.getString("jour_title"));
 			bean.setJour_cnt(rs.getString("jour_cnt"));
-			bean.setJour_regdate(SDF_DATE.format(rs.getDate("regDate")));
+			bean.setJour_regdate(SDF_DATE.format(rs.getDate("jour_regDate")));
 			vlist.addElement(bean);
 			}
 		} catch (Exception e) {

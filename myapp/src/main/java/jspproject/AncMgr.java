@@ -39,7 +39,7 @@ public class AncMgr {
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
 				bean.setAnc_regdate(rs.getString("anc_regdate"));
-				bean.setAnc_img(rs.getString("anc_image"));
+				bean.setAnc_img(rs.getString("anc_img"));
 				vlist.addElement(bean);
 			}
 		} catch (Exception e) {
