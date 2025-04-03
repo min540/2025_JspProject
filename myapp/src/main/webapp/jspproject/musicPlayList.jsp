@@ -550,7 +550,7 @@
 		<div class="music-layout2">
 		    <div class="music-left2">
 		    	<% for (int i = 0; i < 10; i++) { %>
-			    <div class="playlist-box2" onclick = "openMusicPlayListDetail()">
+			    <div class="playlist-box2">
 			    	<img src="mplistImg/tema1.gif" alt="">
 			        <div class="playlist-name2">예시<%= i + 1 %></div>
 			        <div class="playlist-count2">n곡</div>
@@ -735,22 +735,29 @@
 	    }
 	}
 	
-	document.addEventListener("DOMContentLoaded", function () {
-	    const musicLeft = document.querySelector(".music-left2");
+	// 기존 삭제 + 디테일 진입 통합 처리
+    document.addEventListener("DOMContentLoaded", function () {
+        const allMusicLeftContainers = document.querySelectorAll(".music-left2");
 
-	    musicLeft.addEventListener("click", function (e) {
-	        const deleteIcon = e.target.classList.contains("iconDelete2");
-	        const playlistBox = e.target.closest(".playlist-box2");
+        allMusicLeftContainers.forEach(musicLeft => {
+            musicLeft.addEventListener("click", function (e) {
+                const playlistBox = e.target.closest(".playlist-box2");
 
-	        if (!playlistBox) return;
+                if (!playlistBox) return;
 
-	        if (deleteIcon) {
-	            playlistBox.remove();
-	            return;
-	        }
+                if (e.target.classList.contains("iconDelete2")) {
+                    console.log("삭제 아이콘 클릭됨");
+                    playlistBox.remove();
+                    return;
+                }
 
-	        openMusicPlayListDetail(); // ✅ 삭제가 아닌 경우에만 열기
-	    });
-	});
+                // 디테일 화면 진입은 기본 목록에서만
+                const detailContainer = document.querySelector("#musicPlayListDetailWrapper");
+                if (detailContainer && detailContainer.style.display === "none") {
+                    openMusicPlayListDetail();
+                }
+            });
+        });
+    });
 
 </script>

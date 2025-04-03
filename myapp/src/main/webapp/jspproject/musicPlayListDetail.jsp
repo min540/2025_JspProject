@@ -567,7 +567,7 @@
 		        <div class="music-header2">
 				    <!-- 왼쪽: 전체 선택 -->
 				    <div class="header-left2">
-				        <input type="checkbox" id="selectAll2">
+				        <input type="checkbox" id="selectAll_detail">
 				        <label for="selectAll2">전체 선택</label>
 				    </div>
 				
@@ -580,7 +580,7 @@
 				</div>
 		
 		
-		        <div class="music-list2" id="musicList2">
+		        <div class="music-list2" id="musicList_detail">
 		        	<% for (int i = 0; i < 20; i++) { %>
 					    <div class="music-list-item2">
 					        <input type="checkbox" />
@@ -590,7 +590,7 @@
 		        </div>
 		
 		        <div class="music-footer2">
-		            <button class="btn-red delete-selected2">삭제</button>
+		            <button class="btn-red delete-selected_detail">삭제</button>
 		        </div>
 		    </div>
 		</div>
@@ -618,41 +618,41 @@
 </div>
 
 <script>
-
-	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)
 	document.addEventListener('DOMContentLoaded', function () {
-	    const selectAll2 = document.getElementById('selectAll2');
-	    const musicList2 = document.getElementById('musicList2');
-	    const deleteBtn2 = document.querySelector('.delete-selected2'); // 버튼 하나만 선택!
+	    const selectAll = document.getElementById('selectAll_detail');
+	    const musicList = document.getElementById('musicList_detail');
+	    const deleteBtn = document.querySelector('.delete-selected_detail');
+	
+	    if (!selectAll || !musicList || !deleteBtn) return;
 	
 	    // 전체 선택 체크박스
-	    selectAll2.addEventListener('change', function () {
-	        const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
-	        checkboxes.forEach(cb => cb.checked = selectAll2.checked);
+	    selectAll.addEventListener('change', function () {
+	        const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	        checkboxes.forEach(cb => cb.checked = selectAll.checked);
 	    });
 	
 	    // 개별 체크박스 변경 → 전체 선택 상태 갱신
-	    musicList2.addEventListener('change', function (e) {
+	    musicList.addEventListener('change', function (e) {
 	        if (e.target.type === 'checkbox') {
-	            const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
+	            const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
 	            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-	            selectAll2.checked = checkedCount === checkboxes.length;
+	            selectAll.checked = checkedCount === checkboxes.length;
 	        }
 	    });
 	
-	    // ✅ 삭제 버튼 하나에만 기능 적용
-	    deleteBtn2.addEventListener('click', function () {
-	        const items = musicList2.querySelectorAll('.music-list-item2');
+	    // 삭제 버튼 클릭 시
+	    deleteBtn.addEventListener('click', function () {
+	        const items = musicList.querySelectorAll('.music-list-item2');
 	        items.forEach(item => {
 	            const checkbox = item.querySelector('input[type="checkbox"]');
 	            if (checkbox && checkbox.checked) {
 	                item.remove();
 	            }
 	        });
-	        selectAll2.checked = false;
+	        selectAll.checked = false;
 	    });
 	});
-		
+
 	function addPlaylistBox() {
 	    const musicLeft = document.querySelector('.music-left2');
 	    const addButton = document.querySelector('.add-playlist2');
@@ -692,6 +692,5 @@
 	    if (detailContainer) detailContainer.style.display = 'none';
 	    if (musicListContainer) musicListContainer.style.display = 'flex';
 	}
-
 	
 </script>
