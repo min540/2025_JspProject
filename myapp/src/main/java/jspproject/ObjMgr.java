@@ -12,7 +12,6 @@ public class ObjMgr {
 	
 	private DBConnectionMgr pool;
 	private final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy'년'  M'월' d'일' (E)");
-	private final SimpleDateFormat SDF_TIME = new SimpleDateFormat("H:mm:ss");
 	
 	public ObjMgr() {
 		pool = DBConnectionMgr.getInstance();
@@ -25,12 +24,13 @@ public class ObjMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?)";
+			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getUser_id());
 			pstmt.setString(2, bean.getObj_title());
 			pstmt.setInt(3, bean.getObj_check());
 			pstmt.setString(4, bean.getObj_edate());
+			pstmt.setInt(5, bean.getObjgroup_id());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -84,7 +84,7 @@ public class ObjMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "insert objgroup values (null, ?, null, ?)";
+			sql = "insert objgroup values (null, ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getObjgroup_name());
 			pstmt.setString(2, bean.getUser_id());
@@ -106,6 +106,7 @@ public class ObjMgr {
 			sql = "UPDATE objgroup SET objgroup_name = ? WHERE objgroup_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getObjgroup_name());
+			pstmt.setInt(2, bean.getObjgroup_id());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,7 +143,7 @@ public class ObjMgr {
 			sql = "UPDATE obj SET obj_check = ? WHERE obj_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, bean.getObj_check());
-			pstmt.setString(2, bean.getUser_id());
+			pstmt.setInt(2, bean.getObj_id());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -173,6 +174,7 @@ public class ObjMgr {
 				bean.setObj_regdate(SDF_DATE.format(rs.getDate("obj_regdate")));
 				bean.setObj_sdate(SDF_DATE.format(rs.getDate("obj_sdate")));
 				bean.setObj_edate(rs.getString("obj_edate"));
+				bean.setObjgroup_id(rs.getInt("objgroup_id"));
 				vlist.add(bean);
 			}
 		} catch (Exception e) {
@@ -192,15 +194,14 @@ public class ObjMgr {
 		Vector<ObjGroupBean> vlist = new Vector<ObjGroupBean>();
 		try {
 			con = pool.getConnection();
-			sql = "SELECT * FROM objgroup WHERE user_id = ? ORDER BY obj_id DESC";
+			sql = "SELECT * FROM objgroup WHERE user_id = ? ORDER BY objgroup_id DESC";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				ObjGroupBean bean = new ObjGroupBean();
-				bean.setObj_id(rs.getInt("objgroup_id"));
+				bean.setObjgroup_id(rs.getInt("objgroup_id"));
 				bean.setObjgroup_name(rs.getString("objgroup_name"));
-				bean.setObj_id(rs.getInt("obj_id"));
 				bean.setUser_id(rs.getString("user_id"));
 				vlist.add(bean);
 			}
