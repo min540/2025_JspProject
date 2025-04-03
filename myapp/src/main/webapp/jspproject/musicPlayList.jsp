@@ -210,7 +210,7 @@
 	    align-items: center;
 	    justify-content: space-between;
 	
-	    background-color: rgba(0, 0, 0, 0.4); /* 검정 반투명 배경 */
+	    background-color: rgba(0, 0, 0, 0.7); /* 검정 반투명 배경 */
 	    border-radius: 5px;                  /* 둥근 모서리 */
 	    border-bottom: 1px solid #555;        /* 아래쪽 경계선 */
 	    margin-bottom: 12px;                  /* 아래 여백 */
@@ -496,6 +496,12 @@
 	cursor: pointer;
 	}
 	
+	.iconMusicList3{
+	width: 1.5vw;
+	height: 1.5vw;
+	cursor: pointer;
+	}
+	
 	/* 검색창 크기 조절 */
 	.music-search2 {
 	    padding: 4px 8px;
@@ -555,6 +561,7 @@
 		    	<!-- 상단 타이틀 -->
 			    <div class="header-title2">
 			        재생 목록 이름
+			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" >
 			    </div>
 			    
 		    	<!-- 재생 목록 탭 -->    
