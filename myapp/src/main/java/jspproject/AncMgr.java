@@ -116,7 +116,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.equals("2")) {
 			con = pool.getConnection();
 			sql = "insert anc values(null, ?, ?, ?, now(), ?)";
 			pstmt = con.prepareStatement(sql);
@@ -138,7 +138,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.equals("2")) {
 			con = pool.getConnection();
 			sql = "update anc set anc_title=?, anc_cnt=?, anc_img=? where anc_id = ?";
 			pstmt = con.prepareStatement(sql);
@@ -160,7 +160,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.equals("2")) {
 			con = pool.getConnection();
 			sql = "delete from anc where anc_id = ?";
 			pstmt = con.prepareStatement(sql);

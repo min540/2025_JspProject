@@ -169,6 +169,14 @@ function allChk() {
 }
 function chk() {
 }
+function confirmDelete() {
+	const checked = document.querySelectorAll('input[name="ancIds"]:checked');
+	if(checked.length===0){
+		alert("삭제할 항목을 선택하세요.");
+		return false;
+	}
+	return confirm("정말 삭제하시겠습니까?");
+}
 </script>
 </head> 
 <body>
@@ -188,11 +196,12 @@ function chk() {
 	
 	<div class="container-box">
 		<!-- 왼쪽 -->
-		<div class="left-section">	
+		<div class="left-section">
 			<h2 class="ntitle">최신 업데이트 제목</h2>
-			
-			<div class="box2">여기에 가자 첫번째 게시물 불러오기 넘으로 받아오면 될듯</div>
+			<div class="box2" style="color: white;">여기에 가장 첫번째 게시물 불러오기 넘으로 받아오면 될듯</div>
 			<h2 class="ntitle">공지사항 목록</h2>
+			
+			<form action="deleteAncProc.jsp" method="post" onsubmit="return confirmDelete();">
 			<div class="box3">
 			<table  cellspacing="0" style="color: white;">
 				<tr align="center" bgcolor="#32225B" >
@@ -210,15 +219,17 @@ function chk() {
 					<td><input type="checkbox" name="fch" onclick="chk()" value="<%=bean.getAnc_id()%>"></td>
 					<td><%=bean.getAnc_id()%></td>
 					<td>
-					<a href="noticeDetail.jsp?anc_id=<%=bean.getAnc_id()%>" style="color:white;"><%=bean.getAnc_title() %></a>
+					<a href="ancDetail.jsp?anc_id=<%=bean.getAnc_id()%>" style="color:white;"><%=bean.getAnc_title() %></a>
 					</td>
 					<td><%=bean.getUser_id() %></td>
 					<td><%=bean.getAnc_regdate() %></td>
 				</tr>
 				<%} %>
+				
 			</table>
 			</div>
-			<input class="dbtn" type="submit" id="dbtn" name="btn" value="삭제">
+			<input class="dbtn" type="submit" id="dbtn" name="btn" value="삭제" ">
+			</form>
 		</div>
 			 <div class="divider"></div>	
 			 <div class="right-section">
