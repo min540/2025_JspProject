@@ -17,12 +17,12 @@
   left: 0;
   z-index: 9999;
   width: 200px;
-  background-color: #2c1845;
-  border: 2px solid #69c3ff;
+  background-color: rgba(29, 16, 45, 0.85); /* 기존 #1d102d = rgb(29,16,45) */
   border-radius: 8px;
   padding: 10px;
   font-family: 'sans-serif';
   color: white;
+  box-shadow: 0 0 10px rgba(255,255,255,0.4);
 }
 
 .add-playlist-title {
