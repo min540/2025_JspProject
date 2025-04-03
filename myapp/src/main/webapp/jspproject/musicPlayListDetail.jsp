@@ -1,8 +1,7 @@
-<!-- musicPlayList.jsp -->
+<!-- musicPlayListDetail.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
  <style>
-    .music-container2 {
+    .music-container3 {
 	    position: absolute;
 	    left: 18vw;
 	    top: 9.5vh;
@@ -406,9 +405,9 @@
         font-size: 24px;
     }
 
-    .music-description2 textarea {
+    .music-description3 textarea {
     width: 100%;
-    height: 100px;
+    height: 200px;
     resize: none;
     border-radius: 10px;
     border: none;
@@ -416,7 +415,7 @@
     justify-content: center;     /* 가로 가운데 (텍스트 기준) */
     padding: 0;
     text-align: center;
-    line-height: 100px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
+    line-height: 200px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
 
     /* ✅ 다크 스타일 추가 */
     background-color: #2e2e2e;   /* 짙은 회색 */
@@ -525,14 +524,16 @@
     margin-bottom: -3px;
     font-size: 1.1vw;    /* 사이즈도 적당히 */
 	}
-
-	#musicPlayListDetailWrapper {
+	
+	#musicPlayListWrapper {
 	    display: none;
 	}
 	
 </style>
         
-<div class="music-container2" id="musicPlayListWrapper">
+
+
+<div class="music-container3" id="musicPlayListDetailWrapper" style="display: none;">
  	<!-- 🔸 div1: 탭 + 레이아웃 묶는 부모 -->
 	  <div class="music-main2">
 		<!-- 🔹 왼쪽: 재생 목록 UI -->
@@ -550,7 +551,7 @@
 			        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
 			    </div>
 			<% } %>
-		        <div class="add-playlist2" onclick = "addPlaylistBox()">+</div>
+		        <div class="add-playlist2" onclick = "addPlaylistBox_detail()">+</div>
 		    </div>
 		
 		    <!-- 왼쪽 영역 -->
@@ -565,7 +566,7 @@
 		        <div class="music-header2">
 				    <!-- 왼쪽: 전체 선택 -->
 				    <div class="header-left2">
-				        <input type="checkbox" id="selectAll2">
+				        <input type="checkbox" id="selectAll_detail">
 				        <label for="selectAll2">전체 선택</label>
 				    </div>
 				
@@ -578,7 +579,7 @@
 				</div>
 		
 		
-		        <div class="music-list2" id="musicList2">
+		        <div class="music-list2" id="musicList_detail">
 		        	<% for (int i = 0; i < 20; i++) { %>
 					    <div class="music-list-item2">
 					        <input type="checkbox" />
@@ -588,7 +589,7 @@
 		        </div>
 		
 		        <div class="music-footer2">
-		            <button class="btn-red delete-selected2">삭제</button>
+		            <button class="btn-red delete-selected_detail">삭제</button>
 		        </div>
 		    </div>
 		</div>
@@ -596,77 +597,66 @@
 	<!-- 오른쪽 영역 -->
 	<div class="music-right2">
 	    	<div class="preview-icons2">
+	    		<img class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="수정" >
 	    		<img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
 			</div>
 			
 	        <div class="music-preview2">
 	            <img class = "musicImg2" src="musicImg/music1.gif" alt="음악 이미지">
-	            <h2 style="text-align:center;">음악 제목</h2>
+	            <h2 style="text-align:center;">재생 목록 제목</h2>
 	        </div>
 	
-	        <div class="music-controls2">
-	            <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
-	            <span><img class = "iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > </span>
-	            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
+	        <div class="music-description3">
+	            <textarea>재생 목록 설명</textarea>
 	        </div>
-	
-	        <div class="music-description2">
-	            <textarea>음악 설명</textarea>
-	        </div>
-	        
-	        <!-- 가운데 위 버튼 -->
-			<div class="music-cancel-button2">
-			    <button class="btn-purple">음악 취소</button>
-			</div>
 			
 			<div class="music-right-buttons2">
-			    <button class="btn-purple">적용</button>
+			    <button class="btn-purple">수정</button>
 		</div>
 	</div>
 </div>
 
-<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
-<jsp:include page="musicPlayListDetail.jsp" />
-
 <script>
-
-	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)
 	document.addEventListener('DOMContentLoaded', function () {
-	    const selectAll2 = document.getElementById('selectAll2');
-	    const musicList2 = document.getElementById('musicList2');
-	    const deleteBtn2 = document.querySelector('.delete-selected2'); // 버튼 하나만 선택!
+	    const selectAll = document.getElementById('selectAll_detail');
+	    const musicList = document.getElementById('musicList_detail');
+	    const deleteBtn = document.querySelector('.delete-selected_detail');
+	
+	    if (!selectAll || !musicList || !deleteBtn) return;
 	
 	    // 전체 선택 체크박스
-	    selectAll2.addEventListener('change', function () {
-	        const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
-	        checkboxes.forEach(cb => cb.checked = selectAll2.checked);
+	    selectAll.addEventListener('change', function () {
+	        const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	        checkboxes.forEach(cb => cb.checked = selectAll.checked);
 	    });
 	
 	    // 개별 체크박스 변경 → 전체 선택 상태 갱신
-	    musicList2.addEventListener('change', function (e) {
+	    musicList.addEventListener('change', function (e) {
 	        if (e.target.type === 'checkbox') {
-	            const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
+	            const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
 	            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-	            selectAll2.checked = checkedCount === checkboxes.length;
+	            selectAll.checked = checkedCount === checkboxes.length;
 	        }
 	    });
 	
-	    // ✅ 삭제 버튼 하나에만 기능 적용
-	    deleteBtn2.addEventListener('click', function () {
-	        const items = musicList2.querySelectorAll('.music-list-item2');
+	    // 삭제 버튼 클릭 시
+	    deleteBtn.addEventListener('click', function () {
+	        const items = musicList.querySelectorAll('.music-list-item2');
 	        items.forEach(item => {
 	            const checkbox = item.querySelector('input[type="checkbox"]');
 	            if (checkbox && checkbox.checked) {
 	                item.remove();
 	            }
 	        });
-	        selectAll2.checked = false;
+	        selectAll.checked = false;
 	    });
 	});
-		
-	function addPlaylistBox() {
-	    const musicLeft = document.querySelector('.music-left2');
-	    const addButton = document.querySelector('.add-playlist2');
+
+	function addPlaylistBox_detail() {
+	    const musicLeft = document.querySelector('#musicPlayListDetailWrapper .music-left2');
+	    const addButton = document.querySelector('#musicPlayListDetailWrapper .add-playlist2');
+
+	    if (!musicLeft || !addButton) return;
 
 	    const playlistCount = musicLeft.querySelectorAll('.playlist-box2').length + 1;
 
@@ -694,60 +684,14 @@
 	});
 
 	function switchToMusicList() {
-	    const musicListContainer = document.querySelector('.music-container');
-	    const playListContainer = document.querySelector('#musicPlayListWrapper');
+	    const musicListContainer = document.querySelector('.music-container'); // 음악 목록
+	    const playListContainer = document.querySelector('#musicPlayListWrapper'); // 재생 목록
+	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper'); // 상세 목록
 
-	    if (musicListContainer && playListContainer) {
-	        // 음악 목록 숨기고, 재생 목록 보이기
-	        playListContainer.style.display = 'none';
-	        musicListContainer.style.display = 'flex';
-
-	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
-	        const container = playListContainer.querySelector('.music-container');
-	        if (container) {
-	            container.style.display = 'flex';
-	        }
-	    }
+	    // 모두 숨기고 → 음악 목록만 보이게!
+	    if (playListContainer) playListContainer.style.display = 'none';
+	    if (detailContainer) detailContainer.style.display = 'none';
+	    if (musicListContainer) musicListContainer.style.display = 'flex';
 	}
 	
-	function openMusicPlayListDetail() {
-	    const playListContainer = document.querySelector('.music-container2');
-	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper');
-
-	    if (playListContainer) {
-	        playListContainer.style.display = 'none';
-	        console.log("재생 목록 화면 숨김");
-	    }
-
-	    if (detailContainer) {
-	        detailContainer.style.display = 'flex';
-	        console.log("디테일 화면 표시");
-	    }
-	}
-	
-	// 기존 삭제 + 디테일 진입 통합 처리
-    document.addEventListener("DOMContentLoaded", function () {
-        const allMusicLeftContainers = document.querySelectorAll(".music-left2");
-
-        allMusicLeftContainers.forEach(musicLeft => {
-            musicLeft.addEventListener("click", function (e) {
-                const playlistBox = e.target.closest(".playlist-box2");
-
-                if (!playlistBox) return;
-
-                if (e.target.classList.contains("iconDelete2")) {
-                    console.log("삭제 아이콘 클릭됨");
-                    playlistBox.remove();
-                    return;
-                }
-
-                // 디테일 화면 진입은 기본 목록에서만
-                const detailContainer = document.querySelector("#musicPlayListDetailWrapper");
-                if (detailContainer && detailContainer.style.display === "none") {
-                    openMusicPlayListDetail();
-                }
-            });
-        });
-    });
-
 </script>

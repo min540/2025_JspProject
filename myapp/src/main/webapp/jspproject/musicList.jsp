@@ -4,7 +4,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>배경 선택</title>
  <style>
     .music-container {
     position: absolute;
@@ -394,6 +393,10 @@
 	#musicPlayListAddWrapper {
 	    display: none;
 	}
+	
+	#musicPlayListDetailWrapper {
+	    display: none;
+	}
 }
 	
 </style>
@@ -482,10 +485,13 @@
     <jsp:include page="musicPlayList.jsp" />
 </div>
 
-<!-- 재생목록 리스트 영역 (처음엔 숨김) -->
+<!-- 재생목록 추가 영역 (처음엔 숨김) -->
 <div class = "add-playlist-container" id="musicPlayListAddWrapper"> 
     <jsp:include page="musicListAdd.jsp" />
 </div>
+
+<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
+<jsp:include page="musicPlayListDetail.jsp" />
 
 </body>
 </html>
@@ -540,20 +546,17 @@
 	});
 	
 	function switchToPlayList() {
-	    const musicListContainer = document.querySelector('.music-container');
-	    const playListContainer = document.querySelector('#musicPlayListWrapper');
+	    const musicListContainer = document.querySelector('.music-container'); // 음악 목록
+	    const playListContainer = document.querySelector('#musicPlayListWrapper'); // 재생 목록
+	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper'); // 상세 목록
 
-	    if (musicListContainer && playListContainer) {
-	        // 음악 목록 숨기고, 재생 목록 보이기
-	        musicListContainer.style.display = 'none';
-	        playListContainer.style.display = 'flex';
+	    // 내부 컨테이너도 명시적으로
+	    const innerContainer = playListContainer?.querySelector('.music-container2');
 
-	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
-	        const container2 = playListContainer.querySelector('.music-container2');
-	        if (container2) {
-	            container2.style.display = 'flex';
-	        }
-	    }
+	    if (musicListContainer) musicListContainer.style.display = 'none';
+	    if (detailContainer) detailContainer.style.display = 'none';
+	    if (playListContainer) playListContainer.style.display = 'flex';
+	    if (innerContainer) innerContainer.style.display = 'flex'; // 이거 추가!
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
