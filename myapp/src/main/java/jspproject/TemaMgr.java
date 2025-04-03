@@ -120,14 +120,31 @@ public class TemaMgr {
 	    try {
 	        con = pool.getConnection();
 	        
+	        // 디렉토리 확인 및 생성 추가
+	        File dir = new File(SAVEFOLDER);
+	        if (!dir.exists()) {
+	            dir.mkdirs(); // 디렉토리가 없으면 생성
+	        }
+	        
 	        // MultipartRequest를 사용하여 파일 업로드 처리
-	        String uploadDir = req.getServletContext().getRealPath("/images/tema");
-	        MultipartRequest multi = new MultipartRequest(req, uploadDir, 
-	                                5*1024*1024, "UTF-8", new DefaultFileRenamePolicy());
+	        // 경로를 SAVEFOLDER 상수로 변경
+	        MultipartRequest multi = new MultipartRequest(req, SAVEFOLDER, 
+	                            MAXSIZE, ENCODING, new DefaultFileRenamePolicy());
 	        
 	        int tema_id = Integer.parseInt(multi.getParameter("tema_id"));
 	        String tema_title = multi.getParameter("tema_title");
 	        String tema_cnt = multi.getParameter("tema_cnt");
+	        int tema_dark = 0;
+	        int tema_onoff = 1;
+	        
+	        // 다크모드와 활성화 상태 파라미터 처리
+	        try {
+	            tema_dark = Integer.parseInt(multi.getParameter("tema_dark"));
+	        } catch (Exception e) {}
+	        
+	        try {
+	            tema_onoff = Integer.parseInt(multi.getParameter("tema_onoff"));
+	        } catch (Exception e) {}
 	        
 	        // 업로드된 파일 객체
 	        File uploadedFile = multi.getFile("tema_img");
@@ -137,20 +154,24 @@ public class TemaMgr {
 	            // 이미지 업로드된 경우 - 제목, 설명, 이미지 모두 업데이트
 	            String tema_img = multi.getFilesystemName("tema_img");
 	            
-	            sql = "update tema set tema_title=?, tema_cnt=?, tema_img=? where tema_id=?";
+	            sql = "update tema set tema_title=?, tema_cnt=?, tema_img=?, tema_dark=?, tema_onoff=? where tema_id=?";
 	            pstmt = con.prepareStatement(sql);
 	            pstmt.setString(1, tema_title);
 	            pstmt.setString(2, tema_cnt);
 	            pstmt.setString(3, tema_img);
-	            pstmt.setInt(4, tema_id);
+	            pstmt.setInt(4, tema_dark);
+	            pstmt.setInt(5, tema_onoff);
+	            pstmt.setInt(6, tema_id);
 	            
 	        } else {
 	            // 이미지가 업로드되지 않은 경우 - 제목, 설명만 업데이트
-	            sql = "update tema set tema_title=?, tema_cnt=? where tema_id=?";
+	            sql = "update tema set tema_title=?, tema_cnt=?, tema_dark=?, tema_onoff=? where tema_id=?";
 	            pstmt = con.prepareStatement(sql);
 	            pstmt.setString(1, tema_title);
 	            pstmt.setString(2, tema_cnt);
-	            pstmt.setInt(3, tema_id);
+	            pstmt.setInt(3, tema_dark);
+	            pstmt.setInt(4, tema_onoff);
+	            pstmt.setInt(5, tema_id);
 	        }
 	        
 	        pstmt.executeUpdate();
