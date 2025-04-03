@@ -1,6 +1,6 @@
 <!-- mainScreen.jsp -->
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
 <%
 %>
 
@@ -46,11 +46,26 @@
 
 <!-- 오른쪽 하단 아이콘들 -->
 <div class = "icon-container2">
-	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" >
+	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
 	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" >
 	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
-	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" >
-	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" >
+	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
+	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
+</div>
+
+<!-- 음악 리스트 영역 (처음엔 숨김) -->
+<div id="musicListWrapper" style="display:none;">
+    <jsp:include page="musicList.jsp" />
+</div>
+
+<!-- 일지 설정 영역 (처음엔 숨김) -->
+<div id="journalWrapper" style="display:none;">
+    <jsp:include page="journal.jsp" />
+</div>
+
+<!-- 통계 설정 영역 (처음엔 숨김) -->
+<div id="GraphWrapper" style="display:none;">
+    <jsp:include page="ObjTotalGraphSpark.jsp" />
 </div>
 
 <!-- JavaScript 함수 -->
@@ -93,6 +108,7 @@
 	    }
 	}
 	
+	// 전체화면 on/off
 	function toggleFullScreen() { /* 전체화면 껐다 키는 기능 */
 		if (!document.fullscreenElement) { // 전체화면 모드가 아닌 경우
 		    document.documentElement.requestFullscreen(); // HTML 요소를 전체화면 모드로
@@ -100,5 +116,23 @@
 		    document.exitFullscreen();
 		}
 	}
-
+	
+	// 음악 리스트 on/off
+	function toggleMusicList() {
+        var musicDiv = document.getElementById("musicListWrapper");
+        musicDiv.style.display = (musicDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 일지 설정 on/off
+	function toggleJournalList() {
+        var journalDiv = document.getElementById("journalWrapper");
+        journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 통계 그래프 설정 on/off
+	function toggleGraphView() {
+        var GraphDiv = document.getElementById("GraphWrapper");
+        GraphDiv.style.display = (GraphDiv.style.display === "none") ? "block" : "none";
+    }
+	
 </script>

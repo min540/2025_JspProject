@@ -6,23 +6,23 @@ public class TimerBean {
 	private int timer_session;
 	private int timer_break;
 	private int timer_design;
-	private String title;
-	private String cnt;
+	private String timer_title;
+	private String timer_cnt;
 	private int timer_loc;
 	private int timer_onoff;
 	private String timer_img;
 	
 	public TimerBean() {}
 	
-	public TimerBean(int timer_id, String user_id, int timer_session, int timer_break, int timer_design, String title,
-			String cnt, int timer_loc, int timer_onoff, String timer_img) {
+	public TimerBean(int timer_id, String user_id, int timer_session, int timer_break, int timer_design, String timer_title,
+			String timer_cnt, int timer_loc, int timer_onoff, String timer_img) {
 		this.timer_id = timer_id;
 		this.user_id = user_id;
 		this.timer_session = timer_session;
 		this.timer_break = timer_break;
 		this.timer_design = timer_design;
-		this.title = title;
-		this.cnt = cnt;
+		this.timer_title = timer_title;
+		this.timer_cnt = timer_cnt;
 		this.timer_loc = timer_loc;
 		this.timer_onoff = timer_onoff;
 		this.timer_img = timer_img;
@@ -58,17 +58,17 @@ public class TimerBean {
 	public void setTimer_design(int timer_design) {
 		this.timer_design = timer_design;
 	}
-	public String getTitle() {
-		return title;
+	public String getTimer_title() {
+		return timer_title;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setTimer_title(String timer_title) {
+		this.timer_title = timer_title;
 	}
-	public String getCnt() {
-		return cnt;
+	public String getTimer_cnt() {
+		return timer_cnt;
 	}
-	public void setCnt(String cnt) {
-		this.cnt = cnt;
+	public void setTimer_cnt(String cnt) {
+		this.timer_cnt = timer_cnt;
 	}
 	public int getTimer_loc() {
 		return timer_loc;

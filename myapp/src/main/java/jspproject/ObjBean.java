@@ -8,11 +8,12 @@ public class ObjBean {
 	private String obj_regdate;
 	private String obj_sdate;
 	private String obj_edate;
+	private int objgroup_id;
 	
 	public ObjBean() {}
 	
 	public ObjBean(int obj_id, String user_id, String obj_title, int obj_check, String obj_regdate,
-			String obj_sdate, String obj_edate) {
+			String obj_sdate, String obj_edate, int pbjgroup_id) {
 		this.obj_id = obj_id;
 		this.user_id = user_id;
 		this.obj_title = obj_title;
@@ -20,6 +21,7 @@ public class ObjBean {
 		this.obj_regdate = obj_regdate;
 		this.obj_sdate = obj_sdate;
 		this.obj_edate = obj_edate;
+		this.objgroup_id = pbjgroup_id;
 	}
 
 	public int getObj_id() {
@@ -64,4 +66,11 @@ public class ObjBean {
 	public void setObj_edate(String obj_edate) {
 		this.obj_edate = obj_edate;
 	}
+	public int getObjgroup_id() {
+		return objgroup_id;
+	}
+	public void setObjgroup_id(int objgroup_id) {
+		this.objgroup_id = objgroup_id;
+	}
+	
 }
