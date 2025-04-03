@@ -552,7 +552,7 @@
 			        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
 			    </div>
 			<% } %>
-		        <div class="add-playlist2" onclick = "addPlaylistBox()">+</div>
+		        <div class="add-playlist2" onclick = "addPlaylistBox_detail()">+</div>
 		    </div>
 		
 		    <!-- 왼쪽 영역 -->
@@ -653,9 +653,11 @@
 	    });
 	});
 
-	function addPlaylistBox() {
-	    const musicLeft = document.querySelector('.music-left2');
-	    const addButton = document.querySelector('.add-playlist2');
+	function addPlaylistBox_detail() {
+	    const musicLeft = document.querySelector('#musicPlayListDetailWrapper .music-left2');
+	    const addButton = document.querySelector('#musicPlayListDetailWrapper .add-playlist2');
+
+	    if (!musicLeft || !addButton) return;
 
 	    const playlistCount = musicLeft.querySelectorAll('.playlist-box2').length + 1;
 
