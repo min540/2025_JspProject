@@ -65,7 +65,7 @@
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
-    <jsp:include page="ObjTotalGraphSpark.jsp" />
+    <jsp:include page="objTotalGraphSpark.jsp" />
 </div>
 
 <!-- JavaScript 함수 -->
