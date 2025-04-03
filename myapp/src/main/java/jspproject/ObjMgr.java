@@ -30,8 +30,7 @@ public class ObjMgr {
 			pstmt.setString(1, bean.getUser_id());
 			pstmt.setString(2, bean.getObj_title());
 			pstmt.setInt(3, bean.getObj_check());
-			pstmt.setString(4, bean.getObj_sdate());
-			pstmt.setString(5, bean.getObj_edate());
+			pstmt.setString(4, bean.getObj_edate());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -47,12 +46,11 @@ public class ObjMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "UPDATE obj SET obj_title = ?, obj_sdate = ?, obj_edate = ? WHERE obj_id = ?";
+			sql = "UPDATE obj SET obj_title = ?, obj_edate = ? WHERE obj_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getObj_title());
-			pstmt.setString(2, bean.getObj_sdate());
-			pstmt.setString(3, bean.getObj_edate());
-			pstmt.setInt(4, bean.getObj_id());
+			pstmt.setString(2, bean.getObj_edate());
+			pstmt.setInt(3, bean.getObj_id());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -213,5 +211,4 @@ public class ObjMgr {
 		}
 		return vlist;
 	}
-	
 }

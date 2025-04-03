@@ -1,12 +1,8 @@
-<!-- musicPlayList.jsp -->
+<!-- musicPlayListDetail.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>배경 선택</title>
  <style>
-    .music-container2 {
+    .music-container3 {
 	    position: absolute;
 	    left: 18vw;
 	    top: 9.5vh;
@@ -410,9 +406,9 @@
         font-size: 24px;
     }
 
-    .music-description2 textarea {
+    .music-description3 textarea {
     width: 100%;
-    height: 100px;
+    height: 200px;
     resize: none;
     border-radius: 10px;
     border: none;
@@ -420,7 +416,7 @@
     justify-content: center;     /* 가로 가운데 (텍스트 기준) */
     padding: 0;
     text-align: center;
-    line-height: 100px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
+    line-height: 200px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
 
     /* ✅ 다크 스타일 추가 */
     background-color: #2e2e2e;   /* 짙은 회색 */
@@ -529,17 +525,16 @@
     margin-bottom: -3px;
     font-size: 1.1vw;    /* 사이즈도 적당히 */
 	}
-
-	#musicPlayListDetailWrapper {
+	
+	#musicPlayListWrapper {
 	    display: none;
 	}
 	
 </style>
         
-</head>
 
-<body>
-<div class="music-container2" id="musicPlayListWrapper">
+
+<div class="music-container3" id="musicPlayListDetailWrapper" style="display: none;">
  	<!-- 🔸 div1: 탭 + 레이아웃 묶는 부모 -->
 	  <div class="music-main2">
 		<!-- 🔹 왼쪽: 재생 목록 UI -->
@@ -550,7 +545,7 @@
 		<div class="music-layout2">
 		    <div class="music-left2">
 		    	<% for (int i = 0; i < 10; i++) { %>
-			    <div class="playlist-box2" onclick = "openMusicPlayListDetail()">
+			    <div class="playlist-box2">
 			    	<img src="mplistImg/tema1.gif" alt="">
 			        <div class="playlist-name2">예시<%= i + 1 %></div>
 			        <div class="playlist-count2">n곡</div>
@@ -603,40 +598,24 @@
 	<!-- 오른쪽 영역 -->
 	<div class="music-right2">
 	    	<div class="preview-icons2">
+	    		<img class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="수정" >
 	    		<img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
 			</div>
 			
 	        <div class="music-preview2">
 	            <img class = "musicImg2" src="musicImg/music1.gif" alt="음악 이미지">
-	            <h2 style="text-align:center;">음악 제목</h2>
+	            <h2 style="text-align:center;">재생 목록 제목</h2>
 	        </div>
 	
-	        <div class="music-controls2">
-	            <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
-	            <span><img class = "iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > </span>
-	            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
+	        <div class="music-description3">
+	            <textarea>재생 목록 설명</textarea>
 	        </div>
-	
-	        <div class="music-description2">
-	            <textarea>음악 설명</textarea>
-	        </div>
-	        
-	        <!-- 가운데 위 버튼 -->
-			<div class="music-cancel-button2">
-			    <button class="btn-purple">음악 취소</button>
-			</div>
 			
 			<div class="music-right-buttons2">
-			    <button class="btn-purple">적용</button>
+			    <button class="btn-purple">수정</button>
 		</div>
 	</div>
 </div>
-
-<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
-<jsp:include page="musicPlayListDetail.jsp" />
-
-</body>
-</html>
 
 <script>
 
@@ -704,53 +683,15 @@
 	});
 
 	function switchToMusicList() {
-	    const musicListContainer = document.querySelector('.music-container');
-	    const playListContainer = document.querySelector('#musicPlayListWrapper');
+	    const musicListContainer = document.querySelector('.music-container'); // 음악 목록
+	    const playListContainer = document.querySelector('#musicPlayListWrapper'); // 재생 목록
+	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper'); // 상세 목록
 
-	    if (musicListContainer && playListContainer) {
-	        // 음악 목록 숨기고, 재생 목록 보이기
-	        playListContainer.style.display = 'none';
-	        musicListContainer.style.display = 'flex';
-
-	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
-	        const container = playListContainer.querySelector('.music-container');
-	        if (container) {
-	            container.style.display = 'flex';
-	        }
-	    }
+	    // 모두 숨기고 → 음악 목록만 보이게!
+	    if (playListContainer) playListContainer.style.display = 'none';
+	    if (detailContainer) detailContainer.style.display = 'none';
+	    if (musicListContainer) musicListContainer.style.display = 'flex';
 	}
+
 	
-	function openMusicPlayListDetail() {
-	    const playListContainer = document.querySelector('.music-container2');
-	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper');
-
-	    if (playListContainer) {
-	        playListContainer.style.display = 'none';
-	        console.log("재생 목록 화면 숨김");
-	    }
-
-	    if (detailContainer) {
-	        detailContainer.style.display = 'flex';
-	        console.log("디테일 화면 표시");
-	    }
-	}
-	
-	document.addEventListener("DOMContentLoaded", function () {
-	    const musicLeft = document.querySelector(".music-left2");
-
-	    musicLeft.addEventListener("click", function (e) {
-	        const deleteIcon = e.target.classList.contains("iconDelete2");
-	        const playlistBox = e.target.closest(".playlist-box2");
-
-	        if (!playlistBox) return;
-
-	        if (deleteIcon) {
-	            playlistBox.remove();
-	            return;
-	        }
-
-	        openMusicPlayListDetail(); // ✅ 삭제가 아닌 경우에만 열기
-	    });
-	});
-
 </script>

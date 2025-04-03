@@ -168,6 +168,7 @@
     }
 	
     .music-list-item {
+    	position: relative;
         background-color: #3c1e5c;
         margin-bottom: 12px;
         padding: 10px;
@@ -225,6 +226,24 @@
 	
 	.music-list::-webkit-scrollbar-button {
 	    display: none; /* 🔥 위아래 화살표 제거 */
+	}
+	
+	/* 삭제 아이콘 */
+	.music-list-item .iconPlusPlay {
+	    position: absolute;
+	    top: 8px;
+	    left: 96%;
+	    width: 25px;
+	    height: 25px;
+	    opacity: 0;
+	    transition: opacity 0.2s ease;
+	    cursor: pointer;
+	    z-index: 2;
+	}
+	
+	/* 마우스 오버 시 나타남 */
+	.music-list-item:hover .iconPlusPlay {
+	    opacity: 1;
 	}
 	
 	.music-right {
@@ -372,6 +391,15 @@
 	    display: none;
 	}
 	
+	#musicPlayListAddWrapper {
+	    display: none;
+	}
+	
+	#musicPlayListDetailWrapper {
+	    display: none;
+	}
+}
+	
 </style>
         
 </head>
@@ -401,12 +429,12 @@
 		    </div>
 		</div>
 
-
         <div class="music-list" id="musicList">
         	<% for (int i = 0; i < 20; i++) { %>
 			    <div class="music-list-item">
 			        <input type="checkbox" />
 			        <span>음악 제목<%= i + 1 %></span>
+			        <img class="iconPlusPlay" src="icon/아이콘_플레이리스트추가_1.png" alt="추가">
 			    </div>
 			<% } %>
         </div>
@@ -458,6 +486,13 @@
     <jsp:include page="musicPlayList.jsp" />
 </div>
 
+<!-- 재생목록 추가 영역 (처음엔 숨김) -->
+<div class = "add-playlist-container" id="musicPlayListAddWrapper"> 
+    <jsp:include page="musicListAdd.jsp" />
+</div>
+
+<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
+<jsp:include page="musicPlayListDetail.jsp" />
 
 </body>
 </html>
@@ -512,21 +547,48 @@
 	});
 	
 	function switchToPlayList() {
-	    const musicListContainer = document.querySelector('.music-container');
-	    const playListContainer = document.querySelector('#musicPlayListWrapper');
+	    const musicListContainer = document.querySelector('.music-container'); // 음악 목록
+	    const playListContainer = document.querySelector('#musicPlayListWrapper'); // 재생 목록
+	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper'); // 상세 목록
 
-	    if (musicListContainer && playListContainer) {
-	        // 음악 목록 숨기고, 재생 목록 보이기
-	        musicListContainer.style.display = 'none';
-	        playListContainer.style.display = 'flex';
+	    // 내부 컨테이너도 명시적으로
+	    const innerContainer = playListContainer?.querySelector('.music-container2');
 
-	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
-	        const container2 = playListContainer.querySelector('.music-container2');
-	        if (container2) {
-	            container2.style.display = 'flex';
-	        }
-	    }
+	    if (musicListContainer) musicListContainer.style.display = 'none';
+	    if (detailContainer) detailContainer.style.display = 'none';
+	    if (playListContainer) playListContainer.style.display = 'flex';
+	    if (innerContainer) innerContainer.style.display = 'flex'; // 이거 추가!
 	}
 
+	document.addEventListener('DOMContentLoaded', function () {
+		  const plusIcons = document.querySelectorAll('.iconPlusPlay');
+		  const playlistContainer = document.querySelector('.add-playlist-container');
 
+		  plusIcons.forEach(icon => {
+		    icon.addEventListener('click', function (e) {
+		      if (!playlistContainer) return;
+
+		      // 위치 계산
+		      const iconRect = this.getBoundingClientRect();
+		      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+		      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+		      playlistContainer.style.position = 'absolute';
+		      playlistContainer.style.top = (iconRect.bottom + scrollTop + 5) + 'px';
+		      playlistContainer.style.left = (iconRect.left + scrollLeft-180) + 'px';
+		      playlistContainer.style.display = 'block';
+		    });
+		  });
+
+		  // 바깥 클릭 시 숨김
+		  document.addEventListener('click', function (e) {
+		    if (
+		      !e.target.classList.contains('iconPlusPlay') &&
+		      !e.target.closest('.add-playlist-container')
+		    ) {
+		      playlistContainer.style.display = 'none';
+		    }
+		  });
+		});
+	
 </script>
