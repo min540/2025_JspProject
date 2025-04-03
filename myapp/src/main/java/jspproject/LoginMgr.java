@@ -115,6 +115,35 @@ public class LoginMgr {
 		return flag;
 	}
 	
+	//유저 정보 저장
+	public UserBean getUser(String id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		UserBean bean = null;
+		try {
+			con = pool.getConnection();
+			sql = "select user_id, user_name, user_email, user_icon, grade from user where user_id = ? ";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				bean = new UserBean();
+				bean.setUser_id(rs.getString("user_id"));
+				bean.setUser_name(rs.getString("user_name"));
+				bean.setUser_email(rs.getString("user_email"));
+				bean.setUser_icon(rs.getString("user_icon"));
+				bean.setGrade(rs.getInt("grade"));			
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return bean;
+	}
+	
 	//회원 정보 수정
 	public boolean updateUser(HttpServletRequest req) {
 		Connection con = null;
