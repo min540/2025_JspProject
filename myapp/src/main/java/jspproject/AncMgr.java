@@ -39,7 +39,7 @@ public class AncMgr {
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
 				bean.setAnc_regdate(rs.getString("anc_regdate"));
-				//bean.setAnc_img(rs.getString("anc_image"));
+				bean.setAnc_img(rs.getString("anc_img"));
 				vlist.addElement(bean);
 			}
 		} catch (Exception e) {
@@ -49,6 +49,66 @@ public class AncMgr {
 		}
 		return vlist;
 	}
+	
+	//공지사항 세부사항
+	
+	public AncBean getAnc(int anc_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		AncBean bean = new AncBean();
+		try {
+			con = pool.getConnection();
+			sql = "select * from anc where anc_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, anc_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				bean.setAnc_id(rs.getInt("anc_id"));
+				bean.setUser_id(rs.getString("user_id"));
+				bean.setAnc_title(rs.getString("anc_title"));
+				bean.setAnc_cnt(rs.getString("anc_cnt"));
+				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_img(rs.getString("anc_img"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return bean;
+	}
+	
+	//이전 업데이트 공지사항 이미지
+	public AncBean beforeImg(int anc_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		AncBean bean = new AncBean();
+		try {
+			con = pool.getConnection();
+			sql = "select * from anc order by anc_id desc limit 1, 1";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, anc_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				bean.setAnc_id(rs.getInt("anc_id"));
+				bean.setUser_id(rs.getString("user_id"));
+				bean.setAnc_title(rs.getString("anc_title"));
+				bean.setAnc_cnt(rs.getString("anc_cnt"));
+				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_img(rs.getString("anc_img"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return bean;
+	}
+	
 	
 	//공지사항 작성(관리자만사용)
 	public void insertAnc(AncBean bean, String grade) {
