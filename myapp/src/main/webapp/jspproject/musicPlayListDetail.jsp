@@ -1,6 +1,5 @@
 <!-- musicPlayListDetail.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<title>배경 선택</title>
  <style>
     .music-container3 {
 	    position: absolute;

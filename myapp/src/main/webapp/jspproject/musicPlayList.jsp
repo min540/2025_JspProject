@@ -1,10 +1,6 @@
 <!-- musicPlayList.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>배경 선택</title>
+
  <style>
     .music-container2 {
 	    position: absolute;
@@ -536,9 +532,6 @@
 	
 </style>
         
-</head>
-
-<body>
 <div class="music-container2" id="musicPlayListWrapper">
  	<!-- 🔸 div1: 탭 + 레이아웃 묶는 부모 -->
 	  <div class="music-main2">
@@ -634,9 +627,6 @@
 
 <!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
 <jsp:include page="musicPlayListDetail.jsp" />
-
-</body>
-</html>
 
 <script>
 

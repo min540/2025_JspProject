@@ -4,7 +4,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>배경 선택</title>
  <style>
     .music-container {
     position: absolute;
