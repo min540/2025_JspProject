@@ -1,6 +1,5 @@
 <!-- objTotalGraphBar.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     @font-face {
         font-family: 'PFStarDust';
@@ -171,7 +170,7 @@
     <div class="graph-header">
         <div class="graph-tab">
             <button class="graph-tab-btn active">주간</button>
-            <button class="graph-tab-btn">월간</button>
+            <button class="graph-tab-btn" onclick = "switchToMonthBar()">월간</button>
         </div>
     </div>
 
@@ -209,53 +208,6 @@
 </div>
 
 <script>
-	function drawBarWeekChart() {
-	    const goalCtx = document.getElementById('goalChart').getContext('2d');
-	    const memoCtx = document.getElementById('memoChart').getContext('2d');
-	
-	    const commonOptions = {
-	        plugins: { legend: { display: false } },
-	        scales: {
-	            y: {
-	                ticks: {
-	                    callback: function(value) {
-	                        return value.toLocaleString();
-	                    }
-	                }
-	            }
-	        }
-	    };
-	
-	    new Chart(goalCtx, {
-	        type: 'bar',
-	        data: {
-	            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-	            datasets: [{
-	                label: '주간 목표 달성 건수',
-	                data: [300, 500, 700, 400, 600, 800],
-	                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-	                borderRadius: 8
-	            }]
-	        },
-	        options: commonOptions
-	    });
-	
-	    new Chart(memoCtx, {
-	        type: 'bar',
-	        data: {
-	            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-	            datasets: [{
-	                label: '주간 일지 작성 건수',
-	                data: [250, 450, 600, 380, 620, 780],
-	                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-	                borderRadius: 8
-	            }]
-	        },
-	        options: commonOptions
-	    });
-	}
-	
-	drawBarWeekChart();
-    
+
 </script>
 

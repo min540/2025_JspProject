@@ -1,6 +1,5 @@
 <!-- ObjTotalGraphSpark.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     @font-face {
         font-family: 'PFStarDust';
@@ -162,47 +161,5 @@
 </div>
 
 <script>
-	function drawLineChart() {
-	    const ctx = document.getElementById('myChart').getContext('2d');
-	
-	    const chart = new Chart(ctx, {
-	        type: 'line',
-	        data: {
-	            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-	            datasets: [{
-	                label: '연간 작업량',
-	                data: [1230000, 1275000, 1330000, 1420000, 1450000, 1530000],
-	                borderColor: function(ctx) {
-	                    return ctx.dataIndex === 5 ? 'red' : '#0277bd';
-	                },
-	                borderWidth: 2,
-	                pointRadius: 6,
-	                pointBackgroundColor: function(ctx) {
-	                    return ctx.dataIndex === 5 ? 'red' : '#0277bd';
-	                },
-	                fill: false,
-	                tension: 0.3
-	            }]
-	        },
-	        options: {
-	            plugins: {
-	                legend: {
-	                    display: false
-	                }
-	            },
-	            scales: {
-	                y: {
-	                    ticks: {
-	                        callback: function(value) {
-	                            return value.toLocaleString();
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    });
-	}
-	
-	drawLineChart();
 
 </script>
