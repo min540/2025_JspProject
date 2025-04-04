@@ -19,7 +19,7 @@ body, html {
 }
 .left-half{
  	flex: 1;
-  	background-image: url('http://localhost/2025_JspProject/jspproject/images/loginimg.jpg');
+  	background-image: url('images/loginimg.jpg');
   	background-size: cover;
   	background-position: left;
 }
@@ -35,8 +35,9 @@ body, html {
 	transform: translateY(-10px);
 }
 .right-half_title{
-	color: white;
-	margin-bottom: 10px;/*세로*/
+	color: white;	
+	padding-top: 70px;
+	margin-bottom: 20px;/*세로*/
 }
 .login-box{
 	background-color: #4A3C6E;
@@ -138,7 +139,7 @@ function checkId() {//중복확인
 	    return;
 	  }
 
-	  fetch("/2025_JspProject/jspproject/idCheckServlet?user_id=" + encodeURIComponent(userId))
+	  fetch("idCheckServlet?user_id=" + encodeURIComponent(userId))
 	    .then(res => res.text())
 	    .then(result => {
 	      if (result === "true") {
@@ -164,7 +165,7 @@ function checkPhoneRealtime(phone) {// 전화번호 실시간 중복확인
             return;
         }
 
-        fetch("/2025_JspProject/jspproject/phoneCheckServlet?user_phone=" + encodeURIComponent(phone))
+        fetch("phoneCheckServlet?user_phone=" + encodeURIComponent(phone))
             .then(res => res.text())
             .then(result => {
                 const msgDiv = document.getElementById("phone-check-msg");
@@ -202,7 +203,7 @@ function checkEmail(){//이메일 중복체크 실시간
             return;
         }
         
-	  fetch("/2025_JspProject/jspproject/emailCheckServlet?user_email=" + encodeURIComponent(email))
+	  fetch("emailCheckServlet?user_email=" + encodeURIComponent(email))
 	  .then(res => res.text())
 	   .then(result => {
 		   if(result.trim() === "true"){
@@ -265,7 +266,7 @@ function  updateSubmitButton() {
 			<h3 class= "login-box_text">당신의 공간을 만들어보세요</h3>
 			<div class="line"></div>
 			
-<form action="/2025_JspProject/jspproject/userPost" method="post" enctype="multipart/form-data">
+<form action="userPost" method="post" enctype="multipart/form-data">
     <div class="input-row form-item">
     <input type="text" name="user_id" placeholder="아이디" class="input-field " required  style="width: 290px;" value="<%= request.getParameter("user_id") != null ? request.getParameter("user_id") : "" %>">
     <button type="button" onclick="checkId()" class="check-btn" style="width: 100px; height: 50px; font-size: 14px;">중복확인</button>

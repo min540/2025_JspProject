@@ -48,7 +48,7 @@
 <!-- 오른쪽 하단 아이콘들 -->
 <div class = "icon-container2">
 	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
-	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" >
+	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
 	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
@@ -70,6 +70,11 @@
     <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
     <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
     <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+</div>
+
+<!-- 작업 목표 설정 영역 (처음엔 숨김) -->
+<div id="objWrapper" style="display:none;">
+    <jsp:include page="Objective.jsp" />
 </div>
 
 
@@ -130,6 +135,12 @@
 	// 일지 설정 on/off
 	function toggleJournalList() {
         var journalDiv = document.getElementById("journalWrapper");
+        journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 작업 목록 on/off
+	function toggleObjList() {
+        var journalDiv = document.getElementById("objWrapper");
         journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
     }
 	
@@ -343,6 +354,4 @@
 	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
 	    }, 50);
 	}
-
-	
 </script>
