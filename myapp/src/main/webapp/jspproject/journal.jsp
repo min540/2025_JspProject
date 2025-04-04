@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <title>다이어리</title>
   <!-- 외부 CSS 연결 -->
-  <link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/diary.css" />
+<link href="css/diary.css?v=2" rel="stylesheet" type="text/css">
 <style>
   .input-field::-webkit-scrollbar {
     width: 8px;
