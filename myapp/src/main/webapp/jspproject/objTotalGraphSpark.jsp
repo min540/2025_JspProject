@@ -1,4 +1,4 @@
-<!-- ObjTotalGraphSparkMonth.jsp -->
+<!-- ObjTotalGraphSpark.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <style>
     @font-face {
@@ -8,14 +8,7 @@
         font-style: normal;
     }
 
-    body {
-        margin: 0;
-        background-color: #1d102d;
-        font-family: 'PFStarDust', sans-serif;
-        color: white;
-    }
-
-    .spark-container2 {
+    .spark-container {
         position: absolute;
         left: 18vw;
         top: 9.5vh;
@@ -130,18 +123,22 @@
 	    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); /* 살짝 glow */
 	}
 	
-	#barMonthWrapper {
+	#barWeekWrapper {
 	    display: none;
 	}
-
+	
+	#sparkMonthWrapper {
+	    display: none;
+	}
+	
 </style>
 
-<div class="spark-container2">
+<div class="spark-container">
     <!-- 상단 탭 + 통계 -->
     <div class="graph-header">
         <div class="graph-tab">
-            <button class="graph-tab-btn" onclick= "switchToWeekLine()">주간</button>
-            <button class="graph-tab-btn active">월간</button>
+            <button class="graph-tab-btn active" ">주간</button>
+            <button class="graph-tab-btn" onclick="switchToMonthSpark()">월간</button>
         </div>
     </div>
 
@@ -149,18 +146,18 @@
     <div class="graph-body">
         <div class="graph-wrapper">
             <div class="graph-card">
-                <canvas id="myChartMonth"></canvas>
+                <canvas id="myChart"></canvas>
             </div>
         </div>
 
         <div class="graph-sidebar">
-            <button class="btn-purple">꺾은 선</button>
-            <button onclick = "switchToMonthBar()">막대</button>
+            <button class="btn-purple" >꺾은 선</button>
+            <button onclick = "switchToWeekBar()">막대</button>
         </div>
     </div>
 
     <!-- 하단 텍스트 -->
-    <div class="bottom-text">이번 달 총 작업 시간 : 3000H</div>
+    <div class="bottom-text">이번 주 총 작업 시간 : 3000H</div>
 </div>
 
 <script>
