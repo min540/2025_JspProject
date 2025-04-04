@@ -59,23 +59,6 @@
     font-weight: bold;
    	font-size: 1vw;
 	}
-    
-    .background-header input[type="checkbox"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    margin-left: 14px;
-    margin-right: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    background-color: white;
-
-    vertical-align: middle;
-    margin-top: -1px; /* ✅ 살짝 위로 올림 */
-	}
 	
 	/* 체크된 상태 */
 	.background-header input[type="checkbox"]:checked {

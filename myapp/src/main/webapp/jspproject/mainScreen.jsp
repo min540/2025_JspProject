@@ -4,7 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
 %>
-
+<body>
 <!-- 프로필 아이콘 -->
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""> 
 
@@ -72,7 +72,7 @@
     <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
 </div>
 
-
+</body>
 <!-- JavaScript 함수 -->
 <script>
 	let uiVisible = true;
