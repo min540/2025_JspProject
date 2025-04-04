@@ -1,6 +1,6 @@
 <!-- mainScreen.jsp -->
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
 <%
 %>
 
@@ -65,8 +65,12 @@
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
-    <jsp:include page="objTotalGraphSpark.jsp" />
+    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
+    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
+    <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
+    <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
 </div>
+
 
 <!-- JavaScript 함수 -->
 <script>
@@ -129,10 +133,55 @@
         journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
     }
 	
-	// 통계 그래프 설정 on/off
+	let currentChart = null;
+
+	function hideAllGraphs() {
+	    document.querySelectorAll('#GraphWrapper > div').forEach(div => {
+	        div.style.display = 'none';
+	    });
+	}
+
 	function toggleGraphView() {
-        var GraphDiv = document.getElementById("GraphWrapper");
-        GraphDiv.style.display = (GraphDiv.style.display === "none") ? "block" : "none";
-    }
+	    const wrapper = document.getElementById("GraphWrapper");
+	    const isVisible = wrapper.style.display === "block";
+	    wrapper.style.display = isVisible ? "none" : "block";
+
+	    if (!isVisible) {
+	        switchToWeekLine(); // 기본 주간 꺾은선 표시
+	    }
+	}
+
+	function switchToWeekLine() {
+	    hideAllGraphs();
+	    document.getElementById("graph-spark-week").style.display = "block";
+	    setTimeout(() => {
+	        if (typeof drawLineChart === 'function') drawLineChart();
+	    }, 50);
+	}
+
+	function switchToWeekBar() {
+	    hideAllGraphs();
+	    document.getElementById("graph-bar-week").style.display = "block";
+	    setTimeout(() => {
+	        if (typeof drawBarWeekChart === 'function') drawBarWeekChart();
+	    }, 50);
+	}
+
+	function switchToMonthSpark() {
+	    hideAllGraphs();
+	    document.getElementById("graph-spark-month").style.display = "block";
+	    setTimeout(() => {
+	        if (typeof drawLineMonthChart === 'function') drawLineMonthChart();
+	    }, 50);
+	}
+
+	function switchToMonthBar() {
+	    hideAllGraphs();
+	    document.getElementById("graph-bar-month").style.display = "block";
+	    setTimeout(() => {
+	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
+	    }, 50);
+	}
+
 	
 </script>

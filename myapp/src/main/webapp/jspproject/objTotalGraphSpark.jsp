@@ -9,13 +9,6 @@
         font-style: normal;
     }
 
-    body {
-        margin: 0;
-        background-color: #1d102d;
-        font-family: 'PFStarDust', sans-serif;
-        color: white;
-    }
-
     .spark-container {
         position: absolute;
         left: 18vw;
@@ -160,7 +153,7 @@
 
         <div class="graph-sidebar">
             <button class="btn-purple" >꺾은 선</button>
-            <button onclick = switchToWeekBar()>막대</button>
+            <button onclick = "switchToWeekBar()">막대</button>
         </div>
     </div>
 

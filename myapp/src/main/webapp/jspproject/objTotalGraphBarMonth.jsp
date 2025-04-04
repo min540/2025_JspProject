@@ -170,7 +170,7 @@
     <!-- 상단 탭 + 통계 -->
     <div class="graph-header">
         <div class="graph-tab">
-            <button class="graph-tab-btn">주간</button>
+            <button class="graph-tab-btn" onclick = "switchToWeekBar()">주간</button>
             <button class="graph-tab-btn active">월간</button>
         </div>
     </div>
@@ -198,7 +198,7 @@
         </div>
 
         <div class="graph-sidebar">
-            <button>꺾은 선</button>
+            <button onclick = "switchToMonthSpark()">꺾은 선</button>
             <button class="btn-purple">막대</button>
         </div>
     </div>
