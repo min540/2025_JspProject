@@ -113,7 +113,7 @@ body, html {
 	function handleCredential(response) {
 	  const userInfo = parseJwt(response.credential);
 
-	  fetch("/2025_JspProject/jspproject/googleLoginServlet", {
+	  fetch("googleLoginServlet", {
 	    method: "POST",
 	    headers: { "Content-Type": "application/json" },
 	    body: JSON.stringify({
@@ -128,7 +128,7 @@ body, html {
 	  .then(data => {
 	    if (data.status === "ok") {
 	      // 로그인 성공 → 메인 페이지로 이동
-	      window.location.href = "/2025_JspProject/jspproject/mainScreen.jsp";
+	      window.location.href = "mainScreen.jsp";
 	    } else {
 	      alert("구글 로그인에 실패했습니다.");
 	    }
