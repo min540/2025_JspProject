@@ -497,16 +497,29 @@ let backgroundDescriptions = {};
 
 function saveDescription() {
     const titleInput = document.getElementById("backgroundTitleInput");
-    const fileName = document.querySelector(".backgroundImg").src.split('/').pop(); // 이미지 파일명
+    const newTitle = titleInput.value.trim();
+    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
     const description = document.querySelector(".background-description textarea").value;
 
-    if (fileName) {
-        backgroundDescriptions[fileName] = {
-            title: titleInput.value,
-            description: description
-        };
-        alert("제목과 설명이 저장되었습니다.");
-    }
+    if (!fileName) return;
+
+    // 저장
+    backgroundDescriptions[fileName] = {
+        title: newTitle,
+        description: description
+    };
+
+    // 리스트업데이트
+    const allImages = document.querySelectorAll(".background-list-item img");
+
+    allImages.forEach(img => {
+        const src = img.getAttribute("src");
+        if (src.includes(fileName)) {
+            img.setAttribute("alt", newTitle); 
+        }
+    });
+
+    alert("제목과 설명이 저장되었습니다.");
 }
 
 function deleteImage(el) {
