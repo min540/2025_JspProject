@@ -149,7 +149,7 @@
 	    transition: opacity 0.2s ease;
 	    cursor: pointer;
 	    z-index: 2;
-	    background-color:white;
+	    background-color:transparent;
 	}
 
 	/* 마우스 오버 시 아이콘 보이게 */
@@ -424,7 +424,7 @@
 		    // 정확한 파일 이름 배열로 처리
 		    String[] gifFiles = {
 		        "tema1.gif", "tema2.gif", "tema3.gif", "tema4.gif",
-		        "tema5.gif", "tema6.gif", "tema7.gif","tema8.gif",
+		        "tema6.gif", "tema7.gif","tema8.gif",
 		        "tema9.gif","tema10.gif","tema11.gif","tema12.gif",
 		        "tema13.gif","tema14.gif","tema15.gif","tema16.gif",
 		        "tema17.gif","tema18.gif","tema19.gif","tema20.gif"
@@ -443,7 +443,7 @@
 
 		    <!-- 🗑 삭제 버튼 - 이미지 안에 오른쪽 위에 겹치도록 배치 -->
 		    <img class="delete-icon" 
-		         src="<%= request.getContextPath() %>/jspproject/img/delete.png" 
+		         src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png" 
 		         alt="삭제" 
 		         onclick="deleteImage(this)" />
 
@@ -572,10 +572,4 @@ function selectBackground(fileName) {
         textarea.value = "";
     }
 }
-<<<<<<< HEAD
 </script>
-=======
-
-
-</script>
->>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
