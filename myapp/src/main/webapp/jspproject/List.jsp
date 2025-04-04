@@ -192,6 +192,10 @@
                 const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);
                 if (confirmed) {
                     listContainer.removeChild(newItem);
+                    
+                    let currentLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+                    currentLists = currentLists.filter(name => name !== input.value);
+                    localStorage.setItem("userLists", JSON.stringify(currentLists));
                 }
             });
 
@@ -240,6 +244,10 @@
                     const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);
                     if (confirmed) {
                         listContainer.removeChild(item);
+                        
+                        let currentLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+                        currentLists = currentLists.filter(name => name !== input.value);
+                        localStorage.setItem("userLists", JSON.stringify(currentLists));
                     }
                 });
 
