@@ -180,6 +180,11 @@
             justify-content: center;
             transition: all 0.3s ease;
         }
+        .selected-list {
+		    background-color: rgba(255, 255, 255, 0.2);
+		    border: 2px solid white;
+		    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+		}
     </style>
 </head>
 <body>
@@ -378,19 +383,28 @@
                 listContainer.appendChild(defaultBtn);
             } else {
 				//리스트가 있을 경우
-            	visibleLists.forEach(name => {
-            	    const btn = document.createElement('button');
-            	    btn.className = 'edit-btn';
-            	    btn.textContent = name;
-
-            	    // 리스트 버튼 클릭시
-            	    btn.addEventListener('click', () => {
-            	        localStorage.setItem("currentList", name);        // 선택한 리스트 저장
-            	        renderTasksForCurrentList();                      // 해당 리스트 과제 보여주기
-            	    });
-
-            	    listContainer.appendChild(btn);
-            	});
+				visibleLists.forEach(name => {
+				    const btn = document.createElement('button');
+				    btn.className = 'edit-btn';
+				    btn.textContent = name;
+				
+				    // ✅ 현재 선택된 리스트라면 스타일 추가
+				    if (name === localStorage.getItem("currentList")) {
+				        btn.classList.add('selected-list');
+				    }
+				
+				    // 리스트 버튼 클릭시
+				    btn.addEventListener('click', () => {
+				        localStorage.setItem("currentList", name);        // 선택한 리스트 저장
+				        renderTasksForCurrentList();                      // 해당 리스트 과제 보여주기
+				
+				        // ✅ 선택된 리스트 강조 스타일 업데이트
+				        document.querySelectorAll('.edit-btn').forEach(b => b.classList.remove('selected-list'));
+				        btn.classList.add('selected-list');
+				    });
+				
+				    listContainer.appendChild(btn);
+				});
 
 
                 if (hiddenLists.length > 0) {

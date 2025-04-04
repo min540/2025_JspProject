@@ -1,6 +1,22 @@
 <!-- musicPlayList.jsp -->
+<%@page import="java.util.Vector"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ page import="jspproject.UserBean" %>
+<%@ page import="jspproject.BgmBean" %>
+<%@ page import="jspproject.MplistBean" %>
+<%@ page import="jspproject.MplistMgrBean" %>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<%
+String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+if (user_id == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
+Vector<MplistBean> mplist = bmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
+%>
  <style>
     .music-container2 {
 	    position: absolute;
@@ -542,14 +558,19 @@
 		</div>
 		<div class="music-layout2">
 		    <div class="music-left2">
-		    	<% for (int i = 0; i < 10; i++) { %>
-			    <div class="playlist-box2">
-			    	<img src="mplistImg/tema1.gif" alt="">
-			        <div class="playlist-name2">예시<%= i + 1 %></div>
-			        <div class="playlist-count2">n곡</div>
-			        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
-			    </div>
-			<% } %>
+		    	<% if (mplist != null && !mplist.isEmpty()) {
+				     for (MplistBean m : mplist) {
+				%>
+				    <div class="playlist-box2">
+				        <img src="img/<%= (m.getMplist_img() != null && !m.getMplist_img().isEmpty()) ? m.getMplist_img() : "default.gif" %>" alt="">
+				        <div class="playlist-name2"><%= m.getMplist_name() %></div>
+				        <div class="playlist-count2"><%= m.getMplist_cnt() %></div>
+				        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
+				    </div>
+				<%   }
+				   } else { %>
+				    <div style="color:white; padding:10px;">재생목록이 없습니다.</div>
+				<% } %>
 		        <div class="add-playlist2" onclick = "addPlaylistBox()">+</div>
 		    </div>
 		
@@ -577,15 +598,20 @@
 				    </div>
 				</div>
 		
-		
+				
 		        <div class="music-list2" id="musicList2">
-		        	<% for (int i = 0; i < 20; i++) { %>
+					<% if (bgm != null && !bgm.isEmpty()) {
+					     for (BgmBean b : bgm) {
+					%>
 					    <div class="music-list-item2">
-					        <input type="checkbox" />
-					        <span>음악 제목<%= i + 1 %></span>
+					        <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>" />
+					        <span><%= b.getBgm_name() %></span>
 					    </div>
+					<%  }
+					   } else { %>
+					    <div class="music-list-item2" style="color:white;">재생 가능한 음악이 없습니다.</div>
 					<% } %>
-		        </div>
+				</div>
 		
 		        <div class="music-footer2">
 		            <button class="btn-red delete-selected2">삭제</button>
