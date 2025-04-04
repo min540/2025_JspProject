@@ -1,10 +1,6 @@
 <!-- Background.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>배경 선택</title>
+
  <style>
     .background-container {
     position: absolute;
@@ -396,10 +392,7 @@
 }
 	
 </style>
-        
-</head>
 
-<body>
 <div class="background-container">
     <!-- 왼쪽 영역 -->
     <div class="background-left">
@@ -489,87 +482,84 @@
 
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
 
-</body>
-</html>
-
 <script>
-let backgroundDescriptions = {};
-
-function saveDescription() {
-    const titleInput = document.getElementById("backgroundTitleInput");
-    const fileName = document.querySelector(".backgroundImg").src.split('/').pop(); // 이미지 파일명
-    const description = document.querySelector(".background-description textarea").value;
-
-    if (fileName) {
-        backgroundDescriptions[fileName] = {
-            title: titleInput.value,
-            description: description
-        };
-        alert("제목과 설명이 저장되었습니다.");
-    }
-}
-
-function deleteImage(el) {
-    const item = el.closest('.background-list-item');
-    if (confirm("정말 삭제하시겠습니까?")) {
-        item.remove();
-    }
-}
-
-function addbackgroundItem() {
-    document.getElementById("backgroundFileInput").click();
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    const deleteButton = document.querySelector(".delete-selected");
-    const searchInput = document.querySelector(".background-search");
-    const searchButton = document.getElementById("searchButton");
-
-    //  입력 중 부분 검색 
-    searchInput.addEventListener("input", function () {
-        const keyword = this.value.toLowerCase();
-        const items = document.querySelectorAll(".background-list-item");
-        items.forEach(item => {
-            const img = item.querySelector("img");
-            const title = img.getAttribute("alt").toLowerCase();
-            item.style.display = title.includes(keyword) ? "block" : "none";
-        });
-    });
-
-    //  정확히 일치하는 제목만 표시
-    searchButton.addEventListener("click", function () {
-        const keyword = searchInput.value.trim().toLowerCase();
-        const items = document.querySelectorAll(".background-list-item");
-
-        items.forEach(item => {
-            const img = item.querySelector("img");
-            const title = img.getAttribute("alt").toLowerCase();
-
-            if (title === keyword || title === `${keyword}.gif`) {
-                item.style.display = "block";
-            } else {
-                item.style.display = "none";
-            }
-        });
-    });
-});
-
-function selectBackground(fileName) {
-    const previewImg = document.querySelector(".backgroundImg");
-    const titleInput = document.getElementById("backgroundTitleInput");
-    const textarea = document.querySelector(".background-description textarea");
-    const contextPath = "<%= request.getContextPath() %>";
-    const fullPath = contextPath + "/jspproject/mplistImg/" + fileName;
-
-    previewImg.src = fullPath;
-
-    // 저장된 제목/설명 불러오기
-    if (backgroundDescriptions[fileName]) {
-        titleInput.value = backgroundDescriptions[fileName].title || fileName;
-        textarea.value = backgroundDescriptions[fileName].description || "";
-    } else {
-        titleInput.value = fileName;
-        textarea.value = "";
-    }
-}
+	let backgroundDescriptions = {};
+	
+	function saveDescription() {
+	    const titleInput = document.getElementById("backgroundTitleInput");
+	    const fileName = document.querySelector(".backgroundImg").src.split('/').pop(); // 이미지 파일명
+	    const description = document.querySelector(".background-description textarea").value;
+	
+	    if (fileName) {
+	        backgroundDescriptions[fileName] = {
+	            title: titleInput.value,
+	            description: description
+	        };
+	        alert("제목과 설명이 저장되었습니다.");
+	    }
+	}
+	
+	function deleteImage(el) {
+	    const item = el.closest('.background-list-item');
+	    if (confirm("정말 삭제하시겠습니까?")) {
+	        item.remove();
+	    }
+	}
+	
+	function addbackgroundItem() {
+	    document.getElementById("backgroundFileInput").click();
+	}
+	
+	document.addEventListener("DOMContentLoaded", function () {
+	    const deleteButton = document.querySelector(".delete-selected");
+	    const searchInput = document.querySelector(".background-search");
+	    const searchButton = document.getElementById("searchButton");
+	
+	    //  입력 중 부분 검색 
+	    searchInput.addEventListener("input", function () {
+	        const keyword = this.value.toLowerCase();
+	        const items = document.querySelectorAll(".background-list-item");
+	        items.forEach(item => {
+	            const img = item.querySelector("img");
+	            const title = img.getAttribute("alt").toLowerCase();
+	            item.style.display = title.includes(keyword) ? "block" : "none";
+	        });
+	    });
+	
+	    //  정확히 일치하는 제목만 표시
+	    searchButton.addEventListener("click", function () {
+	        const keyword = searchInput.value.trim().toLowerCase();
+	        const items = document.querySelectorAll(".background-list-item");
+	
+	        items.forEach(item => {
+	            const img = item.querySelector("img");
+	            const title = img.getAttribute("alt").toLowerCase();
+	
+	            if (title === keyword || title === `${keyword}.gif`) {
+	                item.style.display = "block";
+	            } else {
+	                item.style.display = "none";
+	            }
+	        });
+	    });
+	});
+	
+	function selectBackground(fileName) {
+	    const previewImg = document.querySelector(".backgroundImg");
+	    const titleInput = document.getElementById("backgroundTitleInput");
+	    const textarea = document.querySelector(".background-description textarea");
+	    const contextPath = "<%= request.getContextPath() %>";
+	    const fullPath = contextPath + "/jspproject/mplistImg/" + fileName;
+	
+	    previewImg.src = fullPath;
+	
+	    // 저장된 제목/설명 불러오기
+	    if (backgroundDescriptions[fileName]) {
+	        titleInput.value = backgroundDescriptions[fileName].title || fileName;
+	        textarea.value = backgroundDescriptions[fileName].description || "";
+	    } else {
+	        titleInput.value = fileName;
+	        textarea.value = "";
+	    }
+	}
 </script>

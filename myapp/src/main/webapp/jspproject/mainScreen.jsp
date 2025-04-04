@@ -12,7 +12,7 @@
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
     <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
-    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정"> 
+    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
     <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃"> 
@@ -59,6 +59,11 @@
     <jsp:include page="profile.jsp" />
 </div>
 
+<!-- 배경 설정 영역 (처음엔 숨김) -->
+<div id="backgroundWrapper" style="display:none;">
+    <jsp:include page="Background.jsp" />
+</div>
+
 <!-- 음악 리스트 영역 (처음엔 숨김) -->
 <div id="musicListWrapper" style="display:none;">
     <jsp:include page="musicList.jsp" />
@@ -77,16 +82,11 @@
     <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
 </div>
 
-<<<<<<< HEAD
-</body>
-=======
 <!-- 작업 목표 설정 영역 (처음엔 숨김) -->
 <div id="objWrapper" style="display:none;">
     <jsp:include page="Objective.jsp" />
 </div>
 
-
->>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
 <!-- JavaScript 함수 -->
 <script>
 	let uiVisible = true;
@@ -146,6 +146,12 @@
 		    document.exitFullscreen();
 		}
 	}
+	
+	// 배경 설정 on/off
+	function toggleBackground() {
+        var backgroundDiv = document.getElementById("backgroundWrapper");
+        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
+    }
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
