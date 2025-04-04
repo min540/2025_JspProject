@@ -1,19 +1,11 @@
 <!-- ObjTotalGraphSpark.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     @font-face {
         font-family: 'PFStarDust';
         src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
         font-weight: bold;
         font-style: normal;
-    }
-
-    body {
-        margin: 0;
-        background-color: #1d102d;
-        font-family: 'PFStarDust', sans-serif;
-        color: white;
     }
 
     .spark-container {
@@ -130,15 +122,23 @@
 	    color: #ffffff;
 	    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); /* 살짝 glow */
 	}
-
+	
+	#barWeekWrapper {
+	    display: none;
+	}
+	
+	#sparkMonthWrapper {
+	    display: none;
+	}
+	
 </style>
 
 <div class="spark-container">
     <!-- 상단 탭 + 통계 -->
     <div class="graph-header">
         <div class="graph-tab">
-            <button class="graph-tab-btn active">주간</button>
-            <button class="graph-tab-btn">월간</button>
+            <button class="graph-tab-btn active" ">주간</button>
+            <button class="graph-tab-btn" onclick="switchToMonthSpark()">월간</button>
         </div>
     </div>
 
@@ -152,7 +152,7 @@
 
         <div class="graph-sidebar">
             <button class="btn-purple" >꺾은 선</button>
-            <button>막대</button>
+            <button onclick = "switchToWeekBar()">막대</button>
         </div>
     </div>
 
@@ -161,42 +161,5 @@
 </div>
 
 <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
 
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-            datasets: [{
-                label: '연간 작업량',
-                data: [1230000, 1275000, 1330000, 1420000, 1450000, 1530000],
-                borderColor: function(ctx) {
-                    return ctx.dataIndex === 5 ? 'red' : '#0277bd';
-                },
-                borderWidth: 2,
-                pointRadius: 6,
-                pointBackgroundColor: function(ctx) {
-                    return ctx.dataIndex === 5 ? 'red' : '#0277bd';
-                },
-                fill: false,
-                tension: 0.3
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
 </script>

@@ -46,6 +46,7 @@ public class BgmMgr {
 				bean.setBgm_music(rs.getString("bgm_music"));
 				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
 				bean.setBgm_image(rs.getString("bgm_image"));
+				bean.setMplist_id(rs.getInt("mplist_id"));
 				vlist.add(bean);
 			}
 		} catch (Exception e) {
@@ -79,6 +80,7 @@ public class BgmMgr {
 				bean.setBgm_music(rs.getString("bgm_music"));
 				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
 				bean.setBgm_image(rs.getString("bgm_image"));
+				bean.setMplist_id(rs.getInt("mplist_id"));
 				vlist.add(bean);
 			}
 		} catch (Exception e) {
@@ -111,6 +113,7 @@ public class BgmMgr {
 				bean.setBgm_music(rs.getString("bgm_music"));
 				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
 				bean.setBgm_image(rs.getString("bgm_image"));
+				bean.setMplist_id(rs.getInt("mplist_id"));
 				vlist.add(bean);
 			}
 		} catch (Exception e) {
@@ -130,34 +133,35 @@ public class BgmMgr {
 
 		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
 		String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
-		int maxSize = 100 * 1024 * 1024; // 100MB
+		int maxSize = 10 * 1024 * 1024; // 10MB
 
 		try {
-			multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
+			multi = new MultipartRequest(req, imagePath, maxSize, ENCTYPE, new DefaultFileRenamePolicy());
 			String user_id = multi.getParameter("user_id");
 			String bgm_name = multi.getParameter("bgm_name");
 			String bgm_cnt = multi.getParameter("bgm_cnt");
-			int bgm_onoff = (multi.getParameter("bgm_onoff") != null) ? 1 : 0;
+			int bgm_onoff = Integer.parseInt(multi.getParameter("bgm_onoff"));
+			int mplist_id = Integer.parseInt(multi.getParameter("mplist_id"));
 			// 이미지 파일 명
-			String bgm_image = multi.getFilesystemName("bgm_image");
+			String bgm_image = multi.getFilesystemName("image");
 			// 음악 파일 처리(수동 복사)
 			String bgm_music = null;
-			File musicFile = multi.getFile("bgm_music");
+			File musicFile = multi.getFile("music");
 			if (musicFile != null) {
 				bgm_music = musicFile.getName();
 				File dest = new File(musicPath + "/" + bgm_music);
 				Files.copy(musicFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
-
 			con = pool.getConnection();
-			sql = "INSERT INTO bgm VALUES (null, ?, ?, ?, ?, ?, ?)";
+			sql = "INSERT INTO bgm VALUES (null, ?, ?, ?, ?, ?, ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			pstmt.setString(2, bgm_name);
-			pstmt.setString(3, bgm_cnt);
-			pstmt.setString(4, bgm_music);
+			pstmt.setString(3, bgm_music);
+			pstmt.setString(4, bgm_cnt);
 			pstmt.setInt(5, bgm_onoff);
 			pstmt.setString(6, bgm_image);
+			pstmt.setInt(7, mplist_id);
 			pstmt.executeUpdate();
 			return true;
 		} catch (Exception e) {
@@ -170,54 +174,56 @@ public class BgmMgr {
 
 	// 배경음악 수정(음악, 사진, 설명만 변경)
 	public boolean updateBgm(HttpServletRequest req) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		MultipartRequest multi = null;
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+	    MultipartRequest multi = null;
 
-		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-		String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
-		int maxSize = 100 * 1024 * 1024;
+	    String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+	    String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
+	    int maxSize = 100 * 1024 * 1024;
 
-		try {
-			multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
+	    try {
+	        multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
 
-			int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
-			String bgm_cnt = multi.getParameter("bgm_cnt");
+	        int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
+	        String bgm_cnt = multi.getParameter("bgm_cnt");
+	        int mplist_id = Integer.parseInt(multi.getParameter("mplist_id")); // ✅ 추가
 
-			String original_music = multi.getParameter("original_music");
-			String original_image = multi.getParameter("original_image");
+	        String original_music = multi.getParameter("original_music");
+	        String original_image = multi.getParameter("original_image");
 
-			String bgm_music = multi.getFilesystemName("bgm_music");
-			if (bgm_music == null) {
-				bgm_music = original_music;
-			} else {
-				File musicFile = multi.getFile("bgm_music");
-				File dest = new File(musicPath + "/" + bgm_music);
-				Files.copy(musicFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			}
+	        String bgm_music = multi.getFilesystemName("bgm_music");
+	        if (bgm_music == null) {
+	            bgm_music = original_music;
+	        } else {
+	            File musicFile = multi.getFile("bgm_music");
+	            File dest = new File(musicPath + "/" + bgm_music);
+	            Files.copy(musicFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	        }
 
-			String bgm_image = multi.getFilesystemName("bgm_image");
-			if (bgm_image == null) {
-				bgm_image = original_image;
-			}
+	        String bgm_image = multi.getFilesystemName("bgm_image");
+	        if (bgm_image == null) {
+	            bgm_image = original_image;
+	        }
 
-			// DB 업데이트
-			con = pool.getConnection();
-			sql = "UPDATE bgm SET bgm_cnt = ?, bgm_music = ?, bgm_image = ? WHERE bgm_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, bgm_cnt);
-			pstmt.setString(2, bgm_music);
-			pstmt.setString(3, bgm_image);
-			pstmt.setInt(4, bgm_id);
-			pstmt.executeUpdate();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
+	        //DB 업데이트
+	        con = pool.getConnection();
+	        sql = "UPDATE bgm SET bgm_cnt = ?, bgm_music = ?, bgm_image = ?, mplist_id = ? WHERE bgm_id = ?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, bgm_cnt);
+	        pstmt.setString(2, bgm_music);
+	        pstmt.setString(3, bgm_image);
+	        pstmt.setInt(4, mplist_id);
+	        pstmt.setInt(5, bgm_id);
+	        pstmt.executeUpdate();
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
 	}
 
 	// 배경음악 삭제
@@ -236,6 +242,27 @@ public class BgmMgr {
 		} finally {
 			pool.freeConnection(con, pstmt);
 		}
+	}
+	
+	//bgm을 mplist에 넣기
+	public boolean assignBgmToMplist(int bgm_id, int mplist_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+	    try {
+	        con = pool.getConnection();
+	        sql = "UPDATE bgm SET mplist_id = ? WHERE bgm_id = ?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, mplist_id);
+	        pstmt.setInt(2, bgm_id);
+	        pstmt.executeUpdate();
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
 	}
 
 	// mplist 리스트 불러오기
@@ -337,13 +364,21 @@ public class BgmMgr {
 		MultipartRequest multi = null;
 		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
 		int maxSize = 10 * 1024 * 1024;
+
 		try {
+			System.out.println("insertMplist() 호출됨");
+
 			multi = new MultipartRequest(req, imagePath, maxSize, ENCTYPE, new DefaultFileRenamePolicy());
+
 			String mplist_name = multi.getParameter("mplist_name");
-			int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
 			String user_id = multi.getParameter("user_id");
 			String mplist_cnt = multi.getParameter("mplist_cnt");
 			String mplist_img = multi.getFilesystemName("mplist_img");
+
+			System.out.println("mplist_name: " + mplist_name);
+			System.out.println("user_id: " + user_id);
+			System.out.println("mplist_cnt: " + mplist_cnt);
+			System.out.println("mplist_img: " + mplist_img);
 
 			con = pool.getConnection();
 			sql = "INSERT INTO mplist (mplist_name, user_id, mplist_cnt, mplist_img) VALUES (?, ?, ?, ?)";
@@ -522,4 +557,24 @@ public class BgmMgr {
 		}
 		return vlist;
 	}
+	
+	// 배경음악 재생 여부 토글
+	public void updateBgmOnoff(int bgm_id, int onoff) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+	    try {
+	        con = pool.getConnection();
+	        sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, onoff);
+	        pstmt.setInt(2, bgm_id);
+	        pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+	}
+	
 }

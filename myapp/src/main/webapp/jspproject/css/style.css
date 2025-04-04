@@ -2,7 +2,7 @@
 
 /*배경화면 설정*/
 body {
-    background-image: url('../tema/tema1.jpg');
+    background-image: url('../tema/background1.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -140,4 +140,18 @@ body {
 .iconRightDown.diary {
     width: 4.4vw;
     height: 4.4vw;
+}
+
+.spark-container, .bar-container, .spark-container2, .bar-container2 {
+	display: none;
+}
+
+.graph-wrapper-container {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+.graph-wrapper-container.active {
+    visibility: visible;
+    height: auto;
 }

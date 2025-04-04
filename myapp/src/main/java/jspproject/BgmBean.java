@@ -8,11 +8,12 @@ public class BgmBean {
 	private String bgm_music;
 	private int bgm_onoff;
 	private String bgm_image;
+	private int mplist_id;
 	
 	public BgmBean() {}
 	
 	public BgmBean(int bgm_id, String user_id, String bgm_name, String bgm_cnt, String bgm_music, int bgm_onoff,
-			String bgm_image) {
+			String bgm_image, int mplist_id) {
 		this.bgm_id = bgm_id;
 		this.user_id = user_id;
 		this.bgm_name = bgm_name;
@@ -20,6 +21,7 @@ public class BgmBean {
 		this.bgm_music = bgm_music;
 		this.bgm_onoff = bgm_onoff;
 		this.bgm_image = bgm_image;
+		this.mplist_id = mplist_id;
 	}
 
 	public int getBgm_id() {
@@ -63,5 +65,11 @@ public class BgmBean {
 	}
 	public void setBgm_image(String bgm_image) {
 		this.bgm_image = bgm_image;
+	}
+	public int getMplist_id() {
+		return mplist_id;
+	}
+	public void setMplist_id(int mplist_id) {
+		this.mplist_id = mplist_id;
 	}
 }

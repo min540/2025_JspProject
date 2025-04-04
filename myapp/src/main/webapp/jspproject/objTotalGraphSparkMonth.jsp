@@ -1,6 +1,5 @@
-<!-- ObjTotalGraphBar.jsp -->
+<!-- ObjTotalGraphSparkMonth.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     @font-face {
         font-family: 'PFStarDust';
@@ -16,7 +15,7 @@
         color: white;
     }
 
-    .spark-container {
+    .spark-container2 {
         position: absolute;
         left: 18vw;
         top: 9.5vh;
@@ -77,48 +76,15 @@
 	    align-items: flex-start;
 	}
 	
-	.graph-double {
-	    display: flex;
-	    justify-content: space-between;
-	    align-items: flex-start;
-	    height: 100%;
-	    gap: 20px;
-	}
-	
-	.graph-box {
-	    width: 100%; /* ✅ 살짝 줄여서 gap과 함께 넓게 배치 */
-	    height: 100%;
-	    display: flex;
-	    padding: 10px;
-	    flex-direction: column;
-	    align-items: center;
-	    justify-content: center;
-	    background: white;
-	    border-radius: 10px;
-	}
-
-	.graph-box canvas {
-	    width: 100% !important;
-	    height: auto !important; /* ✅ 높이 제한 해제 */
-	    aspect-ratio: 4 / 3;      /* ✅ 비율로 조정해서 반응형 유지 */
-	}
-	
-	.graph-label {
-	    text-align: center;
-	    margin-top: 10px;
-	    color: black;
-	    font-family: 'PFStarDust', sans-serif;
-        font-weight: bold;
-        font-size: 1vw;
-	}
-	
 	.graph-card {
 	    width: 95%;
 	    height: 95%;
+	    background-color: white;
 	    border-radius: 10px;
-	    padding: 10px; /* ✅ 패딩 줄이기 */
+	    padding: 20px;
 	    box-sizing: border-box;
 	}
+
 
     .graph-sidebar {
         width: 120px;
@@ -163,15 +129,19 @@
 	    color: #ffffff;
 	    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); /* 살짝 glow */
 	}
+	
+	#barMonthWrapper {
+	    display: none;
+	}
 
 </style>
 
-<div class="spark-container">
+<div class="spark-container2">
     <!-- 상단 탭 + 통계 -->
     <div class="graph-header">
         <div class="graph-tab">
-            <button class="graph-tab-btn active">주간</button>
-            <button class="graph-tab-btn">월간</button>
+            <button class="graph-tab-btn" onclick= "switchToWeekLine()">주간</button>
+            <button class="graph-tab-btn active">월간</button>
         </div>
     </div>
 
@@ -179,78 +149,20 @@
     <div class="graph-body">
         <div class="graph-wrapper">
             <div class="graph-card">
-			    <div class="graph-double">
-				    <div class="graph-card">
-				        <div class="graph-box">
-				            <canvas id="goalChart"></canvas>
-				            <div class="graph-label">목표 달성 건수</div>
-				        </div>
-				    </div>
-				    
-				    <div class="graph-card">
-				        <div class="graph-box">
-				            <canvas id="memoChart"></canvas>
-				            <div class="graph-label">일지 작성 건수</div>
-				        </div>
-				    </div>
-				</div>
-			</div>
+                <canvas id="myChartMonth"></canvas>
+            </div>
         </div>
 
         <div class="graph-sidebar">
-            <button>꺾은 선</button>
-            <button class="btn-purple">막대</button>
+            <button class="btn-purple">꺾은 선</button>
+            <button onclick = "switchToMonthBar()">막대</button>
         </div>
     </div>
 
     <!-- 하단 텍스트 -->
-    <div class="bottom-text">이번 주 총 작업 시간 : 3000H</div>
-    <div class="bottom-text">작성한 일지 수 : 3000개</div>
+    <div class="bottom-text">이번 달 총 작업 시간 : 3000H</div>
 </div>
 
 <script>
-    const goalCtx = document.getElementById('goalChart').getContext('2d');
-    const memoCtx = document.getElementById('memoChart').getContext('2d');
 
-    const commonOptions = {
-        plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                ticks: {
-                    callback: function(value) {
-                        return value.toLocaleString();
-                    }
-                }
-            }
-        }
-    };
-
-    new Chart(goalCtx, {
-        type: 'bar',
-        data: {
-            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-            datasets: [{
-                label: '목표 달성 건수',
-                data: [300, 500, 700, 400, 600, 800],
-                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-                borderRadius: 8
-            }]
-        },
-        options: commonOptions
-    });
-
-    new Chart(memoCtx, {
-        type: 'bar',
-        data: {
-            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-            datasets: [{
-                label: '일지 작성 건수',
-                data: [250, 450, 600, 380, 620, 780],
-                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-                borderRadius: 8
-            }]
-        },
-        options: commonOptions
-    });
 </script>
-
