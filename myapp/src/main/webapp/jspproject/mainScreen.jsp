@@ -343,6 +343,4 @@
 	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
 	    }, 50);
 	}
-
-	
 </script>
