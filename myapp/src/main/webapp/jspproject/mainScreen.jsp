@@ -6,7 +6,7 @@
 %>
 
 <!-- 프로필 아이콘 -->
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""> 
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
@@ -52,6 +52,11 @@
 	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
+</div>
+
+<!-- 프로필 영역 (처음엔 숨김) -->
+<div id="profileWrapper" style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
+    <jsp:include page="profile.jsp" />
 </div>
 
 <!-- 음악 리스트 영역 (처음엔 숨김) -->
@@ -117,6 +122,18 @@
 	    }
 	}
 	
+	// 프로필 on/off
+	function toggleProfile() {
+	    const profileDiv = document.getElementById("profileWrapper");
+	    const profileIcon = document.querySelector(".iconLeftUp");
+	
+	    const isHidden = profileDiv.style.display === "none" || profileDiv.style.display === "";
+	
+	    // 토글 동작
+	    profileDiv.style.display = isHidden ? "block" : "none";
+	    profileIcon.style.display = isHidden ? "none" : "block";
+	}
+	
 	// 전체화면 on/off
 	function toggleFullScreen() { /* 전체화면 껐다 키는 기능 */
 		if (!document.fullscreenElement) { // 전체화면 모드가 아닌 경우
@@ -140,8 +157,8 @@
 	
 	// 작업 목록 on/off
 	function toggleObjList() {
-        var journalDiv = document.getElementById("objWrapper");
-        journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+        var objDiv = document.getElementById("objWrapper");
+        objDiv.style.display = (objDiv.style.display === "none") ? "block" : "none";
     }
 	
 	// 통계 관련 설정
