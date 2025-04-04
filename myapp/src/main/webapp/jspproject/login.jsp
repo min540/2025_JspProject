@@ -20,7 +20,7 @@ body, html {
 }
 .left-half{
  	flex: 1;
-  	background-image: url('http://localhost/2025_JspProject/jspproject/images/loginimg.jpg');
+  	background-image: url('images/loginimg.jpg');
   	background-size: cover;
   	background-position: left;
 }
