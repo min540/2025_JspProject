@@ -307,9 +307,9 @@ function deleteSelectedEntries() {
     <div class="content" id="contentPanel">
       <div class="header">
         <input class="title-input" placeholder="제목을 입력하세요" />
-        <div class="icon-container">
-          <img src="<%= request.getContextPath() %>/jspproject/img/setting.png" class="icon" onclick="enableEditMode()" />
-          <img src="<%= request.getContextPath() %>/jspproject/img/delete.png" class="icon" onclick="hideContentPanel()" />
+        <div class="diary-icon-container">
+          <img src="<%= request.getContextPath() %>/jspproject/img/setting.png" class="diary-icon" onclick="enableEditMode()" />
+          <img src="<%= request.getContextPath() %>/jspproject/img/delete.png" class="diary-icon" onclick="hideContentPanel()" />
         </div>
       </div>
       <textarea class="input-field" placeholder="내용을 입력하세요..."></textarea>
