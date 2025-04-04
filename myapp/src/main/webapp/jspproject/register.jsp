@@ -139,7 +139,7 @@ function checkId() {//중복확인
 	    return;
 	  }
 
-	  fetch("/2025_JspProject/jspproject/idCheckServlet?user_id=" + encodeURIComponent(userId))
+	  fetch("idCheckServlet?user_id=" + encodeURIComponent(userId))
 	    .then(res => res.text())
 	    .then(result => {
 	      if (result === "true") {
