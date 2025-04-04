@@ -1,19 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>목록 추가</title>
+
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: "Noto Sans KR", sans-serif;
-            background: url('your-background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            overflow: hidden;
-        }
 
         .card-container {
             position: absolute;
@@ -119,8 +106,6 @@
             background-color: #33005a;
         }
     </style>
-</head>
-<body>
 
    		<div class="card-container">
         <div class="new-list-card">
@@ -283,5 +268,3 @@
         });
 
     </script>
-</body>
-</html>
