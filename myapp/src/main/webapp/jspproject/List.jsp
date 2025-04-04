@@ -125,7 +125,7 @@
    		<div class="card-container">
         <div class="new-list-card">
             <div class="top-dots">:::</div>
-            <input type="text" class="title-input" placeholder="새로운 목록" />
+            <input type="text" class="title-input" placeholder="새로운 목록" readonly />
             <div class="list-container" id="listContainer"></div>
             <button class="custom-button add-btn">＋ 리스트 추가하기</button>
             <button class="custom-button view-btn">목록 확인</button>
@@ -192,6 +192,10 @@
                 const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);
                 if (confirmed) {
                     listContainer.removeChild(newItem);
+                    
+                    let currentLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+                    currentLists = currentLists.filter(name => name !== input.value);
+                    localStorage.setItem("userLists", JSON.stringify(currentLists));
                 }
             });
 
@@ -209,6 +213,48 @@
 
             card.style.left = left + "px";
             card.style.top = top + "px";
+            
+            const storedLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+            const listContainer = document.getElementById("listContainer");
+
+            storedLists.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = name;
+                input.style.border = 'none';
+                input.style.background = 'transparent';
+                input.style.color = 'black';
+                input.style.fontSize = '18px';
+                input.style.textAlign = 'center';
+                input.style.width = '90%';
+                input.style.outline = 'none';
+
+                const deleteBtn = document.createElement('span');
+                deleteBtn.textContent = '✕';
+                deleteBtn.style.float = 'right';
+                deleteBtn.style.marginRight = '10px';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.style.color = 'white';
+                deleteBtn.style.fontWeight = 'bold';
+
+                deleteBtn.addEventListener('click', () => {
+                    const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);
+                    if (confirmed) {
+                        listContainer.removeChild(item);
+                        
+                        let currentLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+                        currentLists = currentLists.filter(name => name !== input.value);
+                        localStorage.setItem("userLists", JSON.stringify(currentLists));
+                    }
+                });
+
+                item.appendChild(input);
+                item.appendChild(deleteBtn);
+                listContainer.appendChild(item);
+            });
         });
         //Objective.jsp로 이동
         const viewBtn = document.querySelector('.view-btn');
@@ -222,10 +268,17 @@
             localStorage.setItem("cardLeft", left);
             localStorage.setItem("cardTop", top);
             
-            const listItems = document.querySelectorAll(".list-item input[type='text']");
-            const listNames = Array.from(listItems).map(input => input.value.trim());
-            localStorage.setItem("userLists", JSON.stringify(listNames));
+            const existingLists = JSON.parse(localStorage.getItem("userLists") || "[]");
 
+            const listItems = document.querySelectorAll(".list-item input[type='text']");
+            const newListNames = Array.from(listItems)
+                .map(input => input.value.trim())
+                .filter(name => name.length > 0);  // 빈 값 제거
+
+            const mergedLists = [...new Set([...existingLists, ...newListNames])];
+
+            localStorage.setItem("userLists", JSON.stringify(mergedLists));
+//
             window.location.href = "Objective.jsp";
         });
 
