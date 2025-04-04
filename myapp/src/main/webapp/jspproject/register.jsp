@@ -19,7 +19,7 @@ body, html {
 }
 .left-half{
  	flex: 1;
-  	background-image: url('http://localhost/2025_JspProject/jspproject/images/loginimg.jpg');
+  	background-image: url('images/loginimg.jpg');
   	background-size: cover;
   	background-position: left;
 }
@@ -35,8 +35,9 @@ body, html {
 	transform: translateY(-10px);
 }
 .right-half_title{
-	color: white;
-	margin-bottom: 10px;/*세로*/
+	color: white;	
+	padding-top: 70px;
+	margin-bottom: 20px;/*세로*/
 }
 .login-box{
 	background-color: #4A3C6E;
