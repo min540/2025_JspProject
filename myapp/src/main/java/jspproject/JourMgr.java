@@ -17,7 +17,7 @@ public class JourMgr {
 		pool = DBConnectionMgr.getInstance();
 	}
 	//일지 리스트
-	public Vector<JourBean> listJour(){
+	public Vector<JourBean> listJour(String id){
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -25,8 +25,9 @@ public class JourMgr {
 		Vector<JourBean> vlist = new Vector<JourBean>();
 		try {
 			con = pool.getConnection();
-			sql = "select * from jour order by jour_id desc";
+			sql = "select * from jour where user_id = ? order by jour_id desc";
 			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, id);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 			JourBean bean = new JourBean();

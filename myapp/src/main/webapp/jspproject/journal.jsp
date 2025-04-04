@@ -1,12 +1,19 @@
+<%@page import="jspproject.JourBean"%>
+<%@page import="java.util.Vector"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="jmgr" class="jspproject.JourMgr"/>
+<jsp:useBean id="bean" class = "jspproject.JourBean"/>
+<jsp:setProperty property="*" name="bean"/>
+<%
+		String id = request.getParameter("id");
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <title>다이어리</title>
   <!-- 외부 CSS 연결 -->
-<link href="css/diary.css?v=2" rel="stylesheet" type="text/css">
+<link href="css/diary.css" rel="stylesheet" type="text/css">
 <style>
   .input-field::-webkit-scrollbar {
     width: 8px;
@@ -45,7 +52,7 @@
       document.querySelector(".title-input").disabled = true;
       document.querySelector(".input-field").disabled = true;
     }
-
+    
     // 새로운 일지 항목 추가
     function addDiaryEntry(title = "새 일지", content = "") {
       const diaryList = document.querySelector(".diary-list");
@@ -300,7 +307,18 @@ function deleteSelectedEntries() {
         <div style="margin-bottom: 10px;">
           <input type="checkbox" id="select-all" onclick="toggleSelectAll(this)"> 전체 선택
         </div>
-        <div class="diary-list"></div>
+        <div class="diary-list">
+        	<%
+        		Vector<JourBean> vlist = jmgr.listJour(id);
+        		if(!vlist.isEmpty()){ 
+        			for(JourBean jbean : vlist){
+        	%>
+        			
+        	<%
+        	}
+        		}
+        	%>
+        </div>
       </div>
       <button class="delete-button" onclick="deleteSelectedEntries()">삭제</button>
     </div>
