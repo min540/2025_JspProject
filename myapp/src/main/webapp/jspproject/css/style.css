@@ -20,11 +20,12 @@ body {
 /*오른쪽 상단 아이콘*/
 .icon-container {
     position: absolute;
-    left: 73.5vw;
+    left: 74vw;
     top: 2.4vh;
     display: flex;
     align-items: center;
     height: 3.13vh;
+    gap: 12px;
 }
 
 .iconRightUp {
