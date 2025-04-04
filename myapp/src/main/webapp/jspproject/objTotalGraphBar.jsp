@@ -1,4 +1,4 @@
-<!-- ObjTotalGraphBar.jsp -->
+<!-- objTotalGraphBar.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -16,7 +16,7 @@
         color: white;
     }
 
-    .spark-container {
+    .bar-container {
         position: absolute;
         left: 18vw;
         top: 9.5vh;
@@ -82,7 +82,7 @@
 	    justify-content: space-between;
 	    align-items: flex-start;
 	    height: 100%;
-	    gap: 20px;
+	    gap: 50px;
 	}
 	
 	.graph-box {
@@ -112,7 +112,7 @@
         font-size: 1vw;
 	}
 	
-	.graph-card {
+	.graph-card2 {
 	    width: 95%;
 	    height: 95%;
 	    border-radius: 10px;
@@ -166,7 +166,7 @@
 
 </style>
 
-<div class="spark-container">
+<div class="bar-container">
     <!-- 상단 탭 + 통계 -->
     <div class="graph-header">
         <div class="graph-tab">
@@ -178,19 +178,19 @@
     <!-- 중간 본문: 그래프 + 버튼 -->
     <div class="graph-body">
         <div class="graph-wrapper">
-            <div class="graph-card">
+            <div class="graph-card2">
 			    <div class="graph-double">
 				    <div class="graph-card">
 				        <div class="graph-box">
 				            <canvas id="goalChart"></canvas>
-				            <div class="graph-label">목표 달성 건수</div>
+				            <div class="graph-label">이번 주 목표 달성 건수</div>
 				        </div>
 				    </div>
 				    
 				    <div class="graph-card">
 				        <div class="graph-box">
 				            <canvas id="memoChart"></canvas>
-				            <div class="graph-label">일지 작성 건수</div>
+				            <div class="graph-label">이번 주 일지 작성 건수</div>
 				        </div>
 				    </div>
 				</div>
@@ -198,7 +198,7 @@
         </div>
 
         <div class="graph-sidebar">
-            <button>꺾은 선</button>
+            <button onclick = "switchToWeekLine()">꺾은 선</button>
             <button class="btn-purple">막대</button>
         </div>
     </div>
@@ -209,48 +209,53 @@
 </div>
 
 <script>
-    const goalCtx = document.getElementById('goalChart').getContext('2d');
-    const memoCtx = document.getElementById('memoChart').getContext('2d');
-
-    const commonOptions = {
-        plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                ticks: {
-                    callback: function(value) {
-                        return value.toLocaleString();
-                    }
-                }
-            }
-        }
-    };
-
-    new Chart(goalCtx, {
-        type: 'bar',
-        data: {
-            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-            datasets: [{
-                label: '목표 달성 건수',
-                data: [300, 500, 700, 400, 600, 800],
-                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-                borderRadius: 8
-            }]
-        },
-        options: commonOptions
-    });
-
-    new Chart(memoCtx, {
-        type: 'bar',
-        data: {
-            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
-            datasets: [{
-                label: '일지 작성 건수',
-                data: [250, 450, 600, 380, 620, 780],
-                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
-                borderRadius: 8
-            }]
-        },
-        options: commonOptions
-    });
+	function drawBarWeekChart() {
+	    const goalCtx = document.getElementById('goalChart').getContext('2d');
+	    const memoCtx = document.getElementById('memoChart').getContext('2d');
+	
+	    const commonOptions = {
+	        plugins: { legend: { display: false } },
+	        scales: {
+	            y: {
+	                ticks: {
+	                    callback: function(value) {
+	                        return value.toLocaleString();
+	                    }
+	                }
+	            }
+	        }
+	    };
+	
+	    new Chart(goalCtx, {
+	        type: 'bar',
+	        data: {
+	            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
+	            datasets: [{
+	                label: '주간 목표 달성 건수',
+	                data: [300, 500, 700, 400, 600, 800],
+	                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
+	                borderRadius: 8
+	            }]
+	        },
+	        options: commonOptions
+	    });
+	
+	    new Chart(memoCtx, {
+	        type: 'bar',
+	        data: {
+	            labels: ['2016', '2017', '2018', '2019', '2020', '2021'],
+	            datasets: [{
+	                label: '주간 일지 작성 건수',
+	                data: [250, 450, 600, 380, 620, 780],
+	                backgroundColor: ['#ff6384', '#4bc0c0', '#36a2eb', '#ffcd56', '#9966ff', '#c9cbcf'],
+	                borderRadius: 8
+	            }]
+	        },
+	        options: commonOptions
+	    });
+	}
+	
+	drawBarWeekChart();
+    
 </script>
 
