@@ -66,8 +66,8 @@
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
-    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
-    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
+    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
     <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
     <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
 </div>
