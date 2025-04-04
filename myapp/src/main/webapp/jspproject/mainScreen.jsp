@@ -6,7 +6,7 @@
 %>
 
 <!-- 프로필 아이콘 -->
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""> 
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
