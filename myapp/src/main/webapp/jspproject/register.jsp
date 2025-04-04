@@ -35,8 +35,9 @@ body, html {
 	transform: translateY(-10px);
 }
 .right-half_title{
-	color: white;
-	margin-bottom: 10px;/*세로*/
+	color: white;	
+	padding-top: 70px;
+	margin-bottom: 20px;/*세로*/
 }
 .login-box{
 	background-color: #4A3C6E;
