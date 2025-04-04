@@ -572,4 +572,10 @@ function selectBackground(fileName) {
         textarea.value = "";
     }
 }
+<<<<<<< HEAD
 </script>
+=======
+
+
+</script>
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git

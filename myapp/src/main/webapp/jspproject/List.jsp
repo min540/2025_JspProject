@@ -278,7 +278,7 @@
             const mergedLists = [...new Set([...existingLists, ...newListNames])];
 
             localStorage.setItem("userLists", JSON.stringify(mergedLists));
-
+//
             window.location.href = "Objective.jsp";
         });
 

@@ -131,27 +131,39 @@ public class BgmMgr {
 		String sql = null;
 		MultipartRequest multi = null;
 
+		// 파일 저장 경로 설정
 		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
 		String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
 		int maxSize = 10 * 1024 * 1024; // 10MB
 
 		try {
-			multi = new MultipartRequest(req, imagePath, maxSize, ENCTYPE, new DefaultFileRenamePolicy());
+			// 모든 파일은 일단 imagePath에 저장됨
+			multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
+
+			// 파라미터 받기
 			String user_id = multi.getParameter("user_id");
 			String bgm_name = multi.getParameter("bgm_name");
 			String bgm_cnt = multi.getParameter("bgm_cnt");
-			int bgm_onoff = Integer.parseInt(multi.getParameter("bgm_onoff"));
+			int bgm_onoff = 0; // 항상 OFF로 고정
 			int mplist_id = Integer.parseInt(multi.getParameter("mplist_id"));
-			// 이미지 파일 명
+			// 이미지 파일
 			String bgm_image = multi.getFilesystemName("image");
-			// 음악 파일 처리(수동 복사)
+			// 음악 파일 이동 처리
 			String bgm_music = null;
 			File musicFile = multi.getFile("music");
 			if (musicFile != null) {
 				bgm_music = musicFile.getName();
+				// 원래 img 폴더에 저장된 음악 파일 경로
+				File origin = new File(imagePath + "/" + bgm_music);
+				// music 폴더로 이동
 				File dest = new File(musicPath + "/" + bgm_music);
-				Files.copy(musicFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(origin.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				// img 폴더의 음악 파일 삭제
+				if (origin.exists()) {
+					origin.delete();
+				}
 			}
+			// DB 연결 및 INSERT
 			con = pool.getConnection();
 			sql = "INSERT INTO bgm VALUES (null, ?, ?, ?, ?, ?, ?, ?)";
 			pstmt = con.prepareStatement(sql);
