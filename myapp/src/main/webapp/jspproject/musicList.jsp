@@ -240,6 +240,12 @@
 	    z-index: 2;
 	}
 	
+	.header-left {
+    display: flex;
+    align-items: center; /* 세로 정렬 */
+	}
+	
+	
 	/* 마우스 오버 시 나타남 */
 	.music-list-item:hover .iconPlusPlay {
 	    opacity: 1;

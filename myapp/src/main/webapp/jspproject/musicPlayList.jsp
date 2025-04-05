@@ -264,6 +264,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
     	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
 	}
 	
+	.header-left2 {
+	    display: flex;
+	    align-items: center; /* 세로 정렬 */
+	}	
+	
 	.music-search2 {
     padding: 10px 14px;
     font-size: 15px;
