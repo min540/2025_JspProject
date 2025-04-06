@@ -1,18 +1,19 @@
 <!-- mainScreen.jsp -->
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
 %>
-
 <!-- 프로필 아이콘 -->
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""> 
+
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
-    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
-    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정"> 
+    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
+    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
     <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃"> 
@@ -20,7 +21,10 @@
 
 <!-- 음악 설정 쪽 아이콘-->
 <div class="iconMusic-container">
-	<img class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	<span>
+		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	</span>
+	<audio id="mainAudioPlayer" src="music/music1.mp3"></audio>
 	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
 	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
 	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
@@ -48,10 +52,25 @@
 <!-- 오른쪽 하단 아이콘들 -->
 <div class = "icon-container2">
 	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
-	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" >
+	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
 	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
+</div>
+
+<!-- 프로필 영역 (처음엔 숨김) -->
+<div id="profileWrapper" style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
+    <jsp:include page="profile.jsp" />
+</div>
+
+<!-- 공지사항 영역 (처음엔 숨김) -->
+<div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
+    <jsp:include page="ancList.jsp" />
+</div>
+
+<!-- 배경 설정 영역 (처음엔 숨김) -->
+<div id="backgroundWrapper" style="display:none;">
+    <jsp:include page="Background.jsp" />
 </div>
 
 <!-- 음악 리스트 영역 (처음엔 숨김) -->
@@ -61,17 +80,26 @@
 
 <!-- 일지 설정 영역 (처음엔 숨김) -->
 <div id="journalWrapper" style="display:none;">
-    <jsp:include page="journal.jsp" />
-</div>
+    <jsp:include page="/jspproject/journal.jsp" />
+</div>   
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
-    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
-    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
-    <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
-    <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+    <div id="graph-spark-week" style="display:none;"><jsp:include page="/jspproject/objTotalGraphSpark.jsp" /></div>
+    <div id="graph-bar-week" style="display:none;"><jsp:include page="/jspproject/objTotalGraphBar.jsp" /></div>
+    <div id="graph-spark-month" style="display:none;"><jsp:include page="/jspproject/objTotalGraphSparkMonth.jsp" /></div>
+    <div id="graph-bar-month" style="display:none;"><jsp:include page="/jspproject/objTotalGraphBarMonth.jsp" /></div>
 </div>
 
+<!-- 작업 목표 영역 -->
+<div id="objWrapper" style="display:none;">
+    <jsp:include page="/jspproject/Objective.jsp" />
+</div>
+
+<!-- 새로운 리스트 추가 영역 -->
+<div id="listCardWrapper" style="display:none;">
+    <jsp:include page="/jspproject/List.jsp" />
+</div>
 
 <!-- JavaScript 함수 -->
 <script>
@@ -112,6 +140,18 @@
 	    }
 	}
 	
+	// 프로필 on/off
+	function toggleProfile() {
+	    const profileDiv = document.getElementById("profileWrapper");
+	    const profileIcon = document.querySelector(".iconLeftUp");
+	
+	    const isHidden = profileDiv.style.display === "none" || profileDiv.style.display === "";
+	
+	    // 토글 동작
+	    profileDiv.style.display = isHidden ? "block" : "none";
+	    profileIcon.style.display = isHidden ? "none" : "block";
+	}
+	
 	// 전체화면 on/off
 	function toggleFullScreen() { /* 전체화면 껐다 키는 기능 */
 		if (!document.fullscreenElement) { // 전체화면 모드가 아닌 경우
@@ -120,6 +160,18 @@
 		    document.exitFullscreen();
 		}
 	}
+	
+	// 공지사항 리스트 on/off
+	function toggleAnc() {
+        var ancDiv = document.getElementById("ancWrapper");
+        ancDiv.style.display = (ancDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 배경 설정 on/off
+	function toggleBackground() {
+        var backgroundDiv = document.getElementById("backgroundWrapper");
+        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
+    }
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
@@ -131,6 +183,12 @@
 	function toggleJournalList() {
         var journalDiv = document.getElementById("journalWrapper");
         journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 작업 목록 on/off
+	function toggleObjList() {
+        var objDiv = document.getElementById("objWrapper");
+        objDiv.style.display = (objDiv.style.display === "none") ? "block" : "none";
     }
 	
 	// 통계 관련 설정
@@ -343,4 +401,35 @@
 	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
 	    }, 50);
 	}
+	
+	document.addEventListener('DOMContentLoaded', function () {
+	    const playBtn = document.getElementById('mainPlayToggleBtn');
+	    const audio = document.getElementById('mainAudioPlayer');
+
+	    if (playBtn && audio) {
+	        // 초기 상태 설정
+	        playBtn.setAttribute('data-state', 'paused');
+
+	        playBtn.addEventListener('click', function () {
+	            const currentState = playBtn.getAttribute('data-state');
+
+	            if (currentState === 'paused') {
+	                // ▶️ → ⏸️ + 음악 재생
+	                playBtn.src = 'icon/아이콘_일시정지_1.png';
+	                playBtn.alt = '일시정지';
+	                playBtn.setAttribute('data-state', 'playing');
+
+	                audio.play();
+	            } else {
+	                // ⏸️ → ▶️ + 음악 정지
+	                playBtn.src = 'icon/아이콘_재생_1.png';
+	                playBtn.alt = '재생';
+	                playBtn.setAttribute('data-state', 'paused');
+
+	                audio.pause();
+	            }
+	        });
+	    }
+	});
+	
 </script>

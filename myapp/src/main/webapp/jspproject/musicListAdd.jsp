@@ -125,11 +125,13 @@
 <div class="add-playlist-container">
 	<div class="add-playlist-title">재생 목록에 추가</div>
 	<div class="add-playlist-list">
-		<label class="playlist-item"> <input type="checkbox" /><span>재생 목록 1</span></label>
-		<label class="playlist-item"> <input type="checkbox" /><span>재생 목록 1</span></label>
-		<label class="playlist-item"> <input type="checkbox" /><span>재생 목록 1</span></label>
-		<label class="playlist-item"> <input type="checkbox" /><span>재생 목록 1</span></label>
-		<label class="playlist-item"> <input type="checkbox" /><span>재생 목록 1</span></label>
+		<% for (int i = 1; i <= 5; i++) { %>
+			<label class="playlist-item">
+				<input type="checkbox" />
+				<span>재생 목록 <%= i %></span>
+			</label>
+		<% } %>
 	</div>
 	<button class="add-playlist-btn">추가</button>
 </div>
+

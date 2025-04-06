@@ -1,224 +1,263 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>오늘, 내일</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: white;
-            font-family: "Noto Sans KR", sans-serif;
-            overflow: hidden;
-        }
-        .card-wrapper {
-            background-color: rgba(147, 102, 192, 0.2);
-            padding: 5px;
-            border-radius: 22px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            position: absolute;
-            top: 100px;
-            left: 100px;
-            cursor: grab;
-            border: 2px solid white;
-        }
-        .todo-card {
-            width: 500px;
-            height: 500px;
-            padding: 20px;
-            border-radius: 16px;
-            background-color: rgba(147, 102, 192, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: relative;
-            color: white;
-            text-align: center;
-            border: 2px solid white;
-        }
-        .top-dots {
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 28px;
-            color: white;
-            cursor: grab;
-            user-select: none;
-        }
-        .todo-header {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 60px;
-        }
-        .todo-title {
-            background: none;
-            border: 1px solid white;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            padding: 10px 15px;
-            width: 350px;
-        }
-        .edit-btn {
-            background: none;
-            border: 1px solid white;
-            border-radius: 10px;
-            color: white;
-            font-size: 18px;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-        .completed {
-            position: absolute;
-            top: 130px;
-            left: 50px;
-            font-size: 20px;
-            color: black;
-            
-        }
-		#taskList {
-		    margin-top: 65px;
-		    margin-left: 20px;
-		    padding: 0 10px;
-		    display: flex;
-		    flex-direction: column;
-		    gap: 5px;
-		    
-		    height: 270px; /* ✅ 높이 고정 */
-		    overflow-y: auto; /* ✅ 스크롤 가능 */
-		}
-        .task-item {
-            width: 419px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: rgba(186,133,238);
-            border-radius: 10px;
-            padding: 10px;
-            border: 2px solid white;
-            position: relative;
-        }
-        .task-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        .task-left input[type="text"] {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-        }
-        .task-left input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-        .created-date {
-            display: inline-block;
-            font-size: 14px;
-            color: white;
-        }
-        .task-buttons {
-            display: none;
-            gap: 5px;
-        }
-        .task-buttons button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        .task-item:hover .task-buttons {
-            display: flex;
-        }
-        .task-item:hover .created-date {
-            display: none;
-        }
-        .add-task-btn {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 15px;
-            width: 400px;
-            height: 60px;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid white;
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        #calendarModal {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: none;
-            z-index: 9999;
-        }
-        .calendar-content {
-            width: 500px;
-            height: 500px;
-            padding: 20px;
-            border-radius: 16px;
-            background-color: rgba(30, 0, 50, 0.95);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: absolute;
-            border: 2px solid white;
-            color: white;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>오늘, 내일</title>
+<style>
+.obj-card-wrapper {
+	background-color: rgba(147, 102, 192, 0.2);
+	padding: 5px;
+	border-radius: 22px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	position: absolute;
+	top: 100px;
+	left: 100px;
+	cursor: grab;
+	border: 2px solid white;
+}
+
+.obj-todo-card {
+	width: 500px;
+	height: 540px;
+	padding: 20px;
+	border-radius: 16px;
+	background-color: rgba(147, 102, 192, 0.2);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	position: relative;
+	color: white;
+	text-align: center;
+	border: 2px solid white;
+}
+
+.obj-top-dots {
+	position: absolute;
+	top: 5px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 28px;
+	color: white;
+	cursor: grab;
+	user-select: none;
+}
+
+.obj-todo-header {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 60px;
+}
+
+.obj-todo-title {
+	background: none;
+	border: 1px solid white;
+	border-radius: 10px;
+	color: white;
+	font-size: 16px;
+	padding: 10px 15px;
+	width: 350px;
+}
+
+.obj-edit-btn {
+	background: none;
+	border: 1px solid white;
+	border-radius: 10px;
+	color: white;
+	font-size: 18px;
+	padding: 10px 15px;
+	cursor: pointer;
+}
+
+.obj-completed {
+	position: absolute;
+	top: 130px;
+	left: 50px;
+	font-size: 20px;
+	color: black;
+}
+
+#obj-taskList {
+	margin-top: 65px;
+	margin-left: 20px;
+	padding: 0 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	height: 270px; /* ✅ 높이 고정 */
+	overflow-y: auto; /* ✅ 스크롤 가능 */
+	margin-bottom:20px;
+}
+
+#obj-taskList::-webkit-scrollbar {
+    width: 10px;
+}
+
+#obj-taskList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#obj-taskList::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#obj-taskList::-webkit-scrollbar-button {
+    display: none;
+}
+
+.obj-task-item {
+	width: 419px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: rgba(186, 133, 238);
+	border-radius: 10px;
+	padding: 10px;
+	border: 2px solid white;
+	position: relative;
+}
+
+.obj-task-left {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+}
+
+.obj-task-left input[type="text"] {
+	background: none;
+	border: none;
+	color: white;
+	font-size: 16px;
+}
+
+.obj-task-left input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+}
+
+.obj-created-date {
+	display: inline-block;
+	font-size: 14px;
+	color: white;
+}
+
+.obj-task-buttons {
+	display: none;
+	gap: 5px;
+}
+
+.obj-task-buttons button {
+	background: none;
+	border: none;
+	color: white;
+	font-size: 18px;
+	cursor: pointer;
+}
+
+.obj-task-item:hover .obj-task-buttons {
+	display: flex;
+}
+
+.obj-task-item:hover .obj-created-date {
+	display: none;
+}
+
+.obj-add-task-btn {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 10px;
+	width: 400px;
+	height: 60px;
+	padding: 10px;
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid white;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
+	margin-bottom:20px;
+}
+
+#calendarModal {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: none;
+	z-index: 9999;
+}
+
+.calendar-content {
+	width: 500px;
+	height: 500px;
+	padding: 20px;
+	border-radius: 16px;
+	background-color: rgba(30, 0, 50, 0.95);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	position: absolute;
+	border: 2px solid white;
+	color: white;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+}
+</style>
 </head>
 <body>
-    <div class="card-wrapper" id="cardWrapper">
-        <div class="todo-card">
-            <div class="top-dots" id="dragHandle">:::</div>
-			<div class="todo-header" id="listButtonContainer">
-			   
-			</div>
-           <p class="completed">
-  완료된 항목 : <span id="completedNum">0</span>/<span id="totalNum">0</span>
-</p>
-            <div id="taskList"></div>
-            <button class="add-task-btn">과제 추가하기</button>
-        </div>
-    </div>
+	<div class="obj-card-wrapper" id="cardWrapper">
+		<div class="obj-todo-card">
+			<div class="obj-top-dots" id="dragHandle">:::</div>
+			<div class="obj-todo-header" id="listButtonContainer"></div>
+			<p class="obj-completed">
+				완료된 항목 : <span id="completedNum">0</span>/<span id="totalNum">0</span>
+			</p>
+			<div id="obj-taskList"></div>
+			<button class="obj-add-task-btn">과제 추가하기</button>
+		</div>
+	</div>
 
-    <div id="calendarModal">
-        <div class="calendar-content" id="calendarContent">
-            <p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일 설정: </p>
-            <input type="date" id="calendarPicker" style="padding: 10px; border-radius: 10px; border: none;"><br><br>
-            <button id="confirmDateBtn" style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,0.1); border: 1px solid white; color: white; cursor: pointer;">날짜 확인</button>
-        </div>
-    </div>
+	<div id="calendarModal">
+		<div class="calendar-content" id="calendarContent">
+			<p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일
+				설정:</p>
+			<input type="date" id="calendarPicker"
+				style="padding: 10px; border-radius: 10px; border: none;"><br>
+			<br>
+			<button id="confirmDateBtn"
+				style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; cursor: pointer;">날짜
+				확인</button>
+		</div>
+	</div>
 
 	<div id="newListCard" style="display: none;">
-    <div class="calendar-content" style="text-align: center;">
-        <input type="text" placeholder="새로운 목록" style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px;"><br>
-        <button style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+ 리스트 추가하기</button><br>
-        <button style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록 확인</button>
-    </div>
-</div>
+		<div class="calendar-content" style="text-align: center;">
+			<input type="text" placeholder="새로운 목록"
+				style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px;"><br>
+			<button
+				style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
+				리스트 추가하기</button>
+			<br>
+			<button
+				style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록
+				확인</button>
+		</div>
+	</div>
 
-    <script>
+	<script>
         const handle = document.getElementById('dragHandle');
         const cardWrapper = document.getElementById('cardWrapper');
         const calendarContent = document.getElementById('calendarContent');
-        const taskList = document.getElementById('taskList');
-        const addBtn = document.querySelector('.add-task-btn');
+        const taskList = document.getElementById('obj-taskList');
+        const addBtn = document.querySelector('.obj-add-task-btn');
         const calendarModal = document.getElementById('calendarModal');
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarPicker = document.getElementById('calendarPicker');
@@ -252,7 +291,7 @@
         }
 
         function updateCompleteCount() {
-            const allTasks = document.querySelectorAll('#taskList .task-item');
+            const allTasks = document.querySelectorAll('#taskList .obj-task-item');
             const total = allTasks.length;
             let completed = 0;
 
@@ -284,15 +323,15 @@
             localStorage.setItem("taskData", JSON.stringify(taskData));
 
             const taskItem = document.createElement('div');
-            taskItem.className = 'task-item';
+            taskItem.className = 'obj-task-item';
 
             taskItem.innerHTML = `
-                <div class="task-left">
+                <div class="obj-task-left">
                     <input type="checkbox" class="task-check">
                     <input type="text" placeholder="과제 제목 입력" value="">
-                    <span class="created-date">${today}</span>
+                    <span class="obj-created-date">${today}</span>
                 </div>
-                <div class="task-buttons">
+                <div class="obj-task-buttons">
                     <button class="calendar-btn">📅</button>
                     <button class="delete-task">X</button>
                 </div>
@@ -342,7 +381,7 @@
         confirmDateBtn.addEventListener('click', () => {
             const selectedDate = calendarPicker.value;
             if (selectedDate && currentTargetTask) {
-                const dateSpan = currentTargetTask.querySelector('.created-date');
+                const dateSpan = currentTargetTask.querySelector('.obj-created-date');
                 dateSpan.textContent = selectedDate.replace(/-/g, '/');
                 calendarModal.style.display = 'none';
                 cardWrapper.style.display = 'block';
@@ -369,7 +408,7 @@
             // ✅ 리스트가 하나도 없을 경우 "새로운 목록" 기본 버튼만 표시
             if (storedLists.length === 0) {
                 const defaultBtn = document.createElement('button');
-                defaultBtn.className = 'edit-btn';
+                defaultBtn.className = 'obj-edit-btn';
                 defaultBtn.textContent = '새로운 목록';
                 defaultBtn.style.width = '370px';
                 defaultBtn.style.marginRight = '10px';
@@ -380,7 +419,7 @@
 				//리스트가 있을 경우
             	visibleLists.forEach(name => {
             	    const btn = document.createElement('button');
-            	    btn.className = 'edit-btn';
+            	    btn.className = 'obj-edit-btn';
             	    btn.textContent = name;
 
             	    // 리스트 버튼 클릭시
@@ -395,7 +434,7 @@
 
                 if (hiddenLists.length > 0) {
                     const dropdownBtn = document.createElement('button');
-                    dropdownBtn.className = 'edit-btn';
+                    dropdownBtn.className = 'obj-edit-btn';
                     dropdownBtn.textContent = '...';
 
                     const dropdownMenu = document.createElement('div');
@@ -453,13 +492,16 @@
 
             // ✎ 연필 버튼은 항상 마지막에 붙이기
             const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
+            editBtn.className = 'obj-edit-btn';
             editBtn.textContent = '✎';
             editBtn.addEventListener('click', () => {
                 const rect = document.getElementById('cardWrapper').getBoundingClientRect();
                 localStorage.setItem("cardLeft", Math.floor(rect.left));
                 localStorage.setItem("cardTop", Math.floor(rect.top));
-                window.location.href = "List.jsp";
+
+                // ✅ 현재 카드 숨기고 listCardWrapper 표시
+                document.getElementById("cardWrapper").style.display = "none";
+                document.getElementById("listCardWrapper").style.display = "block";
             });
             listContainer.appendChild(editBtn);
 
@@ -480,15 +522,15 @@
 
             tasks.forEach((task, index) => {
                 const taskItem = document.createElement('div');
-                taskItem.className = 'task-item';
+                taskItem.className = 'obj-task-item';
 
                 taskItem.innerHTML = `
-                    <div class="task-left">
+                    <div class="obj-task-left">
                         <input type="checkbox" class="task-check" ${task.checked ? 'checked' : ''}>
                         <input type="text" placeholder="과제 제목 입력" value="${task.title}">
-                        <span class="created-date">${task.date}</span>
+                        <span class="obj-created-date">${task.date}</span>
                     </div>
-                    <div class="task-buttons">
+                    <div class="obj-task-buttons">
                         <button class="calendar-btn">📅</button>
                         <button class="delete-task">X</button>
                     </div>
@@ -539,6 +581,6 @@
 
         
     </script>
-    
+
 </body>
 </html>

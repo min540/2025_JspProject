@@ -1,10 +1,6 @@
 <!-- Background.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>배경 선택</title>
+
  <style>
     .background-container {
     position: absolute;
@@ -59,41 +55,6 @@
     font-weight: bold;
    	font-size: 1vw;
 	}
-    
-    .background-header input[type="checkbox"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    margin-left: 14px;
-    margin-right: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    background-color: white;
-
-    vertical-align: middle;
-    margin-top: -1px; /* ✅ 살짝 위로 올림 */
-	}
-	
-	/* 체크된 상태 */
-	.background-header input[type="checkbox"]:checked {
-	    background-color: black;       /* 체크 시 검정색 채우기 */
-	    border-color: white;
-	}
-	
-	/* 체크된 상태에 체크 모양 (✓ 표시용) */
-	.background-header input[type="checkbox"]:checked::after {
-	    content: '✓';
-	    color: white;
-	    font-size: 11px;
-	    font-weight: bold;
-	    position: absolute;
-	    top: 50%;
-   	 	left: 50%;
-    	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
-	}
 	
 	.background-search {
     padding: 10px 14px;
@@ -131,12 +92,13 @@
 	    display: flex;
 	    align-items: center;
 	    gap: 10px;
-	}
+	    margin-left: auto
+	    }
 	
 	.background-list {
 	    display: grid;
 	    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* ← 이미지 크기 맞게 칸 자동 계산 */
-	    gap: 15px;               /* 이미지 간 간격 */
+	    gap: 1px 2px;               /* 이미지 간 간격 */
 	    max-height: none;        /* 🔥 높이 제한 해제 */
 	    overflow-y: auto;        /* 스크롤 가능 (필요 시) */
 	    padding-right: 10px;     /* 스크롤바 공간 여유 */
@@ -176,14 +138,14 @@
 	.delete-icon {
 	    position: absolute;
 	    top: 5px;
-	    right: 5px;
+	    right: 10px;
 	    width: 20px;
 	    height: 20px;
 	    opacity: 0;
 	    transition: opacity 0.2s ease;
 	    cursor: pointer;
 	    z-index: 2;
-	    background-color:white;
+	    background-color:transparent;
 	}
 
 	/* 마우스 오버 시 아이콘 보이게 */
@@ -278,6 +240,8 @@
 	}
 	
 	.background-right {
+	 margin-left: auto; /* 🔥 왼쪽 공간을 밀어서 오른쪽으로 이동 */
+    justify-content: flex-end;
    	 	position: relative; /* 기준점 잡아줌 */
         flex: 3;
         padding: 10px;
@@ -413,7 +377,7 @@
 	}
 	
 	.background-preview h2 {
-    margin-top: 20px;     /* 줄이거나 0으로 설정 가능 */
+    margin-top: 5px;     /* 줄이거나 0으로 설정 가능 */
     margin-bottom: -3px;
     font-size: 1.1vw;    /* 사이즈도 적당히 */
 	}
@@ -428,10 +392,7 @@
 }
 	
 </style>
-        
-</head>
 
-<body>
 <div class="background-container">
     <!-- 왼쪽 영역 -->
     <div class="background-left">
@@ -442,11 +403,6 @@
 		</div>
     
         <div class="background-header">
-		    <!-- 왼쪽: 전체 선택 -->
-		    <div class="header-left">
-		        <input type="checkbox" id="selectAll">
-		        <label for="selectAll">전체 선택</label>
-		    </div>
 		
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
@@ -461,7 +417,7 @@
 		    // 정확한 파일 이름 배열로 처리
 		    String[] gifFiles = {
 		        "tema1.gif", "tema2.gif", "tema3.gif", "tema4.gif",
-		        "tema5.gif", "tema6.gif", "tema7.gif","tema8.gif",
+		        "tema6.gif", "tema7.gif","tema8.gif",
 		        "tema9.gif","tema10.gif","tema11.gif","tema12.gif",
 		        "tema13.gif","tema14.gif","tema15.gif","tema16.gif",
 		        "tema17.gif","tema18.gif","tema19.gif","tema20.gif"
@@ -470,7 +426,6 @@
 		    for (int i = 0; i < gifFiles.length; i++) {
 		%>
 		    <div class="background-list-item">
-		        <input type="checkbox" />
 		        <button class="background-image-button" onclick="selectBackground('<%= gifFiles[i] %>')">
 			<img src="<%= request.getContextPath() %>/jspproject/mplistImg/<%= gifFiles[i] %>" 
 			     alt="<%= gifFiles[i] %>" />
@@ -481,7 +436,7 @@
 
 		    <!-- 🗑 삭제 버튼 - 이미지 안에 오른쪽 위에 겹치도록 배치 -->
 		    <img class="delete-icon" 
-		         src="<%= request.getContextPath() %>/jspproject/img/delete.png" 
+		         src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png" 
 		         alt="삭제" 
 		         onclick="deleteImage(this)" />
 
@@ -491,7 +446,6 @@
 
         <div class="background-footer">
             <button class="btn-purple" onclick="addbackgroundItem()" >업로드</button>
-            <button class="btn-red delete-selected">삭제</button>
         </div>
     </div>
 
@@ -504,7 +458,8 @@
 		
         <div class="background-preview">
             <img class = "backgroundImg" src="backgroundImg/background1.gif" alt="배경 이미지">
-            <h2 style="text-align:center;">배경 제목</h2>
+             <input id="backgroundTitleInput" type="text" value="배경 제목" style="text-align:center; 
+             font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
         </div>
 
         <div class="background-description">
@@ -518,7 +473,7 @@
 		
 		<!-- 아래 좌우 버튼 -->
 		<div class="background-right-buttons">
-		    <button class="btn-dark">수정</button>
+		    <button class="btn-dark" onclick="saveDescription()">수정</button>
 		    <button class="btn-purple">적용</button>
 		</div>
 
@@ -527,10 +482,36 @@
 
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
 
-</body>
-</html>
-
 <script>
+let backgroundDescriptions = {};
+
+function saveDescription() {
+    const titleInput = document.getElementById("backgroundTitleInput");
+    const newTitle = titleInput.value.trim();
+    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
+    const description = document.querySelector(".background-description textarea").value;
+
+    if (!fileName) return;
+
+    // 저장
+    backgroundDescriptions[fileName] = {
+        title: newTitle,
+        description: description
+    };
+
+    // 리스트업데이트
+    const allImages = document.querySelectorAll(".background-list-item img");
+
+    allImages.forEach(img => {
+        const src = img.getAttribute("src");
+        if (src.includes(fileName)) {
+            img.setAttribute("alt", newTitle); 
+        }
+    });
+
+    alert("제목과 설명이 저장되었습니다.");
+}
+
 function deleteImage(el) {
     const item = el.closest('.background-list-item');
     if (confirm("정말 삭제하시겠습니까?")) {
@@ -543,34 +524,11 @@ function addbackgroundItem() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const selectAllCheckbox = document.getElementById("selectAll");
     const deleteButton = document.querySelector(".delete-selected");
     const searchInput = document.querySelector(".background-search");
     const searchButton = document.getElementById("searchButton");
 
-    // 전체 선택 기능
-    selectAllCheckbox.addEventListener("change", function () {
-        const checkboxes = document.querySelectorAll(".background-list-item input[type='checkbox']");
-        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-    });
-
-    // 선택 삭제
-    deleteButton.addEventListener("click", function () {
-        const checkedItems = document.querySelectorAll(".background-list-item input[type='checkbox']:checked");
-        if (checkedItems.length === 0) {
-            alert("삭제할 항목을 선택해주세요.");
-            return;
-        }
-        if (confirm("선택한 배경을 정말 삭제하시겠습니까?")) {
-            checkedItems.forEach(cb => {
-                const item = cb.closest(".background-list-item");
-                item.remove();
-            });
-        }
-    });
-
-
-    //입력 중엔 부분 검색
+    //  입력 중 부분 검색 
     searchInput.addEventListener("input", function () {
         const keyword = this.value.toLowerCase();
         const items = document.querySelectorAll(".background-list-item");
@@ -581,7 +539,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // 검색 버튼 클릭 시는 정확히 일치하는 항목만 보이기
+    //  정확히 일치하는 제목만 표시
     searchButton.addEventListener("click", function () {
         const keyword = searchInput.value.trim().toLowerCase();
         const items = document.querySelectorAll(".background-list-item");
@@ -599,16 +557,102 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// 배경 선택 시 미리보기 이미지 바꾸기
 function selectBackground(fileName) {
     const previewImg = document.querySelector(".backgroundImg");
-    const previewTitle = document.querySelector(".background-preview h2");
+    const titleInput = document.getElementById("backgroundTitleInput");
+    const textarea = document.querySelector(".background-description textarea");
     const contextPath = "<%= request.getContextPath() %>";
     const fullPath = contextPath + "/jspproject/mplistImg/" + fileName;
 
     previewImg.src = fullPath;
-    previewTitle.textContent = fileName;
+
+    // 저장된 제목/설명 불러오기
+    if (backgroundDescriptions[fileName]) {
+        titleInput.value = backgroundDescriptions[fileName].title || fileName;
+        textarea.value = backgroundDescriptions[fileName].description || "";
+    } else {
+        titleInput.value = fileName;
+        textarea.value = "";
+    }
 }
-
-
+=======
+	let backgroundDescriptions = {};
+	
+	function saveDescription() {
+	    const titleInput = document.getElementById("backgroundTitleInput");
+	    const fileName = document.querySelector(".backgroundImg").src.split('/').pop(); // 이미지 파일명
+	    const description = document.querySelector(".background-description textarea").value;
+	
+	    if (fileName) {
+	        backgroundDescriptions[fileName] = {
+	            title: titleInput.value,
+	            description: description
+	        };
+	        alert("제목과 설명이 저장되었습니다.");
+	    }
+	}
+	
+	function deleteImage(el) {
+	    const item = el.closest('.background-list-item');
+	    if (confirm("정말 삭제하시겠습니까?")) {
+	        item.remove();
+	    }
+	}
+	
+	function addbackgroundItem() {
+	    document.getElementById("backgroundFileInput").click();
+	}
+	
+	document.addEventListener("DOMContentLoaded", function () {
+	    const deleteButton = document.querySelector(".delete-selected");
+	    const searchInput = document.querySelector(".background-search");
+	    const searchButton = document.getElementById("searchButton");
+	
+	    //  입력 중 부분 검색 
+	    searchInput.addEventListener("input", function () {
+	        const keyword = this.value.toLowerCase();
+	        const items = document.querySelectorAll(".background-list-item");
+	        items.forEach(item => {
+	            const img = item.querySelector("img");
+	            const title = img.getAttribute("alt").toLowerCase();
+	            item.style.display = title.includes(keyword) ? "block" : "none";
+	        });
+	    });
+	
+	    //  정확히 일치하는 제목만 표시
+	    searchButton.addEventListener("click", function () {
+	        const keyword = searchInput.value.trim().toLowerCase();
+	        const items = document.querySelectorAll(".background-list-item");
+	
+	        items.forEach(item => {
+	            const img = item.querySelector("img");
+	            const title = img.getAttribute("alt").toLowerCase();
+	
+	            if (title === keyword || title === `${keyword}.gif`) {
+	                item.style.display = "block";
+	            } else {
+	                item.style.display = "none";
+	            }
+	        });
+	    });
+	});
+	
+	function selectBackground(fileName) {
+	    const previewImg = document.querySelector(".backgroundImg");
+	    const titleInput = document.getElementById("backgroundTitleInput");
+	    const textarea = document.querySelector(".background-description textarea");
+	    const contextPath = "<%= request.getContextPath() %>";
+	    const fullPath = contextPath + "/jspproject/mplistImg/" + fileName;
+	
+	    previewImg.src = fullPath;
+	
+	    // 저장된 제목/설명 불러오기
+	    if (backgroundDescriptions[fileName]) {
+	        titleInput.value = backgroundDescriptions[fileName].title || fileName;
+	        textarea.value = backgroundDescriptions[fileName].description || "";
+	    } else {
+	        titleInput.value = fileName;
+	        textarea.value = "";
+	    }
+	}
 </script>

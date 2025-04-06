@@ -82,7 +82,7 @@ public class AncMgr {
 	}
 	
 	//공지사항 미리보기
-	public AncBean viewAnc(int anc_id) {
+	public AncBean viewAnc() {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -90,16 +90,15 @@ public class AncMgr {
 		AncBean bean = new AncBean();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by anc_id desc";
+			sql = "SELECT * FROM anc ORDER BY anc_id DESC LIMIT 1";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, anc_id);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				bean.setAnc_id(rs.getInt("anc_id"));
 				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_regdate(rs.getString("anc_regdate"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
@@ -128,7 +127,7 @@ public class AncMgr {
 				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_regdate(rs.getString("anc_regdate"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
@@ -139,8 +138,6 @@ public class AncMgr {
 		return bean;
 	}
 	
-	
-	
 	//이전 업데이트 공지사항 이미지
 	public AncBean beforeImg(int anc_id) {
 		Connection con = null;
@@ -150,16 +147,13 @@ public class AncMgr {
 		AncBean bean = new AncBean();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by anc_id desc limit 1, 1";
+			sql = "SELECT * FROM anc WHERE anc_id < ? ORDER BY anc_id DESC LIMIT 1";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, anc_id);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				bean.setAnc_id(rs.getInt("anc_id"));
-				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
-				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
@@ -177,7 +171,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.equals("2")) {
 			con = pool.getConnection();
 			sql = "insert anc values(null, ?, ?, ?, now(), ?)";
 			pstmt = con.prepareStatement(sql);
@@ -193,13 +187,14 @@ public class AncMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
 	//공지사항 수정
 	public void updateAnc(AncBean bean, String grade) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.equals("2")) {
 			con = pool.getConnection();
 			sql = "update anc set anc_title=?, anc_cnt=?, anc_img=? where anc_id = ?";
 			pstmt = con.prepareStatement(sql);
@@ -221,7 +216,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("1")) {
+			if(grade !=null && grade.trim().equals("2")) {
 			con = pool.getConnection();
 			sql = "delete from anc where anc_id = ?";
 			pstmt = con.prepareStatement(sql);
