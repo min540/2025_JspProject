@@ -139,8 +139,6 @@ public class AncMgr {
 		return bean;
 	}
 	
-	
-	
 	//이전 업데이트 공지사항 이미지
 	public AncBean beforeImg(int anc_id) {
 		Connection con = null;
@@ -193,6 +191,7 @@ public class AncMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
 	//공지사항 수정
 	public void updateAnc(AncBean bean, String grade) {
 		Connection con = null;
@@ -221,7 +220,7 @@ public class AncMgr {
 		PreparedStatement pstmt = null;
 		String sql = null;
 		try {
-			if(grade !=null && grade.equals("2")) {
+			if(grade !=null && grade.trim().equals("2")) {
 			con = pool.getConnection();
 			sql = "delete from anc where anc_id = ?";
 			pstmt = con.prepareStatement(sql);
