@@ -8,12 +8,8 @@
 <jsp:useBean id="mgr" class ="jspproject.AncMgr"/>
 <%
 	//파일경로
-	String path = application.getRealPath("/upload");
-	//폴더 생성
-	java.io.File uploadDir = new java.io.File(path);// 없으면 폴더 생성
-	if (!uploadDir.exists()) {
-    	uploadDir.mkdirs();  
-	}
+	String path = application.getRealPath("/jspproject/upload");
+	out.println("저장 경로: " + path);
 	MultipartRequest multi = new MultipartRequest(
 													request, path, 30 * 1024 * 1024, "UTF-8" ,new DefaultFileRenamePolicy());
 	
