@@ -1,4 +1,4 @@
-<!-- notice.jsp -->
+<!-- anc.jsp -->
 <%@page import="jspproject.AncBean"%>
 <%@page import="java.util.Vector"%>
 <%@page import="jspproject.AncMgr"%>
@@ -110,7 +110,7 @@ header h3, header h4 {
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 input[type="checkbox"] {
-  appearance: none;         
+  appearance: none;      
   width: 15px;
   height: 15px;
   border: 2px solid #ffffff;  
@@ -152,6 +152,7 @@ input[type="checkbox"]:checked::after {
 .container-box {
   	display: flex;
   	position: relative;
+  	
 }
 .left-section, .right-section {
  	width: 50%;
@@ -166,9 +167,10 @@ input[type="checkbox"]:checked::after {
 </style>
 <script>
 function allChk() {
-}
-function chk() {
-}
+	  const all = document.querySelector('input[name="allCh"]');
+	  const items = document.querySelectorAll('input[name="ancIds"]');
+	  items.forEach(i => i.checked = all.checked);
+	}
 function confirmDelete() {
 	const checked = document.querySelectorAll('input[name="ancIds"]:checked');
 	if(checked.length===0){
@@ -183,7 +185,7 @@ function confirmDelete() {
 	<header>
 	<h3>오늘, 내일</h3>
 	<h4>공지사항</h4>
-	<h4>글쓰기</h4>
+	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
 <div class="image-wrapper">
   <img src="http://localhost/2025_JspProject/jspproject/images/loginimg.jpg" class="main-image" />
@@ -205,7 +207,7 @@ function confirmDelete() {
 			<div class="box3">
 			<table  cellspacing="0" style="color: white;">
 				<tr align="center" bgcolor="#32225B" >
-					<td><input type="checkbox" name="allCh" onclick="allChk()" ></td>
+					<td><input type="checkbox" name="allCh" onclick="allChk()"></td>
 					<td width="100">번호</td>
 					<td width="250">제 목</td>
 					<td width="100">작성자</td>
@@ -216,7 +218,7 @@ function confirmDelete() {
 				%>
 				<!-- db에서 받아올 내용 -->
 				<tr align="center" style="font-size: 10px;">
-					<td><input type="checkbox" name="fch" onclick="chk()" value="<%=bean.getAnc_id()%>"></td>
+					<td><input type="checkbox" name="ancIds" onclick="chk()" value="<%=bean.getAnc_id()%>"></td>
 					<td><%=bean.getAnc_id()%></td>
 					<td>
 					<a href="ancDetail.jsp?anc_id=<%=bean.getAnc_id()%>" style="color:white;"><%=bean.getAnc_title() %></a>
@@ -228,18 +230,22 @@ function confirmDelete() {
 				
 			</table>
 			</div>
-			<input class="dbtn" type="submit" id="dbtn" name="btn" value="삭제" ">
+			<div>
+				<input class="dbtn" type="submit" id="dbtn" name="btn" value="삭제">	
+			</div>
 			</form>
 		</div>
+		
+	
 			 <div class="divider"></div>	
 			 <div class="right-section">
-				<div style="display: flex; flex-direction: column;">
-					<div class="ntitle new">주요 공지</div>
-					<div class="newtext">1차업데이트</div>
+				<div style="display: flex; flex-direction: column; align-items: flex-start;">
+					<div class=" ntitle new ">주요 공지</div>
+					<div class=" newtext ">1차업데이트</div>
 				</div>
+			 </div>
 			 </div>
 		</div>
 	</div>
-</div>
 </body>
 </html>
