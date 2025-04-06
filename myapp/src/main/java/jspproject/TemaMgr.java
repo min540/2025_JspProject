@@ -4,6 +4,8 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,32 +25,54 @@ public class TemaMgr {
 	}
 	
 	// 테마 업로드
-		public void uploadFile(HttpServletRequest req) {
-			Connection con = null;
-			PreparedStatement pstmt = null;
-			String sql = null;
-			try {
-				// 파일 업로드 //////////////////
-				MultipartRequest multi = 
-						new MultipartRequest(req, SAVEFOLDER, 
-															MAXSIZE, ENCODING,
-															new DefaultFileRenamePolicy());	
-				String upFile = multi.getFilesystemName("upFile");
-				File f = multi.getFile("upFile");
-				long size = f.length(); // 파일 크기
-				// 테이블 저장 /////////////////
-				con = pool.getConnection();
-				sql = "insert tema(upFile, size) values (?, ?)";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, upFile);
-				pstmt.setLong(2, size);
-				pstmt.executeUpdate();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				pool.freeConnection(con, pstmt);
-			}
-		}
+	public Map<String, String> uploadFile(HttpServletRequest req) {
+	    Map<String, String> resultMap = new HashMap<>();
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+
+	    try {
+	        MultipartRequest multi = new MultipartRequest(
+	            req,
+	            SAVEFOLDER,
+	            MAXSIZE,
+	            ENCODING,
+	            new DefaultFileRenamePolicy()
+	        );
+
+	        String tema_title = multi.getParameter("tema_title");
+	        String tema_cnt = multi.getParameter("tema_cnt");
+	        String tema_img = multi.getFilesystemName("tema_img");
+
+	        String user_id = "test_user";
+	        int tema_dark = 0;
+	        int tema_onoff = 1;
+
+	        con = pool.getConnection();
+	        sql = "INSERT INTO tema(user_id, tema_title, tema_cnt, tema_img, tema_dark, tema_onoff) VALUES (?, ?, ?, ?, ?, ?)";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, user_id);
+	        pstmt.setString(2, tema_title);
+	        pstmt.setString(3, tema_cnt);
+	        pstmt.setString(4, tema_img);
+	        pstmt.setInt(5, tema_dark);
+	        pstmt.setInt(6, tema_onoff);
+	        pstmt.executeUpdate();
+
+	        // 업로드된 값들 저장
+	        resultMap.put("tema_title", tema_title);
+	        resultMap.put("tema_cnt", tema_cnt);
+	        resultMap.put("tema_img", tema_img);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+
+	    return resultMap;
+	}
+
 	//테마리스트
 	public Vector<TemaBean> listTema(){
 		Connection con = null;
@@ -242,7 +266,7 @@ public class TemaMgr {
 		Vector<TemaBean> vlist = new Vector<TemaBean>();
 		try {
 			con = pool.getConnection();
-			sql = "select * from tema where tema_id=? and tema_tile like ?";
+			sql = "select * from tema where tema_id=? and tema_title like ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, tema_id);
 			pstmt.setString(2, "%"+ title +"%" );
@@ -253,7 +277,7 @@ public class TemaMgr {
 				bean.setUser_id(rs.getString("user_id"));
 				bean.setTema_title(rs.getString("tema_title"));
 				bean.setTema_bimg(rs.getString("tema_bimg"));
-				bean.setTema_cnt(rs.getString("team_cnt"));
+				bean.setTema_cnt(rs.getString("tema_cnt"));
 				bean.setTema_dark(rs.getInt("tema_dark"));
 				bean.setTema_onoff(rs.getInt("tema_onoff"));
 				bean.setTema_img(rs.getString("tema_img"));

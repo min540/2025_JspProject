@@ -82,6 +82,8 @@
     <jsp:include page="journal.jsp" />
 </div>   
 
+
+
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
     <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
