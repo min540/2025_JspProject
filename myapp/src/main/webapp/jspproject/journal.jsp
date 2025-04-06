@@ -4,7 +4,6 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>다이어리</title>
   <!-- 외부 CSS 연결 -->
 <link href="css/diary.css?v=2" rel="stylesheet" type="text/css">
 <style>
@@ -307,9 +306,9 @@ function deleteSelectedEntries() {
     <div class="content" id="contentPanel">
       <div class="header">
         <input class="title-input" placeholder="제목을 입력하세요" />
-        <div class="icon-container">
-          <img src="<%= request.getContextPath() %>/jspproject/img/setting.png" class="icon" onclick="enableEditMode()" />
-          <img src="<%= request.getContextPath() %>/jspproject/img/delete.png" class="icon" onclick="hideContentPanel()" />
+        <div class="diary-icon-container">
+          <img src="icon/아이콘_수정_1.png" class="diary-icon" onclick="enableEditMode()" />
+          <img src="icon/아이콘_삭제_1.png" class="diary-icon" onclick="hideContentPanel()" />
         </div>
       </div>
       <textarea class="input-field" placeholder="내용을 입력하세요..."></textarea>

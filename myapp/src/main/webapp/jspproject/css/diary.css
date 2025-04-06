@@ -146,15 +146,18 @@
   cursor: pointer;
 }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-right: 10px;
+  gap: 10px;
+  position: relative;
+}
 
-	.title-input {
-	  width: 100%;
+		.title-input {
+	  flex: 1; /* 전체 너비 대신 남는 공간만 차지하게 */
 	  padding: 10px 5px;
 	  font-size: 16px;
 	  border: none;
@@ -163,24 +166,31 @@
 	  background: transparent;
 	  color: white;
 	  outline: none;
+	  min-width: 0;
+	   width: calc(100% - 100px);
 	}
+
 
 .title-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 
 
-    .icon-container {
-      display: flex;
-      gap: 12px;
-      margin-left: 10px;
-    }
+.diary-icon-container {
+  position: static;
+  top: 5px;      
+  right: 100px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-	.icon {
-	  width: 36px;
-	  height: 36px;
+	.diary-icon {
+	  width: 30px;
+	  height: 30px;
 	  cursor: pointer;
-	  filter: brightness(0) invert(1); /* 흰색처럼 보이게 */
+	  filter: brightness(0) invert(1); /* 밝게 */
+	  position: relative; /* 꼭 붙이자 */
 	}
 
 
