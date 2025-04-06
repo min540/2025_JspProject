@@ -11,7 +11,7 @@
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
-    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
+    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
     <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
@@ -20,7 +20,10 @@
 
 <!-- 음악 설정 쪽 아이콘-->
 <div class="iconMusic-container">
-	<img class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	<span>
+		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	</span>
+	<audio id="mainAudioPlayer" src="music/music1.mp3"></audio>
 	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
 	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
 	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
@@ -57,6 +60,11 @@
 <!-- 프로필 영역 (처음엔 숨김) -->
 <div id="profileWrapper" style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
     <jsp:include page="profile.jsp" />
+</div>
+
+<!-- 공지사항 영역 (처음엔 숨김) -->
+<div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
+    <jsp:include page="ancList.jsp" />
 </div>
 
 <!-- 배경 설정 영역 (처음엔 숨김) -->
@@ -151,6 +159,12 @@
 		    document.exitFullscreen();
 		}
 	}
+	
+	// 공지사항 리스트 on/off
+	function toggleAnc() {
+        var ancDiv = document.getElementById("ancWrapper");
+        ancDiv.style.display = (ancDiv.style.display === "none") ? "block" : "none";
+    }
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
@@ -386,4 +400,35 @@
 	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
 	    }, 50);
 	}
+	
+	document.addEventListener('DOMContentLoaded', function () {
+	    const playBtn = document.getElementById('mainPlayToggleBtn');
+	    const audio = document.getElementById('mainAudioPlayer');
+
+	    if (playBtn && audio) {
+	        // 초기 상태 설정
+	        playBtn.setAttribute('data-state', 'paused');
+
+	        playBtn.addEventListener('click', function () {
+	            const currentState = playBtn.getAttribute('data-state');
+
+	            if (currentState === 'paused') {
+	                // ▶️ → ⏸️ + 음악 재생
+	                playBtn.src = 'icon/아이콘_일시정지_1.png';
+	                playBtn.alt = '일시정지';
+	                playBtn.setAttribute('data-state', 'playing');
+
+	                audio.play();
+	            } else {
+	                // ⏸️ → ▶️ + 음악 정지
+	                playBtn.src = 'icon/아이콘_재생_1.png';
+	                playBtn.alt = '재생';
+	                playBtn.setAttribute('data-state', 'paused');
+
+	                audio.pause();
+	            }
+	        });
+	    }
+	});
+	
 </script>
