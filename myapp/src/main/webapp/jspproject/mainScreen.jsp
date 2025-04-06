@@ -80,7 +80,7 @@
 <!-- 일지 설정 영역 (처음엔 숨김) -->
 <div id="journalWrapper" style="display:none;">
     <jsp:include page="journal.jsp" />
-</div>
+</div>   
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
@@ -89,6 +89,11 @@
     <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
     <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
 </div>
+
+
+
+</body>
+
 
 <!-- 작업 목표 설정 영역 (처음엔 숨김) -->
 <div id="objWrapper" style="display:none;">
