@@ -1,5 +1,22 @@
 <!-- musicList.jsp -->
+<%@page import="java.util.Vector"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="jspproject.UserBean" %>
+<%@ page import="jspproject.BgmBean" %>
+<%@ page import="jspproject.MplistBean" %>
+<%@ page import="jspproject.MplistMgrBean" %>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<%
+String user_id = (String) session.getAttribute("id");
+if (user_id == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+
+
+Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -435,13 +452,18 @@
 		</div>
 
         <div class="music-list" id="musicList">
-        	<% for (int i = 0; i < 20; i++) { %>
-			    <div class="music-list-item">
-			        <input type="checkbox" />
-			        <span>음악 제목<%= i + 1 %></span>
+        	<% if(bgm != null && !bgm.isEmpty()) {
+        		for (BgmBean b : bgm) { 
+        	%>
+			    <div class="music-list-item" onclick="showBgmDetail('<%=b.getBgm_id()%>', '<%=b.getBgm_name()%>', '<%=b.getBgm_cnt()%>', 'img/<%=b.getBgm_image()%>')">
+			        <input type="checkbox" name="bgm_id" value="<%=b.getBgm_id()%>"/>
+			        <span><%=b.getBgm_name()%></span>
 			        <img class="iconPlusPlay" src="icon/아이콘_플레이리스트추가_1.png" alt="추가">
 			    </div>
-			<% } %>
+			<%}
+        	}else { %>
+				<div class="music-list-item2" style="color:white;">재생 가능한 음악이 없습니다.</div>
+			<%}%>
         </div>
 
         <div class="music-footer">
@@ -453,13 +475,14 @@
     <!-- 오른쪽 영역 -->
     <div class="music-right">
     	<div class="preview-icons">
-    		<img class="iconMusicList" src="icon/아이콘_수정_1.png" alt="수정" >
+    		<img class="iconMusicList" src="icon/아이콘_수정_1.png" alt="수정" onclick="">
     		<img class="iconMusicList" src="icon/아이콘_삭제_1.png" alt="삭제">
 		</div>
 		
         <div class="music-preview">
-            <img class = "musicImg" src="musicImg/music1.gif" alt="음악 이미지">
-            <h2 style="text-align:center;">음악 제목</h2>
+        	<% for (BgmBean b : bgm) { %>
+            <img id="bgmImg" class="musicImg" src="img/<%= b.getBgm_image() %>" onclick="document.getElementById('bgmImgInput').click()"/>
+            <h2 id="bgmName" contenteditable="true"><%= b.getBgm_name() %></h2>
         </div>
 
         <div class="music-controls">
@@ -472,9 +495,8 @@
         </div>
 
         <div class="music-description">
-            <textarea>음악 설명</textarea>
-        </div>
-
+		  <div id="bgmCnt" contenteditable="true"><%= b.getBgm_cnt() %></div>
+		</div>
         <!-- 가운데 위 버튼 -->
 		<div class="music-cancel-button">
 		    <button class="btn-purple">음악 취소</button>
@@ -482,10 +504,19 @@
 		
 		<!-- 아래 좌우 버튼 -->
 		<div class="music-right-buttons">
-		    <button class="btn-dark">수정</button>
+		    <button class="btn-dark" onclick="submitBgmEdit(<%= b.getBgm_id() %>)">수정</button>
 		    <button class="btn-purple">적용</button>
 		</div>
-
+		<form id="bgmEditForm" method="post" enctype="multipart/form-data" action="<%=request.getContextPath()%>/jspproject/bgmUpPost">
+		  <input type="hidden" name="bgm_id" id="hiddenBgmId" value="<%= b.getBgm_id() %>">
+		  <input type="hidden" name="bgm_name" id="hiddenBgmName">
+		  <input type="hidden" name="bgm_cnt" id="hiddenBgmCnt">
+		  <input type="hidden" name="original_music" value="<%= b.getBgm_music() %>">
+		  <input type="hidden" name="original_image" value="<%= b.getBgm_image() %>">
+		  <input type="hidden" name="mplist_id" value="<%= b.getMplist_id() %>">
+		  <input type="file" name="bgm_image" id="bgmImgInput" style="display:none;" onchange="previewImage(event)">
+		</form>
+		<%} %>
     </div>
 </div>
 
@@ -628,6 +659,39 @@
 	        });
 	    }
 	});
+	
+	let currentBgmId = null;
 
+	function previewImage(event) {
+	    const reader = new FileReader();
+	    reader.onload = function (e) {
+	        document.getElementById('bgmImg').src = e.target.result;
+	    };
+    	reader.readAsDataURL(event.target.files[0]);
+	}
+	
+	function showBgmDetail(bgmId, bgmName, bgmCnt, bgmImgPath) {
+	    currentBgmId = bgmId;
+	    document.getElementById("bgmImg").src = bgmImgPath;
+	    document.getElementById("bgmName").innerText = bgmName;
+	    document.getElementById("bgmCnt").innerText = bgmCnt;
+	    document.getElementById("hiddenBgmId").value = bgmId;
+	}
+
+	function submitBgmEdit() {
+	    const name = document.getElementById("bgmName").innerText.trim();
+	    const cnt = document.getElementById("bgmCnt").innerText.trim();
+
+	    document.getElementById("hiddenBgmName").value = name;
+	    document.getElementById("hiddenBgmCnt").value = cnt;
+
+	    const bgmId = document.getElementById("hiddenBgmId").value;
+	    if (!bgmId) {
+	        alert("bgm_id가 비어있습니다!");
+	        return;
+	    }
+
+	    document.getElementById("bgmEditForm").submit();
+	}
 	
 </script>
