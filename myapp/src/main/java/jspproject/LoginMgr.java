@@ -163,7 +163,7 @@ public class LoginMgr {
 			User_icon = multi.getFilesystemName("profile");
 			con = pool.getConnection();
 			if(User_icon!=null&&!User_icon.equals("")) {
-				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ?, user_icon = ? where id = ?";
+				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ?, user_icon = ? where user_id = ?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1, multi.getParameter("user_pwd"));
 				pstmt.setString(2, multi.getParameter("user_name"));
@@ -172,7 +172,7 @@ public class LoginMgr {
 				pstmt.setString(5, User_icon);
 				pstmt.setString(6, multi.getParameter("user_id"));
 			}else {
-				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ? where id = ?";
+				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ? where user_id = ?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1, multi.getParameter("user_pwd"));
 				pstmt.setString(2, multi.getParameter("user_name"));
