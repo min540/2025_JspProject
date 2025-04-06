@@ -107,7 +107,6 @@
     display: none;
 }
 
-
 .obj-task-item {
 	width: 419px;
 	display: flex;
