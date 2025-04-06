@@ -483,7 +483,6 @@
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
 
 <script>
-<<<<<<< HEAD
 let backgroundDescriptions = {};
 
 function saveDescription() {
@@ -656,5 +655,4 @@ function selectBackground(fileName) {
 	        textarea.value = "";
 	    }
 	}
->>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
 </script>

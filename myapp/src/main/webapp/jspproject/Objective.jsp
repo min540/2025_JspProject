@@ -19,7 +19,7 @@
 
 .obj-todo-card {
 	width: 500px;
-	height: 500px;
+	height: 540px;
 	padding: 20px;
 	border-radius: 16px;
 	background-color: rgba(147, 102, 192, 0.2);
@@ -85,7 +85,28 @@
 	gap: 5px;
 	height: 270px; /* ✅ 높이 고정 */
 	overflow-y: auto; /* ✅ 스크롤 가능 */
+	margin-bottom:20px;
 }
+
+#obj-taskList::-webkit-scrollbar {
+    width: 10px;
+}
+
+#obj-taskList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#obj-taskList::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#obj-taskList::-webkit-scrollbar-button {
+    display: none;
+}
+
 
 .obj-task-item {
 	width: 419px;
@@ -149,7 +170,7 @@
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	bottom: 15px;
+	bottom: 10px;
 	width: 400px;
 	height: 60px;
 	padding: 10px;
@@ -159,6 +180,7 @@
 	color: white;
 	cursor: pointer;
 	font-size: 18px;
+	margin-bottom:20px;
 }
 
 #calendarModal {
@@ -477,7 +499,10 @@
                 const rect = document.getElementById('cardWrapper').getBoundingClientRect();
                 localStorage.setItem("cardLeft", Math.floor(rect.left));
                 localStorage.setItem("cardTop", Math.floor(rect.top));
-                window.location.href = "List.jsp";
+
+                // ✅ 현재 카드 숨기고 listCardWrapper 표시
+                document.getElementById("cardWrapper").style.display = "none";
+                document.getElementById("listCardWrapper").style.display = "block";
             });
             listContainer.appendChild(editBtn);
 
