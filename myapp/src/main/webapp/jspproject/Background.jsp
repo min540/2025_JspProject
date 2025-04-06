@@ -483,6 +483,100 @@
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
 
 <script>
+<<<<<<< HEAD
+let backgroundDescriptions = {};
+
+function saveDescription() {
+    const titleInput = document.getElementById("backgroundTitleInput");
+    const newTitle = titleInput.value.trim();
+    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
+    const description = document.querySelector(".background-description textarea").value;
+
+    if (!fileName) return;
+
+    // 저장
+    backgroundDescriptions[fileName] = {
+        title: newTitle,
+        description: description
+    };
+
+    // 리스트업데이트
+    const allImages = document.querySelectorAll(".background-list-item img");
+
+    allImages.forEach(img => {
+        const src = img.getAttribute("src");
+        if (src.includes(fileName)) {
+            img.setAttribute("alt", newTitle); 
+        }
+    });
+
+    alert("제목과 설명이 저장되었습니다.");
+}
+
+function deleteImage(el) {
+    const item = el.closest('.background-list-item');
+    if (confirm("정말 삭제하시겠습니까?")) {
+        item.remove();
+    }
+}
+
+function addbackgroundItem() {
+    document.getElementById("backgroundFileInput").click();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const deleteButton = document.querySelector(".delete-selected");
+    const searchInput = document.querySelector(".background-search");
+    const searchButton = document.getElementById("searchButton");
+
+    //  입력 중 부분 검색 
+    searchInput.addEventListener("input", function () {
+        const keyword = this.value.toLowerCase();
+        const items = document.querySelectorAll(".background-list-item");
+        items.forEach(item => {
+            const img = item.querySelector("img");
+            const title = img.getAttribute("alt").toLowerCase();
+            item.style.display = title.includes(keyword) ? "block" : "none";
+        });
+    });
+
+    //  정확히 일치하는 제목만 표시
+    searchButton.addEventListener("click", function () {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const items = document.querySelectorAll(".background-list-item");
+
+        items.forEach(item => {
+            const img = item.querySelector("img");
+            const title = img.getAttribute("alt").toLowerCase();
+
+            if (title === keyword || title === `${keyword}.gif`) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+});
+
+function selectBackground(fileName) {
+    const previewImg = document.querySelector(".backgroundImg");
+    const titleInput = document.getElementById("backgroundTitleInput");
+    const textarea = document.querySelector(".background-description textarea");
+    const contextPath = "<%= request.getContextPath() %>";
+    const fullPath = contextPath + "/jspproject/mplistImg/" + fileName;
+
+    previewImg.src = fullPath;
+
+    // 저장된 제목/설명 불러오기
+    if (backgroundDescriptions[fileName]) {
+        titleInput.value = backgroundDescriptions[fileName].title || fileName;
+        textarea.value = backgroundDescriptions[fileName].description || "";
+    } else {
+        titleInput.value = fileName;
+        textarea.value = "";
+    }
+}
+=======
 	let backgroundDescriptions = {};
 	
 	function saveDescription() {
@@ -562,4 +656,5 @@
 	        textarea.value = "";
 	    }
 	}
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
 </script>
