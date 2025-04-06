@@ -50,11 +50,18 @@
             color: white;
             text-align: center;
         }
+        
+        .title-label {
+		    font-size: 20px;
+		    font-weight: bold;
+		    margin-top: 30px;
+		    color: white;
+		}
 
         .list-container {
             margin-top: 20px;
             width: 80%;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -110,7 +117,7 @@
    		<div class="card-container">
         <div class="new-list-card">
             <div class="top-dots">:::</div>
-            <input type="text" class="title-input" placeholder="새로운 목록" readonly />
+            <div class="title-label">새로운 목록</div>
             <div class="list-container" id="listContainer"></div>
             <button class="custom-button add-btn">＋ 리스트 추가하기</button>
             <button class="custom-button view-btn">목록 확인</button>
@@ -122,33 +129,33 @@
         const dragHandle = document.querySelector('.top-dots');
         const card = document.querySelector('.card-container');
 
-        let isDragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
+        window.isDraggingList = false;
+        window.offsetXList = 0;
+        window.offsetYList = 0;
 
         dragHandle.addEventListener('mousedown', function (e) {
-            isDragging = true;
-            offsetX = e.clientX - card.offsetLeft;
-            offsetY = e.clientY - card.offsetTop;
+            window.isDraggingList = true;
+            window.offsetXList = e.clientX - card.offsetLeft;
+            window.offsetYList = e.clientY - card.offsetTop;
         });
 
         document.addEventListener('mousemove', function (e) {
-            if (isDragging) {
-                card.style.left = (e.clientX - offsetX) + 'px';
-                card.style.top = (e.clientY - offsetY) + 'px';
+            if (window.isDraggingList) {
+                card.style.left = (e.clientX - window.offsetXList) + 'px';
+                card.style.top = (e.clientY - window.offsetYList) + 'px';
             }
         });
 
         document.addEventListener('mouseup', function () {
-            isDragging = false;
+            window.isDraggingList = false;
         });
 
         // 리스트 추가 기능
-        const addBtn = document.querySelector('.add-btn');
+        const addBtnList = document.querySelector('.add-btn');
         const listContainer = document.getElementById('listContainer');
 
         let count = 1;
-        addBtn.addEventListener('click', function () {
+        addBtnList.addEventListener('click', function () {
             const newItem = document.createElement('div');
             newItem.className = 'list-item';
 
@@ -246,25 +253,40 @@
         const cardContainer = document.querySelector('.card-container');
 
         viewBtn.addEventListener('click', function () {
-            const rect = cardContainer.getBoundingClientRect();
-            const left = Math.floor(rect.left + window.scrollX);
-            const top = Math.floor(rect.top + window.scrollY);
+        	const rect = cardContainer.getBoundingClientRect();
+        	const left = Math.floor(rect.left + window.scrollX);
+        	const top = Math.floor(rect.top + window.scrollY);
 
-            localStorage.setItem("cardLeft", left);
-            localStorage.setItem("cardTop", top);
-            
-            const existingLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+        	localStorage.setItem("cardLeft", left);
+        	localStorage.setItem("cardTop", top);
 
-            const listItems = document.querySelectorAll(".list-item input[type='text']");
-            const newListNames = Array.from(listItems)
-                .map(input => input.value.trim())
-                .filter(name => name.length > 0);  // 빈 값 제거
+        	const existingLists = JSON.parse(localStorage.getItem("userLists") || "[]");
+        	const listItems = document.querySelectorAll(".list-item input[type='text']");
+        	const newListNames = Array.from(listItems)
+        		.map(input => input.value.trim())
+        		.filter(name => name.length > 0);
 
-            const mergedLists = [...new Set([...existingLists, ...newListNames])];
+        	const mergedLists = [...new Set([...existingLists, ...newListNames])];
+        	localStorage.setItem("userLists", JSON.stringify(mergedLists));
 
-            localStorage.setItem("userLists", JSON.stringify(mergedLists));
-//
-            window.location.href = "Objective.jsp";
+        	// ✅ 화면 전환: 리스트 → 작업목표
+        	document.getElementById("listCardWrapper").style.display = "none";
+        	document.getElementById("objWrapper").style.display = "block";
+
+        	// ✅ 내부 카드도 강제 표시
+        	const cardWrapper = document.getElementById("cardWrapper");
+        	if (cardWrapper) {
+        		cardWrapper.style.display = "block";
+        		cardWrapper.style.left = (localStorage.getItem("cardLeft") || "100") + "px";
+        		cardWrapper.style.top = (localStorage.getItem("cardTop") || "100") + "px";
+        	}
+
+        	// ✅ 과제 다시 렌더링
+        	if (typeof renderTasksForCurrentList === 'function') {
+        		renderTasksForCurrentList();
+        	}
         });
+
+
 
     </script>

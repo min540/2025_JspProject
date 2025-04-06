@@ -467,6 +467,7 @@
             <span>
 			  <img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" data-state="paused">
 			</span>
+			<audio id="playAudioPlayer" src="music/music1.mp3"></audio>
             <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
         </div>
 
@@ -600,21 +601,29 @@
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	    const playBtn = document.getElementById('playToggleBtn');
+	    const audio = document.getElementById('playAudioPlayer');
 
-	    if (playBtn) {
+	    if (playBtn && audio) {
+	        // 초기 상태 설정
+	        playBtn.setAttribute('data-state', 'paused');
+
 	        playBtn.addEventListener('click', function () {
 	            const currentState = playBtn.getAttribute('data-state');
 
 	            if (currentState === 'paused') {
-	                // 재생 상태로 변경
+	                // ▶️ → ⏸️ + 음악 재생
 	                playBtn.src = 'icon/아이콘_일시정지_1.png';
 	                playBtn.alt = '일시정지';
 	                playBtn.setAttribute('data-state', 'playing');
+
+	                audio.play();
 	            } else {
-	                // 일시정지 상태로 변경
+	                // ⏸️ → ▶️ + 음악 정지
 	                playBtn.src = 'icon/아이콘_재생_1.png';
 	                playBtn.alt = '재생';
 	                playBtn.setAttribute('data-state', 'paused');
+
+	                audio.pause();
 	            }
 	        });
 	    }

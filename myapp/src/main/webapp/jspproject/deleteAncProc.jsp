@@ -1,9 +1,19 @@
 <!-- deleteAncProc.jsp -->
+<%@page import="java.util.Arrays"%>
+<%@page import="jspproject.UserBean"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
   	String[] delIds = request.getParameterValues("ancIds");
-	String grade = (String)session.getAttribute("grade");
+	UserBean user = (UserBean) session.getAttribute("user");
+	String grade = null;
+	
+	if (user == null) {
+	    response.sendRedirect("login.jsp");
+	    return;
+	}
+	
+	grade = String.valueOf(user.getGrade());
 
   	if (delIds != null) {
     	AncMgr mgr = new AncMgr();

@@ -26,13 +26,17 @@ public class LoginPostServlet extends HttpServlet {
 
 					    if (user.getGrade() == 2) {
 					        response.sendRedirect("anc.jsp");
+					        return;
 					    } else if (user.getGrade() == 1 || user.getGrade() == 0) {
 					        response.sendRedirect("mainScreen.jsp");
+					        return;
 					    } else {
 					        response.sendRedirect("login.jsp?error=login_failed");
+					        return;
 					    }
 					} else {
 					    response.sendRedirect("login.jsp?error=login_failed");
+					    return;
 				}
 			}
 		}

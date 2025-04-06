@@ -584,7 +584,8 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		    	<!-- 상단 타이틀 -->
 			    <div class="header-title2">
 			        재생 목록 이름
-			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" >
+			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" 
+			        onclick="openMusicPlayListDetail()">
 			    </div>
 			    
 		    	<!-- 재생 목록 탭 -->    
@@ -631,8 +632,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 			</div>
 			
 	        <div class="music-preview2">
-	            <img class = "musicImg2" src="musicImg/music1.gif" alt="음악 이미지">
-	            <h2 style="text-align:center;">음악 제목</h2>
+	        <% if (bgm != null && !bgm.isEmpty()) {
+					 for (BgmBean b : bgm) {
+			%>
+	            <img class = "musicImg2" src="img/<%=b.getBgm_image()%>" alt="음악 이미지">
+	            <h2 style="text-align:center;"><%=b.getBgm_name()%></h2>
 	        </div>
 	
 	        <div class="music-controls2">
@@ -640,13 +644,15 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            <span>
 				  <img id="playToggleBtn2" class="iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" data-state="paused">
 				</span>
+				<audio id="playListAudioPlayer" src="music/music1.mp3"></audio>
 	            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
 	        </div>
 	
 	        <div class="music-description2">
-	            <textarea>음악 설명</textarea>
+	            <textarea><%=b.getBgm_cnt()%></textarea>
 	        </div>
-	        
+	       <%} %>
+	      <%}%>
 	        <!-- 가운데 위 버튼 -->
 			<div class="music-cancel-button2">
 			    <button class="btn-purple">음악 취소</button>
@@ -785,21 +791,29 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
     document.addEventListener('DOMContentLoaded', function () {
 	    const playBtn = document.getElementById('playToggleBtn2');
+	    const audio = document.getElementById('playListAudioPlayer');
 
-	    if (playBtn) {
+	    if (playBtn && audio) {
+	        // 초기 상태 설정
+	        playBtn.setAttribute('data-state', 'paused');
+
 	        playBtn.addEventListener('click', function () {
 	            const currentState = playBtn.getAttribute('data-state');
 
 	            if (currentState === 'paused') {
-	                // 재생 상태로 변경
+	                // ▶️ → ⏸️ + 음악 재생
 	                playBtn.src = 'icon/아이콘_일시정지_1.png';
 	                playBtn.alt = '일시정지';
 	                playBtn.setAttribute('data-state', 'playing');
+
+	                audio.play();
 	            } else {
-	                // 일시정지 상태로 변경
+	                // ⏸️ → ▶️ + 음악 정지
 	                playBtn.src = 'icon/아이콘_재생_1.png';
 	                playBtn.alt = '재생';
 	                playBtn.setAttribute('data-state', 'paused');
+
+	                audio.pause();
 	            }
 	        });
 	    }

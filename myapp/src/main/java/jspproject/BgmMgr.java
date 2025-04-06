@@ -411,35 +411,40 @@ public class BgmMgr {
 
 	// mplist 수정
 	public void updateMplist(HttpServletRequest req) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		MultipartRequest multi = null;
-		String mplist_img = null;
-		try {
-			multi = new MultipartRequest(req, SAVEFOLDER, MAXSIZE, ENCTYPE, new DefaultFileRenamePolicy());
-			mplist_img = multi.getFilesystemName("mplist_img");
-			con = pool.getConnection();
-			if (mplist_img != null && !mplist_img.equals("")) {
-				sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ?, mplist_img = ? WHERE mplist_id = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, multi.getParameter("mplist_name"));
-				pstmt.setString(2, multi.getParameter("mplist_cnt"));
-				pstmt.setString(3, mplist_img);
-				pstmt.setInt(4, Integer.parseInt(multi.getParameter("mplist_id")));
-			} else {
-				sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ? WHERE mplist_id = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, multi.getParameter("mplist_name"));
-				pstmt.setString(2, multi.getParameter("mplist_cnt"));
-				pstmt.setInt(3, Integer.parseInt(multi.getParameter("mplist_id")));
-			}
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+	    MultipartRequest multi = null;
+	    String mplist_img = null;
+	    try {
+	        multi = new MultipartRequest(req, SAVEFOLDER, MAXSIZE, ENCTYPE, new DefaultFileRenamePolicy());
+	        // 업로드된 파일 이름
+	        mplist_img = multi.getFilesystemName("mplist_img");
+	        // 파일 객체 (필요 시 파일 삭제, 이름 변경 등 처리 가능)
+	        File file = multi.getFile("mplist_img");
+	        con = pool.getConnection();
+	        if (file != null && mplist_img != null && !mplist_img.equals("")) {
+	            // 👉 파일이 새로 업로드된 경우
+	            sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ?, mplist_img = ? WHERE mplist_id = ?";
+	            pstmt = con.prepareStatement(sql);
+	            pstmt.setString(1, multi.getParameter("mplist_name"));
+	            pstmt.setString(2, multi.getParameter("mplist_cnt"));
+	            pstmt.setString(3, mplist_img);
+	            pstmt.setInt(4, Integer.parseInt(multi.getParameter("mplist_id")));
+	        } else {
+	            // 👉 파일이 업로드되지 않은 경우 (이미지 수정 없이 텍스트만 수정)
+	            sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ? WHERE mplist_id = ?";
+	            pstmt = con.prepareStatement(sql);
+	            pstmt.setString(1, multi.getParameter("mplist_name"));
+	            pstmt.setString(2, multi.getParameter("mplist_cnt"));
+	            pstmt.setInt(3, Integer.parseInt(multi.getParameter("mplist_id")));
+	        }
+	        pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
 	}
 
 	// mplist 삭제
