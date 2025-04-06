@@ -11,7 +11,7 @@
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
-    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
+    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
     <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
@@ -60,6 +60,11 @@
 <!-- 프로필 영역 (처음엔 숨김) -->
 <div id="profileWrapper" style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
     <jsp:include page="profile.jsp" />
+</div>
+
+<!-- 공지사항 영역 (처음엔 숨김) -->
+<div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
+    <jsp:include page="ancList.jsp" />
 </div>
 
 <!-- 배경 설정 영역 (처음엔 숨김) -->
@@ -149,6 +154,12 @@
 		    document.exitFullscreen();
 		}
 	}
+	
+	// 공지사항 리스트 on/off
+	function toggleAnc() {
+        var ancDiv = document.getElementById("ancWrapper");
+        ancDiv.style.display = (ancDiv.style.display === "none") ? "block" : "none";
+    }
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
