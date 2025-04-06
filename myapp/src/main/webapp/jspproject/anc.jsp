@@ -202,7 +202,6 @@ function confirmDelete() {
 			<h2 class="ntitle">최신 업데이트 제목</h2>
 			<div class="box2" style="color: white;">여기에 가장 첫번째 게시물 불러오기 넘으로 받아오면 될듯</div>
 			<h2 class="ntitle">공지사항 목록</h2>
-			
 			<form action="deleteAncProc.jsp" method="post" onsubmit="return confirmDelete();">
 			<div class="box3">
 			<table  cellspacing="0" style="color: white;">
@@ -218,7 +217,7 @@ function confirmDelete() {
 				%>
 				<!-- db에서 받아올 내용 -->
 				<tr align="center" style="font-size: 10px;">
-					<td><input type="checkbox" name="ancIds" onclick="chk()" value="<%=bean.getAnc_id()%>"></td>
+					<td><input type="checkbox" name="ancIds" value="<%=bean.getAnc_id()%>"></td>
 					<td><%=bean.getAnc_id()%></td>
 					<td>
 					<a href="ancDetail.jsp?anc_id=<%=bean.getAnc_id()%>" style="color:white;"><%=bean.getAnc_title() %></a>
@@ -231,7 +230,7 @@ function confirmDelete() {
 			</table>
 			</div>
 			<div>
-				<input class="dbtn" type="submit" id="dbtn" name="btn" value="삭제">	
+				<button type="submit" class="dbtn" style="z-index:9999; position:relative; pointer-events:auto;" onclick="return confirmDelete();">삭제</button>
 			</div>
 			</form>
 		</div>

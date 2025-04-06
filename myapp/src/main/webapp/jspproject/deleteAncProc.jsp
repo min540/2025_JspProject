@@ -20,7 +20,6 @@
     	for (String idStr : delIds) {
       	int anc_id = Integer.parseInt(idStr);
       	mgr.deleteAnc(anc_id, grade);
-      	
     	}
   	}
   	response.sendRedirect("anc.jsp");

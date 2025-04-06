@@ -189,13 +189,12 @@ function showFileName(input) {
 
 	<div class="box">
 		<div>
-	<form action="uploadProc.jsp" method="post" enctype="multipart/form-data">
+	<form action="ancUploadProc.jsp" method="post" enctype="multipart/form-data">
 		<h2 class="Ititle" >제목</h2>
-			 <input type="text" placeholder="제목을 입력하세요" class="box2">
-		</div>
+			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2">
 		<div>
 		<h2 class="Ititle" >내용</h2>
-  			<textarea placeholder="공지 내용을 입력하세요" class="box3"></textarea>
+  			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"></textarea>
 		</div>
   				<input type="file" id="uploadFile" name="uploadFile" style="display: none;" onchange="showFileName(this)">
  				<div class= "upload-header">
@@ -208,6 +207,7 @@ function showFileName(input) {
 			<input type="submit" class="complete-btn" value="작성 완료">
 		</form>
 	</div>
+</div>
 </div>
 </body>
 </html>
