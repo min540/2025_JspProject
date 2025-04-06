@@ -6,13 +6,13 @@
 %>
 <body>
 <!-- 프로필 아이콘 -->
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""> 
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
     <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인"> 
-    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정"> 
+    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
     <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃"> 
@@ -54,6 +54,16 @@
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
 </div>
 
+<!-- 프로필 영역 (처음엔 숨김) -->
+<div id="profileWrapper" style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
+    <jsp:include page="profile.jsp" />
+</div>
+
+<!-- 배경 설정 영역 (처음엔 숨김) -->
+<div id="backgroundWrapper" style="display:none;">
+    <jsp:include page="Background.jsp" />
+</div>
+
 <!-- 음악 리스트 영역 (처음엔 숨김) -->
 <div id="musicListWrapper" style="display:none;">
     <jsp:include page="musicList.jsp" />
@@ -73,13 +83,14 @@
 </div>
 
 
+
 </body>
+
+
 <!-- 작업 목표 설정 영역 (처음엔 숨김) -->
 <div id="objWrapper" style="display:none;">
     <jsp:include page="Objective.jsp" />
 </div>
-
-
 
 <!-- JavaScript 함수 -->
 <script>
@@ -120,6 +131,18 @@
 	    }
 	}
 	
+	// 프로필 on/off
+	function toggleProfile() {
+	    const profileDiv = document.getElementById("profileWrapper");
+	    const profileIcon = document.querySelector(".iconLeftUp");
+	
+	    const isHidden = profileDiv.style.display === "none" || profileDiv.style.display === "";
+	
+	    // 토글 동작
+	    profileDiv.style.display = isHidden ? "block" : "none";
+	    profileIcon.style.display = isHidden ? "none" : "block";
+	}
+	
 	// 전체화면 on/off
 	function toggleFullScreen() { /* 전체화면 껐다 키는 기능 */
 		if (!document.fullscreenElement) { // 전체화면 모드가 아닌 경우
@@ -128,6 +151,12 @@
 		    document.exitFullscreen();
 		}
 	}
+	
+	// 배경 설정 on/off
+	function toggleBackground() {
+        var backgroundDiv = document.getElementById("backgroundWrapper");
+        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
+    }
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
@@ -143,8 +172,8 @@
 	
 	// 작업 목록 on/off
 	function toggleObjList() {
-        var journalDiv = document.getElementById("objWrapper");
-        journalDiv.style.display = (journalDiv.style.display === "none") ? "block" : "none";
+        var objDiv = document.getElementById("objWrapper");
+        objDiv.style.display = (objDiv.style.display === "none") ? "block" : "none";
     }
 	
 	// 통계 관련 설정
