@@ -240,6 +240,12 @@
 	    z-index: 2;
 	}
 	
+	.header-left {
+    display: flex;
+    align-items: center; /* 세로 정렬 */
+	}
+	
+	
 	/* 마우스 오버 시 나타남 */
 	.music-list-item:hover .iconPlusPlay {
 	    opacity: 1;
@@ -458,7 +464,9 @@
 
         <div class="music-controls">
             <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
-            <span><img class = "iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > </span>
+            <span>
+			  <img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" data-state="paused">
+			</span>
             <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
         </div>
 
@@ -589,5 +597,28 @@
 		    }
 		  });
 		});
+	
+	document.addEventListener('DOMContentLoaded', function () {
+	    const playBtn = document.getElementById('playToggleBtn');
+
+	    if (playBtn) {
+	        playBtn.addEventListener('click', function () {
+	            const currentState = playBtn.getAttribute('data-state');
+
+	            if (currentState === 'paused') {
+	                // 재생 상태로 변경
+	                playBtn.src = 'icon/아이콘_일시정지_1.png';
+	                playBtn.alt = '일시정지';
+	                playBtn.setAttribute('data-state', 'playing');
+	            } else {
+	                // 일시정지 상태로 변경
+	                playBtn.src = 'icon/아이콘_재생_1.png';
+	                playBtn.alt = '재생';
+	                playBtn.setAttribute('data-state', 'paused');
+	            }
+	        });
+	    }
+	});
+
 	
 </script>

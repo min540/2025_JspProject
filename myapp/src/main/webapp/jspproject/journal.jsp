@@ -19,7 +19,6 @@ Vector<JourBean> jour = jmgr.listJour(user_id);
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>다이어리</title>
   <!-- 외부 CSS 연결 -->
 <link href="css/diary.css" rel="stylesheet" type="text/css">
 <style>

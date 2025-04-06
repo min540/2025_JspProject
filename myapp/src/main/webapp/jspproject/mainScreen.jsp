@@ -22,7 +22,9 @@
 
 <!-- 음악 설정 쪽 아이콘-->
 <div class="iconMusic-container">
-	<img class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	<span>
+		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	</span>
 	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
 	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
 	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
@@ -383,4 +385,27 @@
 	        if (typeof drawBarMonthChart === 'function') drawBarMonthChart();
 	    }, 50);
 	}
+	
+	document.addEventListener('DOMContentLoaded', function () {
+	    const playBtn = document.getElementById('mainPlayToggleBtn');
+
+	    if (playBtn) {
+	        playBtn.addEventListener('click', function () {
+	            const currentState = playBtn.getAttribute('data-state');
+
+	            if (currentState === 'paused') {
+	                // 재생 상태로 변경
+	                playBtn.src = 'icon/아이콘_일시정지_1.png';
+	                playBtn.alt = '일시정지';
+	                playBtn.setAttribute('data-state', 'playing');
+	            } else {
+	                // 일시정지 상태로 변경
+	                playBtn.src = 'icon/아이콘_재생_1.png';
+	                playBtn.alt = '재생';
+	                playBtn.setAttribute('data-state', 'paused');
+	            }
+	        });
+	    }
+	});
+	
 </script>
