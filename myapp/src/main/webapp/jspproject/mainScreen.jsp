@@ -4,8 +4,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
 %>
-<body>
 <!-- 프로필 아이콘 -->
+
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
 
 <!-- 오른쪽 상단 아이콘들-->
@@ -79,25 +80,25 @@
 
 <!-- 일지 설정 영역 (처음엔 숨김) -->
 <div id="journalWrapper" style="display:none;">
-    <jsp:include page="journal.jsp" />
+    <jsp:include page="/jspproject/journal.jsp" />
 </div>   
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
 <div id="GraphWrapper" style="display:none;">
-    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
-    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
-    <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
-    <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+    <div id="graph-spark-week" style="display:none;"><jsp:include page="/jspproject/objTotalGraphSpark.jsp" /></div>
+    <div id="graph-bar-week" style="display:none;"><jsp:include page="/jspproject/objTotalGraphBar.jsp" /></div>
+    <div id="graph-spark-month" style="display:none;"><jsp:include page="/jspproject/objTotalGraphSparkMonth.jsp" /></div>
+    <div id="graph-bar-month" style="display:none;"><jsp:include page="/jspproject/objTotalGraphBarMonth.jsp" /></div>
 </div>
 
-
-
-</body>
-
-
-<!-- 작업 목표 설정 영역 (처음엔 숨김) -->
+<!-- 작업 목표 영역 -->
 <div id="objWrapper" style="display:none;">
-    <jsp:include page="Objective.jsp" />
+    <jsp:include page="/jspproject/Objective.jsp" />
+</div>
+
+<!-- 새로운 리스트 추가 영역 -->
+<div id="listCardWrapper" style="display:none;">
+    <jsp:include page="/jspproject/List.jsp" />
 </div>
 
 <!-- JavaScript 함수 -->
