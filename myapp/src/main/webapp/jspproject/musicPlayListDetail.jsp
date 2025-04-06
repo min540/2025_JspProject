@@ -1,5 +1,30 @@
 <!-- musicPlayListDetail.jsp -->
+<%@page import="java.util.Vector"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="jspproject.UserBean" %>
+<%@ page import="jspproject.BgmBean" %>
+<%@ page import="jspproject.MplistBean" %>
+<%@ page import="jspproject.MplistMgrBean" %>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<%
+String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+if (user_id == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+boolean isMultipart = request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/");
+if (isMultipart) {
+    out.clear(); // 👉 출력 버퍼 비우기 (중요!)
+    bmgr.updateMplist(request);
+    response.sendRedirect("musicPlayListDetail.jsp");
+    return;
+}
+
+UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
+Vector<MplistBean> mplist = bmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
+%>
  <style>
     .music-container3 {
 	    position: absolute;
@@ -580,11 +605,16 @@
 		
 		
 		        <div class="music-list2" id="musicList_detail">
-		        	<% for (int i = 0; i < 20; i++) { %>
+		        	<% if (bgm != null && !bgm.isEmpty()) {
+					     for (BgmBean b : bgm) {
+					%>
 					    <div class="music-list-item2">
-					        <input type="checkbox" />
-					        <span>음악 제목<%= i + 1 %></span>
+					        <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>" />
+					        <span><%= b.getBgm_name() %></span>
 					    </div>
+					<%  }
+					   } else { %>
+					    <div class="music-list-item2" style="color:white;">재생 가능한 음악이 없습니다.</div>
 					<% } %>
 		        </div>
 		
@@ -602,18 +632,28 @@
 			</div>
 			
 	        <div class="music-preview2">
-	            <img class = "musicImg2" src="musicImg/music1.gif" alt="음악 이미지">
-	            <h2 style="text-align:center;">재생 목록 제목</h2>
-	        </div>
-	
-	        <div class="music-description3">
-	            <textarea>재생 목록 설명</textarea>
-	        </div>
-			
+	        <% if (mplist != null && !mplist.isEmpty()) {
+	        	for (MplistBean m : mplist) {
+	        %>
+	        <img id="mplistImg" class="musicImg2" src="img/<%= m.getMplist_img() %>" alt="음악 이미지" onclick="document.getElementById('mplistImgInput').click()" />
+			<h2 id="mplistName" contenteditable="true"><%= m.getMplist_name() %></h2>
+			<div class="music-description3">
+				 <div id="mplistCnt" contenteditable="true"><%= m.getMplist_cnt() %></div>
+			</div>
+	        	
 			<div class="music-right-buttons2">
-			    <button class="btn-purple">수정</button>
-		</div>
+			    <button class="btn-purple" onclick="submitEditForm()">수정</button>
+			</div>
+			
+			<form id="mplistEditForm" method="post" enctype="multipart/form-data" style="display:none;">
+				<input type="hidden" name="mplist_id" value="<%= m.getMplist_id() %>">
+				<input type="hidden" name="mplist_name" id="hiddenMplistName">
+				<input type="hidden" name="mplist_cnt" id="hiddenMplistCnt">
+				<input type="file" name="mplist_img" id="mplistImgInput" onchange="previewImage(event)">
+			</form>
 	</div>
+	<%} %>
+<%} %>
 </div>
 
 <script>
@@ -692,6 +732,33 @@
 	    if (playListContainer) playListContainer.style.display = 'none';
 	    if (detailContainer) detailContainer.style.display = 'none';
 	    if (musicListContainer) musicListContainer.style.display = 'flex';
+	}
+	
+	function previewImage(event) {
+	    const reader = new FileReader();
+	    reader.onload = function (e) {
+	        document.getElementById('mplistImg').src = e.target.result;
+	    };
+	    reader.readAsDataURL(event.target.files[0]);
+	}
+	
+	//수정 기능
+	function previewImage(event) {
+	    const reader = new FileReader();
+	    reader.onload = function (e) {
+	        document.getElementById('mplistImg').src = e.target.result;
+	    };
+    	reader.readAsDataURL(event.target.files[0]);
+	}
+
+	function submitEditForm() {
+	    const name = document.getElementById('mplistName').innerText.trim();
+	    const cnt = document.getElementById('mplistCnt').innerText.trim();
+
+	    document.getElementById('hiddenMplistName').value = name;
+	    document.getElementById('hiddenMplistCnt').value = cnt;
+
+	    document.getElementById('mplistEditForm').submit();
 	}
 	
 </script>
