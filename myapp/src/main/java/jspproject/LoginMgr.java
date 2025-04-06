@@ -121,7 +121,7 @@ public class LoginMgr {
 	}
 	
 	//유저 정보 저장
-	public UserBean getUser(String id) {
+	public UserBean getUser(String user_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -129,15 +129,17 @@ public class LoginMgr {
 		UserBean bean = null;
 		try {
 			con = pool.getConnection();
-			sql = "select user_id, user_name, user_email, user_icon, grade from user where user_id = ? ";
+			sql = "select user_id, user_pwd, user_name, user_email,  user_phone, user_icon, grade from user where user_id = ? ";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, id);
+			pstmt.setString(1, user_id);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				bean = new UserBean();
 				bean.setUser_id(rs.getString("user_id"));
+				bean.setUser_pwd(rs.getString("user_pwd"));
 				bean.setUser_name(rs.getString("user_name"));
 				bean.setUser_email(rs.getString("user_email"));
+				bean.setUser_phone(rs.getString("user_phone"));
 				bean.setUser_icon(rs.getString("user_icon"));
 				bean.setGrade(rs.getInt("grade"));			
 			}
@@ -149,47 +151,50 @@ public class LoginMgr {
 		return bean;
 	}
 	
-	//회원 정보 수정
 	public boolean updateUser(HttpServletRequest req) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		MultipartRequest multi = null;
-		String User_icon = null;
-		boolean flag = false;
-		try {
-			multi = new MultipartRequest(req, SAVEFOLDER,MAXSIZE, ENCTYPE,
-					new DefaultFileRenamePolicy());
-			User_icon = multi.getFilesystemName("profile");
-			con = pool.getConnection();
-			if(User_icon!=null&&!User_icon.equals("")) {
-				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ?, user_icon = ? where user_id = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, multi.getParameter("user_pwd"));
-				pstmt.setString(2, multi.getParameter("user_name"));
-				pstmt.setString(3, multi.getParameter("user_email"));
-				pstmt.setString(4, multi.getParameter("user_phone"));
-				pstmt.setString(5, User_icon);
-				pstmt.setString(6, multi.getParameter("user_id"));
-			}else {
-				sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ? where user_id = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, multi.getParameter("user_pwd"));
-				pstmt.setString(2, multi.getParameter("user_name"));
-				pstmt.setString(3, multi.getParameter("user_email"));
-				pstmt.setString(4, multi.getParameter("user_phone"));
-				pstmt.setString(5, multi.getParameter("user_id"));
-			}
-			if(pstmt.executeUpdate()==1)
-				flag = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-		return flag;
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = null;
+	    MultipartRequest multi = null;
+	    String User_icon = null;
+	    boolean flag = false;
+	    try {
+	        // 상대 경로 → 실제 물리 경로 변환 (insertUser 메소드와 동일한 방식)
+	        String realFolder = req.getServletContext().getRealPath("/jspproject/img");
+	        File file = new File(realFolder);
+	        if (!file.exists()) file.mkdirs();
+	        
+	        multi = new MultipartRequest(req, realFolder, MAXSIZE, ENCTYPE,
+	                new DefaultFileRenamePolicy());
+	        User_icon = multi.getFilesystemName("profile");
+	        con = pool.getConnection();
+	        if(User_icon!=null&&!User_icon.equals("")) {
+	            sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ?, user_icon = ? where user_id = ?";
+	            pstmt = con.prepareStatement(sql);
+	            pstmt.setString(1, multi.getParameter("user_pwd"));
+	            pstmt.setString(2, multi.getParameter("user_name"));
+	            pstmt.setString(3, multi.getParameter("user_email"));
+	            pstmt.setString(4, multi.getParameter("user_phone"));
+	            pstmt.setString(5, User_icon);
+	            pstmt.setString(6, multi.getParameter("user_id"));
+	        }else {
+	            sql = "update user set user_pwd = ?, user_name = ?, user_email = ?, user_phone = ? where user_id = ?";
+	            pstmt = con.prepareStatement(sql);
+	            pstmt.setString(1, multi.getParameter("user_pwd"));
+	            pstmt.setString(2, multi.getParameter("user_name"));
+	            pstmt.setString(3, multi.getParameter("user_email"));
+	            pstmt.setString(4, multi.getParameter("user_phone"));
+	            pstmt.setString(5, multi.getParameter("user_id"));
+	        }
+	        if(pstmt.executeUpdate()==1)
+	            flag = true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+	    return flag;
 	}
-	
 	//회원 탈퇴(삭제)
 	public void deleteUser(String user_id) {
 		Connection con = null;

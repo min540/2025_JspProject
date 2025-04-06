@@ -1,7 +1,12 @@
-<!-- noticeDetail.jsp -->
+<!-- ancDetail.jsp -->
+<%@page import="jspproject.AncBean"%>
+<%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
-	
+	int anc_id = Integer.parseInt(request.getParameter("anc_id"));
+	AncMgr amgr = new AncMgr();
+	AncBean bean = amgr.getAnc(anc_id);
+	AncBean pbean = amgr.beforeImg(anc_id);
 %>
 <html>
 <head>
@@ -129,6 +134,23 @@ header h3, header h4 {
 	margin-left: 130px;
 	font-size: 12px;
 }
+.image-overlay-text {
+  position: absolute;
+  top: 0px;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  color: black;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: 45px;
+  margin-top: 70px;
+  pointer-events: none;
+}
 </style>
 <script>
 </script>
@@ -149,22 +171,40 @@ header h3, header h4 {
 	<div class="box">	
 		<div class="container-box">
 			<div class="left-section">	
-				<h2 class="ntitle" style="font-size:30px;">공지 제목</h2>
+				<h2 class="ntitle" style="font-size:30px;"><%=bean.getAnc_title() %></h2>
 			<!-- 공지사항 내용 -->
-			<div class="ntitle">공지내용 받아오는 부분 입니다.</div>
+			<% if (bean.getAnc_img() != null) { %>
+				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= bean.getAnc_img() %>" width="415" height="200">
+			<% } %>
+			<div class="ntitle"><%=bean.getAnc_cnt() %></div>
 			</div>
 			
 			<div class="divider"></div>	
 			
 			<div class="right-section">
 			<!-- 다음업데이트 박스, 게시일시랑 유형-->
-			<div class="box1">다음업데이트 미리보기</div>
+			<div class="box1">
+			
+			<% if (pbean.getAnc_img() != null) { %>
+		
+			<div class="image-overlay-text">
+			
+      			<%=pbean.getAnc_title()%>
+    		</div>
+			<a href="ancDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
+			<img src="<%= request.getContextPath() %>/jspproject/upload/<%= pbean.getAnc_img() %>" width="130" height="130"></img>
+			</a>
+			
+				<% }else{ %>
+					<p>이전 공지가 없습니다.<p>
+				<% } %>
+			</div>
 			<div style="margin-bottom: 70px;">
 			<div class="rtext"">게시일시</div>
-			<div class="rdtext">2025.04.03</div>
+			<div class="rdtext"><%=bean.getAnc_regdate()%></div>
 			</div>
 			<div class="rtext">작성자</div>
-			<div class="rdtext">오진우르스</div>
+			<div class="rdtext"><%=bean.getUser_id()%></div>
 			</div>
 		</div>
 	</div>
