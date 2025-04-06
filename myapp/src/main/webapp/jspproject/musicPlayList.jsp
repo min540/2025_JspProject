@@ -637,7 +637,9 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
 	        <div class="music-controls2">
 	            <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
-	            <span><img class = "iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > </span>
+	            <span>
+				  <img id="playToggleBtn2" class="iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" data-state="paused">
+				</span>
 	            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
 	        </div>
 	
@@ -780,5 +782,27 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
             });
         });
     });
+	
+    document.addEventListener('DOMContentLoaded', function () {
+	    const playBtn = document.getElementById('playToggleBtn2');
+
+	    if (playBtn) {
+	        playBtn.addEventListener('click', function () {
+	            const currentState = playBtn.getAttribute('data-state');
+
+	            if (currentState === 'paused') {
+	                // 재생 상태로 변경
+	                playBtn.src = 'icon/아이콘_일시정지_1.png';
+	                playBtn.alt = '일시정지';
+	                playBtn.setAttribute('data-state', 'playing');
+	            } else {
+	                // 일시정지 상태로 변경
+	                playBtn.src = 'icon/아이콘_재생_1.png';
+	                playBtn.alt = '재생';
+	                playBtn.setAttribute('data-state', 'paused');
+	            }
+	        });
+	    }
+	});
 
 </script>
