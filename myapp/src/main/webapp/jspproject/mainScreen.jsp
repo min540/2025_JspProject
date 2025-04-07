@@ -1,6 +1,8 @@
 <!-- mainScreen.jsp -->
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <link href="css/style.css?v=2" rel="stylesheet" type="text/css">
+<%@ page import="jspproject.UserBean" %>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
 %>
