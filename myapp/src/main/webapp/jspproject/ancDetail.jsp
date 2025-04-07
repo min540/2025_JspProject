@@ -202,12 +202,14 @@ button.text-button{
 			<!-- 수정 | 삭제 -->
 			<div class="sbtn">
 			<a href="ancUpdate.jsp?anc_id=<%=bean.getAnc_id()%>"><button  class="text-button">수정</button></a>
+			<a href="ancDeleteProc.jsp?ancIds=<%=bean.getAnc_id()%>" onclick="return confirm('정말 삭제하시겠습니까?')">
 			<button  class="text-button">삭제</button>
+			</a>
 			</div>
 			<!-- 이전공지 업데이트-->
 			<div class="box1">
 			
-			<% if (pbean.getAnc_img() != null) { %>
+			<% if (pbean.getAnc_id()!= 0) { %>
 		
 			<div class="image-overlay-text">
       			<%=pbean.getAnc_title()%>
