@@ -1,28 +1,32 @@
-<%@page import="jspproject.ObjBean"%>
-<%@ page import="java.util.ArrayList" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
-
-<%
-    ArrayList<ObjBean> objList = (ArrayList<ObjBean>) request.getAttribute("objList");
-    if (objList == null) objList = new ArrayList<ObjBean>(); // 널 방지
-%>
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>오늘, 내일</title>
 <style>
+@font-face {
+	font-family: 'PFStarDust';
+	src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+.pf-font {
+	font-family: 'PFStarDust', sans-serif !important;
+	color: white;
+}
+
+
 .obj-card-wrapper {
-	background-color: rgba(147, 102, 192, 0.2);
+	background-color: rgba(29, 16, 45, 0.35); /* 기존 #1d102d = rgb(29,16,45) */
 	padding: 5px;
-	border-radius: 22px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	border-radius: 15px;
+	box-shadow: 0 0 20px rgba(255,255,255,0.4);
 	position: absolute;
 	top: 100px;
 	left: 100px;
 	cursor: grab;
-	border: 2px solid white;
 }
 
 .obj-todo-card {
@@ -30,12 +34,10 @@
 	height: 540px;
 	padding: 20px;
 	border-radius: 16px;
-	background-color: rgba(147, 102, 192, 0.2);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	background-color: rgba(29, 16, 45, 0.3); /* 기존 #1d102d = rgb(29,16,45) */
 	position: relative;
 	color: white;
 	text-align: center;
-	border: 2px solid white;
 }
 
 .obj-top-dots {
@@ -81,7 +83,7 @@
 	top: 130px;
 	left: 50px;
 	font-size: 20px;
-	color: black;
+	color: white;
 }
 
 #obj-taskList {
@@ -91,7 +93,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
-	height: 270px; /* ✅ 높이 고정 */
+	height: 290px; /* ✅ 높이 고정 */
 	overflow-y: auto; /* ✅ 스크롤 가능 */
 	margin-bottom:20px;
 }
@@ -120,11 +122,13 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background-color: rgba(186, 133, 238);
+	background-color: #3c1e5c;
+	color:white;
 	border-radius: 10px;
 	padding: 10px;
-	border: 2px solid white;
 	position: relative;
+	box-shadow: 0 0 8px rgba(123, 44, 191, 0.6);
+	margin-bottom:5px;
 }
 
 .obj-task-left {
@@ -142,8 +146,34 @@
 }
 
 .obj-task-left input[type="checkbox"] {
-	width: 20px;
-	height: 20px;
+	appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-left: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: white;
+}
+
+/* 체크된 상태 */
+.obj-task-left input[type="checkbox"]:checked {
+	background-color: black;       /* 체크 시 검정색 채우기 */
+	border-color: white;
+}
+	
+/* 체크된 상태에 체크 모양 (✓ 표시용) */
+.obj-task-left input[type="checkbox"]:checked::after {
+	content: '✓';
+	color: white;
+	font-size: 11px;
+	font-weight: bold;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
 }
 
 .obj-created-date {
@@ -188,6 +218,7 @@
 	cursor: pointer;
 	font-size: 18px;
 	margin-bottom:20px;
+	font-family: 'PFStarDust', sans-serif;
 }
 
 #calendarModal {
@@ -228,67 +259,40 @@
 			<p class="obj-completed">
 				완료된 항목 : <span id="completedNum">0</span>/<span id="totalNum">0</span>
 			</p>
-			<div id="obj-taskList">
-	<% for (ObjBean obj : objList) { %>
-		<div class="obj-task-item">
-			<div class="obj-task-left">
-				<form action="objToggleCheck.jsp" method="post">
-					<input type="hidden" name="obj_id" value="<%= obj.getObj_id() %>">
-					<input type="checkbox" name="checked" onchange="this.form.submit()" <%= obj.getObj_check() == 1 ? "checked" : "" %> >
-				</form>
-
-				<input type="text" class="pf-font" value="<%= obj.getObj_title() %>" readonly>
-
-				<span class="obj-created-date">
-					<%= obj.getObj_edate() != null ? obj.getObj_edate().replace("-", "/") : obj.getObj_regdate() %>
-				</span>
-			</div>
-
-			<div class="obj-task-buttons">
-				<form method="post" action="objDelete.jsp" style="display:inline;">
-					<input type="hidden" name="obj_id" value="<%= obj.getObj_id() %>">
-					<button type="submit" class="delete-task">X</button>
-				</form>
-			</div>
-		</div>
-	<% } %>
-
-	<% if (objList.size() == 0) { %>
-		<div class="obj-task-item">
-			<div class="obj-task-left">
-				<span class="pf-font">등록된 과제가 없습니다.</span>
-			</div>
-		</div>
-	<% } %>
-</div>
-			<button class="obj-add-task-btn">과제 추가하기</button>
+			
+			<!-- ✅ 과제 리스트 영역을 form으로 감싸기 -->
+			<form id="taskForm" onsubmit="return false;">
+				<div id="obj-taskList"></div>
+				<button type="button" class="obj-add-task-btn">과제 추가하기</button>
+			</form>
 		</div>
 	</div>
 
+	<!-- ✅ 마감일 설정용 달력 폼 -->
 	<div id="calendarModal">
 		<div class="calendar-content" id="calendarContent">
-			<p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일
-				설정:</p>
-			<input type="date" id="calendarPicker"
-				style="padding: 10px; border-radius: 10px; border: none;"><br>
-			<br>
-			<button id="confirmDateBtn"
-				style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; cursor: pointer;">날짜
-				확인</button>
+			<form id="calendarForm" onsubmit="return false;" style="display: flex; flex-direction: column; align-items: center;">
+				<p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일 설정:</p>
+				<input type="date" id="calendarPicker"
+					style="padding: 10px; border-radius: 10px; border: none;"><br><br>
+				<button id="confirmDateBtn" type="submit"
+					style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; cursor: pointer;">날짜 확인</button>
+			</form>
 		</div>
 	</div>
 
+	<!-- 기존 목록 추가용 div -->
 	<div id="newListCard" style="display: none;">
 		<div class="calendar-content" style="text-align: center;">
-			<input type="text" placeholder="새로운 목록"
-				style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px;"><br>
-			<button
-				style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
-				리스트 추가하기</button>
-			<br>
-			<button
-				style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록
-				확인</button>
+			<form id="newListForm" onsubmit="return false;">
+				<input type="text" class="pf-font" placeholder="새로운 목록"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; font-family: 'PFStarDust', sans-serif;"><br>
+				<button type="submit"
+					style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
+					리스트 추가하기</button><br>
+				<button type="button"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록 확인</button>
+			</form>
 		</div>
 	</div>
 
@@ -331,7 +335,7 @@
         }
 
         function updateCompleteCount() {
-            const allTasks = document.querySelectorAll('#taskList .obj-task-item');
+            const allTasks = document.querySelectorAll('#obj-taskList .obj-task-item');
             const total = allTasks.length;
             let completed = 0;
 
@@ -368,7 +372,7 @@
             taskItem.innerHTML = `
                 <div class="obj-task-left">
                     <input type="checkbox" class="task-check">
-                    <input type="text" placeholder="과제 제목 입력" value="">
+                    <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="">
                     <span class="obj-created-date">${today}</span>
                 </div>
                 <div class="obj-task-buttons">
@@ -377,7 +381,6 @@
                 </div>
             `;
 
-            taskList.appendChild(taskItem);
             renderTasksForCurrentList();
 
             // 제목 input에 포커스 주기
@@ -453,6 +456,7 @@
                 defaultBtn.style.width = '370px';
                 defaultBtn.style.marginRight = '10px';
                 defaultBtn.style.padding = '10px 15px';
+                defaultBtn.style.fontFamily = 'PFStarDust, sans-serif'
                 
                 listContainer.appendChild(defaultBtn);
             } else {
@@ -552,6 +556,42 @@
             document.getElementById("cardWrapper").style.top = savedTop + "px";
             renderTasksForCurrentList();
         });
+
+        function renderTasksForCurrentList() {
+            const currentList = localStorage.getItem("currentList");
+            const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
+            const tasks = taskData[currentList] || [];
+
+            taskList.innerHTML = ""; // 기존 목록 비우기
+
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'obj-task-item';
+
+                taskItem.innerHTML = `
+                    <div class="obj-task-left">
+                        <input type="checkbox" class="task-check" ${task.checked ? 'checked' : ''}>
+                        <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="${task.title}">
+                        <span class="obj-created-date">${task.date}</span>
+                    </div>
+                    <div class="obj-task-buttons">
+                        <button class="calendar-btn">📅</button>
+                        <button class="delete-task">X</button>
+                    </div>
+                `;
+
+                taskList.appendChild(taskItem);
+
+                const checkbox = taskItem.querySelector('.task-check');
+                checkbox.addEventListener('change', () => {
+
+                    if (taskData[currentList] && taskData[currentList][index]) {
+                        taskData[currentList][index].checked = checkbox.checked;
+                        localStorage.setItem("taskData", JSON.stringify(taskData));
+                    }
+
+                    updateCompleteCount();
+                });
 
                 // 삭제 버튼 이벤트
                 taskItem.querySelector('.delete-task').addEventListener('click', () => {

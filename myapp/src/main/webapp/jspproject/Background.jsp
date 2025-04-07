@@ -489,7 +489,7 @@
 <div id="uploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
     background-color: rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
     
-    <form action="uploadTema.jsp" method="post" enctype="multipart/form-data" 
+    <form id="uploadForm" action="uploadTema.jsp" method="post" enctype="multipart/form-data" 
           style="background:#1d102d; padding:30px; border-radius:15px; box-shadow:0 0 20px white; color:white;">
         
         <h3 style="margin-bottom:15px;">배경 이미지 업로드</h3>
@@ -503,6 +503,7 @@
             <button type="button" onclick="closeUploadModal()" style="padding:8px 16px; background-color:#444; color:white; border:none; border-radius:8px;">취소</button>
         </div>
     </form>
+    
 </div>
 
 
@@ -631,6 +632,36 @@ function closeUploadModal() {
     document.getElementById("uploadModal").style.display = "none";
 }
 
+//✅ 업로드 폼 Ajax 처리
+document.getElementById("uploadForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // 기본 폼 제출 막기
+
+    const formData = new FormData(this);
+
+    fetch("uploadTema.jsp", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(result => {
+        console.log("업로드 완료");
+
+        // 모달 닫기
+        closeUploadModal();
+
+        // Background.jsp 다시 불러와서 backgroundWrapper 갱신
+        fetch("Background.jsp")
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("backgroundWrapper").innerHTML = html;
+            });
+
+    })
+    .catch(err => {
+        console.error("업로드 실패", err);
+        alert("업로드 중 오류가 발생했습니다.");
+    });
+});
 
 
 </script>
