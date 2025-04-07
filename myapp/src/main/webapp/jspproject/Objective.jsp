@@ -93,7 +93,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
-	height: 280px; /* ✅ 높이 고정 */
+	height: 290px; /* ✅ 높이 고정 */
 	overflow-y: auto; /* ✅ 스크롤 가능 */
 	margin-bottom:20px;
 }

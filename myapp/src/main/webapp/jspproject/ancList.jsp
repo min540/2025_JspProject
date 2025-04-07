@@ -1,6 +1,21 @@
 <!-- ancList.jsp -->
 <%@ page contentType="text/html; charset=UTF-8"%>
-<%-- musicListAdd.jsp --%>
+<%@ page import="java.util.Vector" %>
+<%@ page import="jspproject.AncBean" %>
+<%@ page import="jspproject.AncMgr" %>
+
+<%
+    // 로그인 세션 확인
+    String userId = (String) session.getAttribute("id");
+    if (userId == null) {
+        response.sendRedirect("login.jsp"); // 로그인 페이지로 리디렉트
+        return;
+    }
+
+    // 공지사항 불러오기
+    AncMgr mgr = new AncMgr();
+    Vector<AncBean> vlist = mgr.listPageAnc(1, 10); // 최근 공지 10개 불러오기
+%>
 
 <style>
 @font-face {
@@ -40,13 +55,12 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding-right: 3px; /* 💡 스크롤바와 콘텐츠 간 여유 */
+	padding-right: 3px;
 }
 
 .add-anclist-list::-webkit-scrollbar {
 	width: 10px;
 }
-
 .add-anclist-list::-webkit-scrollbar-thumb {
 	background-color: white;
 	border-radius: 10px;
@@ -78,12 +92,21 @@
 <div class="add-anclist-container">
 	<div class="add-anclist-title">공지사항</div>
 	<div class="add-anclist-list">
-		<% for (int i = 1; i <= 10; i++) { %>
+		<%
+			for (AncBean bean : vlist) {
+		%>
 			<div class="add-anclist-card">
-				<div class="anclist-title">공지사항 제목<%= i %></div>
-				<div class="anclist-desc">공지사항 내용</div>
+				<div class="anclist-title"><%= bean.getAnc_title() %></div>
+				<div class="anclist-desc"><%= bean.getAnc_cnt() %></div>
+			</div>
+		<%
+			}
+			if (vlist.size() == 0) {
+		%>
+			<div class="add-anclist-card">
+				<div class="anclist-title">공지 없음</div>
+				<div class="anclist-desc">등록된 공지사항이 없습니다.</div>
 			</div>
 		<% } %>
 	</div>
 </div>
-
