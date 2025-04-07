@@ -25,11 +25,15 @@ if (ubean == null) {
     %>
     <!-- 파일 업로드를 위한 enctype 추가 -->
     <script>
-    function update() {
-    	alert("수정이 완료 되었습니다");
-		document.frm.submit();
-    }
+  
     function previewImage(event) {
+        // 파일 입력 요소의 disabled 상태 확인
+        const fileInput = event.target;
+        if (fileInput.disabled) {
+            // disabled 상태라면 함수 실행 중단
+            return;
+        }
+
         if (event.target.files && event.target.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -47,10 +51,14 @@ if (ubean == null) {
 		document.getElementById('phone').disabled = false;			
 		document.getElementById('email').disabled = false;		
 		document.getElementById('success').disabled = false;	
-		document.getElementById('profileImg').disabled = false;	
+		  const profileImage = document.getElementById('profileImage');
+		    profileImage.disabled = false;
 		
 		}
-         
+         function update() {
+         	alert("수정이 완료 되었습니다");
+     		document.frm.submit();
+         }
          window.onload = function() {
              // 모든 입력 필드 비활성화
              document.getElementById('password').disabled = true;
@@ -58,8 +66,9 @@ if (ubean == null) {
              document.getElementById('phone').disabled = true;
              document.getElementById('email').disabled = true;
              document.getElementById('success').disabled = true;    
-             document.getElementById('profileImg').disabled = true;    
-            
+          // 프로필 이미지 입력 필드도 비활성화
+             const profileImage = document.getElementById('profileImage');
+             profileImage.disabled = true;
          }
 
          
@@ -138,7 +147,10 @@ if (ubean == null) {
 	    width: 100%;
 	    height: 100%;
 	    border-radius: 50%;
-	    object-fit: cover;
+	    object-fit: cover; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+	    position: absolute; /* 절대 위치로 설정 */
+	    top: 0;
+	    left: 0;
 	 
 	}
 	
@@ -189,16 +201,20 @@ if (ubean == null) {
 		    <img src="icon/아이콘_프로필_1.png" alt="프로필 아이콘" class="icon-profile" onclick="toggleProfile()">
 		</div>
 		
-		<label for="profileImage" class="profile-circle">
-    <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>"
-     alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
-</label>
       
         
         <!-- 같은 페이지로 폼 제출 -->
         <form action="profileUpdate"  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
         <input type="file" name="profile" id="profileImage" onchange="previewImage(event)" style="display: none;">
-        
+        	
+        	
+			<label for="profileImage"  class="profile-label" >
+			<div class="profile-circle">
+    	<img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>"
+     	alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+     	</div>
+		</label>
+		
        
             <div class="form-group">
                 <label for="username">아이디
