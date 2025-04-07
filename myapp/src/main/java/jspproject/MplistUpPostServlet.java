@@ -15,7 +15,7 @@ public class MplistUpPostServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		BgmMgr bmgr = new BgmMgr();
 		bmgr.updateMplist(request);
-			response.sendRedirect("playlist.jsp");
+			response.sendRedirect("musicPlayListDetail.jsp");
 		
 	}
 

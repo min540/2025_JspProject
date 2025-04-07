@@ -1,11 +1,27 @@
+<%@page import="jspproject.JourBean"%>
+<%@page import="java.util.Vector"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="jspproject.UserBean" %>
 <jsp:useBean id="jmgr" class="jspproject.JourMgr"/>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bean" class = "jspproject.JourBean"/>
+<jsp:setProperty property="*" name="bean"/>
+<%
+String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+if (user_id == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+UserBean user = lmgr.getUser(user_id); 
+Vector<JourBean> jour = jmgr.listJour(user_id);
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <title>다이어리</title>
   <!-- 외부 CSS 연결 -->
-<link href="css/diary.css?v=2" rel="stylesheet" type="text/css">
+<link href="css/diary.css" rel="stylesheet" type="text/css">
 <style>
   .input-field::-webkit-scrollbar {
     width: 8px;
@@ -44,7 +60,7 @@
       document.querySelector(".title-input").disabled = true;
       document.querySelector(".input-field").disabled = true;
     }
-
+    
     // 새로운 일지 항목 추가
     function addDiaryEntry(title = "새 일지", content = "") {
       const diaryList = document.querySelector(".diary-list");
@@ -299,7 +315,8 @@ function deleteSelectedEntries() {
         <div style="margin-bottom: 10px;">
           <input type="checkbox" id="select-all" onclick="toggleSelectAll(this)"> 전체 선택
         </div>
-        <div class="diary-list"></div>
+        <div class="diary-list">
+        </div>
       </div>
       <button class="delete-button" onclick="deleteSelectedEntries()">삭제</button>
     </div>
@@ -318,7 +335,7 @@ function deleteSelectedEntries() {
  <!-- 삭제 확인 모달 -->
 <div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000;">
   <div style="background: #1d0934; border: 1px solid white; border-radius: 8px; width: 230px; padding: 20px; text-align: center; color: white; position: relative; font-family: Arial, sans-serif;">
-    <img src="<%= request.getContextPath() %>/jspproject/img/transparent.png" onclick="closeModal()" style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; cursor: pointer; filter: brightness(0) invert(1);" />
+    <img src="/jspproject/img/transparent.png" onclick="closeModal()" style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; cursor: pointer; filter: brightness(0) invert(1);" />
     <div id="modalMessage" style="font-size: 15px; margin-bottom: 20px;">삭제하시겠습니까?</div>
     <div style="display: flex; justify-content: space-around;">
       <button onclick="closeModal()" style="background: transparent; border: none; color: white; font-size: 14px; cursor: pointer;">취소</button>
@@ -330,7 +347,7 @@ function deleteSelectedEntries() {
   <!-- 수정 완료 모달 -->
   <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000;">
     <div style="background: #1d0934; border: 1px solid white; border-radius: 8px; width: 230px; padding: 20px; text-align: center; color: white; position: relative; font-family: Arial, sans-serif;">
-      <img src="<%= request.getContextPath() %>/jspproject/img/transparent.png" onclick="closeEditModal()" style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; cursor: pointer; filter: brightness(0) invert(1);" />
+      <img src="<% %>/jspproject/img/transparent.png" onclick="closeEditModal()" style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; cursor: pointer; filter: brightness(0) invert(1);" />
       <div id="editModalMessage" style="font-size: 15px;">수정되었습니다.</div>
     </div>
   </div>
@@ -341,7 +358,7 @@ function deleteSelectedEntries() {
   justify-content: center; align-items: center; z-index: 1000;">
   <div style="background: #1d0934; border: 1px solid white; border-radius: 8px;
     width: 230px; padding: 20px; text-align: center; color: white; position: relative; font-family: Arial, sans-serif;">
-    <img src="<%= request.getContextPath() %>/jspproject/img/transparent.png"
+    <img src="<% %>/jspproject/img/transparent.png"
       onclick="closeNoSelectionModal()" 
       style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; cursor: pointer; filter: brightness(0) invert(1);" />
     <div style="font-size: 15px;" id="noSelectionMessage">삭제할 일지를 선택하세요.</div>

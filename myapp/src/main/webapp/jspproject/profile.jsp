@@ -1,7 +1,42 @@
+<%@page import="java.util.Vector"%>
+<%@page import="jspproject.UserBean" %>
+<%@page import="java.beans.beancontext.BeanContext"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bean" class ="jspproject.UserBean"/>
+<jsp:setProperty property="*" name="bean"/>
+<%
+String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+if (user_id == null) {
+	//로그인안된 상태이기 때문에 현재의url가지고 login.jsp로 간다
+	StringBuffer url = request.getRequestURL();
+    response.sendRedirect("login.jsp");
+}
 
+//로그인된 사용자의 정보를 데이터베이스에서 가져오기
+UserBean ubean = lmgr.getUser(user_id);
+//사용자 정보가 없을 경우를 대비
+if (ubean == null) {
+	ubean = new UserBean();
+}
+//폼이 제출되었는지 확인
+if ("POST".equalsIgnoreCase(request.getMethod())) {
+ // 기존 updateUser 메서드는 HttpServletRequest를 매개변수로 받음
+ boolean updated = lmgr.updateUser(request);
+ 
+ if (updated) {
+     // 페이지 새로고침하여 업데이트된 정보 보여주기
+     response.sendRedirect(request.getRequestURI());
+ } else {
+
+ }
+}
+    %>
     <!-- 파일 업로드를 위한 enctype 추가 -->
     <script>
+    function update() {
+		document.frm.submit();
+    }
         function previewImage(event) {
             const reader = new FileReader();
             reader.onload = function() {
@@ -11,6 +46,24 @@
             }
             reader.readAsDataURL(event.target.files[0]);
         }
+         function enableEdit() {
+		document.getElementById('password').disabled = false;			
+		document.getElementById('name').disabled = false;			
+		document.getElementById('phone').disabled = false;			
+		document.getElementById('email').disabled = false;		
+		document.getElementById('success').disabled = false;	
+		}
+         
+         window.onload = function() {
+             // 모든 입력 필드 비활성화
+             document.getElementById('password').disabled = true;
+             document.getElementById('name').disabled = true;
+             document.getElementById('phone').disabled = true;
+             document.getElementById('email').disabled = true;
+             document.getElementById('success').disabled = true;    
+         }
+       
+         
     </script>
 <style>        
 	.form-container {
@@ -128,42 +181,50 @@
 
     <div class="form-container">
         <div class="profile-icons">
-		    <img src="icon/아이콘_수정_1.png" alt="수정 아이콘" class="icon-edit">
+		    <img src="icon/아이콘_수정_1.png" alt="수정 아이콘" class="icon-edit" onclick = "enableEdit()">
 		    <img src="icon/아이콘_프로필_1.png" alt="프로필 아이콘" class="icon-profile" onclick="toggleProfile()">
 		</div>
 		
 		<label for="profileImage" class="profile-circle">
-		    <img id="profileImg" src="#" alt="프로필 이미지">
-		</label>
+    <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>" alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+</label>
+      
         
-        <input type="file" name="profileImage" id="profileImage" onchange="previewImage(event)" style="display: none;">
+        <!-- 같은 페이지로 폼 제출 -->
+        <form action=""  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
+        <input type="file" name="profile" id="profileImage" onchange="previewImage(event)" style="display: none;">
         
-        <form action="processForm.jsp" method="post" enctype="multipart/form-data">
+       
             <div class="form-group">
-                <label for="username">아이디:</label>
-                <input type="text" id="username" name="username">
+                <label for="username">아이디
+                <input type="text" id="username" name="user_id" value = "<%=ubean.getUser_id() %>" readonly >
+                </label>
             </div>
             
             <div class="form-group">
-                <label for="password">비밀번호:</label>
-                <input type="text" id="password" name="password">
+                <label for="password">비밀번호
+                <input type="text" id="password" name="user_pwd" value="<%=ubean.getUser_pwd() %>" disabled>
+                </label>
             </div>
             
             <div class="form-group">
-                <label for="name">이름:</label>
-                <input type="text" id="name" name="name">
+                <label for="name">이름
+                <input type="text" id="name" name="user_name" value = "<%=ubean.getUser_name()%>" disabled>
+                </label>
             </div>
             
             <div class="form-group">
-                <label for="phone">전화번호:</label>
-                <input type="text" id="phone" name="phone">
+                <label for="phone">전화번호
+                <input type="text" id="phone" name="user_phone" value = "<%=ubean.getUser_phone()%>" disabled>
+                </label>
             </div>
             
             <div class="form-group">
-                <label for="address">주소:</label>
-                <input type="text" id="address" name="address">
+                <label for="email">이메일
+                <input type="text" id="email" name="user_email" value = "<%=ubean.getUser_email()%>" disabled>
+                </label>
             </div>
+              <input type="button"  value="완료" id = "success"class="submit-btn" onclick="update()" disabled>
             
-            <button type="submit" class="submit-btn">완료</button>
         </form>
     </div>
