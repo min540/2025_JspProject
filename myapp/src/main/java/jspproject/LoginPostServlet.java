@@ -23,6 +23,7 @@ public class LoginPostServlet extends HttpServlet {
 					if (user != null) {
 					    request.getSession().setAttribute("user", user);                 // 기존 유지
 					    request.getSession().setAttribute("id", user.getUser_id());     // ✅ user_id 따로 저장 (추가)
+					    request.getSession().setAttribute("grade", user.getGrade()); 
 
 					    if (user.getGrade() == 2) {
 					        response.sendRedirect("anc.jsp");
