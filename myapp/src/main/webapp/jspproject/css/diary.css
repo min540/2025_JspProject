@@ -44,7 +44,7 @@
 		}
 		
 		.diary-list::-webkit-scrollbar {
-		  width: 8px; /* 스크롤 너비 */
+		  width: 10px; /* 스크롤 너비 */
 		}
 		
 		.diary-list::-webkit-scrollbar-track {
@@ -52,14 +52,15 @@
 		}
 		
 		.diary-list::-webkit-scrollbar-thumb {
-		  background-color: #663399;  /* ✅ 보라색 */
-		  border-radius: 4px;
+		  background-color: white;  /* 스크롤바 색상 */
+		  border-radius: 10px;
+		  border: 2px solid transparent;
+		  background-clip: content-box; /* 부드러운 느낌 */
 		}
 		
-		.diary-list::-webkit-scrollbar-thumb:hover {
-		  background-color: #8A2BE2;  /* 마우스 오버 시 더 밝은 보라색 */
+		.diary-list::-webkit-scrollbar-button {
+		    display: none; /* 🔥 위아래 화살표 제거 */
 		}
-
 
 	.content {
 	  flex-grow: 1;
@@ -72,21 +73,22 @@
 	}
 
     .button {
-       width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  background: #230B3D;
-  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+	  width: 100%;
+	  padding: 12px;
+	  margin-bottom: 5px;
+	  background: #230B3D;
+	  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
+	  border-radius: 8px;
+	  color: white;
+	  font-weight: bold;
+	  cursor: pointer;
     }
 
     .diary-list {
       flex-grow: 1;
       overflow-y: auto;
       margin-top: 10px;
+      margin-bottom: 20px;
     }
 
     .placeholder {
@@ -119,6 +121,14 @@
   accent-color: #8A2BE2;
 }
 
+	.select-all-container {
+	  display: flex;
+	  align-items: center;
+	  gap: 6px; /* ✅ 텍스트와 간격 */
+	  margin-top: 6px;
+	  margin-bottom: 10px; /* ✅ 아래 간격 */
+	}
+
     .entry .title {
       color: white;
       font-weight: bold;
@@ -137,7 +147,7 @@
     .delete-button {
   width: 100%;
   padding: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   background: #230B3D;
   border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
   border-radius: 8px;
@@ -146,51 +156,51 @@
   cursor: pointer;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-right: 10px;
-  gap: 10px;
-  position: relative;
-}
+	.header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  margin-top:5px;
+	  margin-bottom: 15px;
+	  gap: 10px;
+	  padding:5px;
+	  border-bottom: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
+	}
 
-		.title-input {
-	  flex: 1; /* 전체 너비 대신 남는 공간만 차지하게 */
-	  padding: 10px 5px;
-	  font-size: 16px;
-	  border: none;
-	  border-bottom: 1px solid white;
-	  border-radius: 0;
-	  background: transparent;
-	  color: white;
-	  outline: none;
-	  min-width: 0;
-	   width: calc(100% - 100px);
+	/* 다이어리 제목 input만 별도 스타일 적용 (우선순위 높이기 위해 더 구체적 선택자 사용) */
+	.header input.title-input1 {
+	    flex-grow: 1;
+	    padding: 10px;
+	    font-size: 16px;
+	    border: none;
+	    border-radius: 6px;
+	    background: transparent;
+	    color: white;
+	    outline: none;
+	    height: 40px;
+	    box-sizing: border-box;
 	}
 
 
-.title-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
+
+	.title-input::placeholder {
+	  color: rgba(255, 255, 255, 0.7);
+	}
 
 
-.diary-icon-container {
-  position: static;
-  top: 5px;      
-  right: 100px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+	.diary-icon-container {
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  flex-shrink: 0;
+	}
+
 
 	.diary-icon {
 	  width: 30px;
 	  height: 30px;
 	  cursor: pointer;
-	  filter: brightness(0) invert(1); /* 밝게 */
-	  position: relative; /* 꼭 붙이자 */
+	  filter: brightness(0) invert(1);
 	}
 
 

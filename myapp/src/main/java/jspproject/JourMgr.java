@@ -46,25 +46,35 @@ public class JourMgr {
 		return vlist;
 	}
 	
-	//일지 작성
-	public void insertJour(JourBean bean) {
+	// 일지 작성 후 생성된 ID 반환
+	public int insertJour(JourBean bean) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		String sql = null;
+		int generatedId = -1;
+
 		try {
 			con = pool.getConnection();
-			sql = "insert jour values(null, ?, ?, ?, now())";
-			pstmt = con.prepareStatement(sql);
+			sql = "INSERT INTO jour(user_id, jour_title, jour_cnt, jour_regDate) VALUES(?, ?, ?, NOW())";
+			pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, bean.getUser_id());
-			pstmt.setString(2,bean.getJour_title());
+			pstmt.setString(2, bean.getJour_title());
 			pstmt.setString(3, bean.getJour_cnt());
 			pstmt.executeUpdate();
+
+			rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				generatedId = rs.getInt(1);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			pool.freeConnection(con, pstmt);
+			pool.freeConnection(con, pstmt, rs);
 		}
+		return generatedId;
 	}
+
 	
 	//일지 수정
 	public void updateJour(JourBean bean) {
