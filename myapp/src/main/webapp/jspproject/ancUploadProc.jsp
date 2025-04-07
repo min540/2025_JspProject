@@ -7,6 +7,7 @@
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <jsp:useBean id="mgr" class ="jspproject.AncMgr"/>
 <%
+
 	//파일경로- 경로 바꿔줘야함
 	String path = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/upload";
 	/* //폴더 생성
