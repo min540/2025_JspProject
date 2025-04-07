@@ -4,9 +4,11 @@
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
+/* 	int anc_id = Integer.parseInt(request.getParameter("anc_id")); */
 	AncMgr amgr = new AncMgr();
 	Vector<AncBean> vlist = amgr.listAnc();
 	AncBean recent = amgr.viewAnc();
+/* 	AncBean pbean = amgr.beforeImg(anc_id); */
 %>
 <html>
 <head>
@@ -100,7 +102,7 @@ header h3, header h4 {
 } 
 .box2{
  width:415px;
- height:400px;
+ height:400px auto;
  background-color: #5C4B85;
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
@@ -185,7 +187,7 @@ function confirmDelete() {
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<h4>공지사항</h4>
+	<a href="anc.jsp"><h4>공지사항</h4></a>
 	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
 <div class="image-wrapper">
@@ -253,8 +255,10 @@ function confirmDelete() {
 			 <div class="divider"></div>	
 			 <div class="right-section">
 				<div style="display: flex; flex-direction: column; align-items: flex-start;">
+					
 					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
-					<div class=" newtext ">주요 공지 제목</div>
+					<div class=" newtext ">1차 업데이트</div>
+				
 				</div>
 			 </div>
 			 </div>

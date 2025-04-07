@@ -95,10 +95,11 @@
 		<%
 			for (AncBean bean : vlist) {
 		%>
-			<div class="add-anclist-card">
+			<a href="userAncDetail.jsp?anc_id=<%=bean.getAnc_id()%>"><div class="add-anclist-card">
+				<!-- 여기는 상세페이지로 이동하는 주소값  -->
 				<div class="anclist-title"><%= bean.getAnc_title() %></div>
 				<div class="anclist-desc"><%= bean.getAnc_cnt() %></div>
-			</div>
+			</div></a>
 		<%
 			}
 			if (vlist.size() == 0) {
