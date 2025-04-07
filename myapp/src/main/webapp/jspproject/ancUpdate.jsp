@@ -1,11 +1,16 @@
-<!-- anc.jsp -->
+<!-- ancUpdate.jsp -->
 <%@page import="jspproject.AncBean"%>
 <%@page import="java.util.Vector"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
+	String ancIdParam = request.getParameter("anc_id");
+	int anc_id = 0;
+	if (ancIdParam != null && !ancIdParam.isEmpty()) {
+		anc_id = Integer.parseInt(ancIdParam);
+	}
 	AncMgr amgr = new AncMgr();
-	Vector<AncBean> vlist = amgr.listAnc();
+	AncBean bean = amgr.getAnc(anc_id); 
 %>
 <html>
 <head>
@@ -189,12 +194,13 @@ function showFileName(input) {
 
 	<div class="box">
 		<div>
-	<form action="ancUploadProc.jsp" method="post" enctype="multipart/form-data">
+	<form action="ancUpdateProc.jsp" method="post" enctype="multipart/form-data">
+	 <input type="hidden" name="anc_id" value="<%=bean.getAnc_id()%>">
 		<h2 class="Ititle" >제목</h2>
-			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2">
+			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2" value="<%=bean.getAnc_title()%>">
 		<div>
 		<h2 class="Ititle" >내용</h2>
-  			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"></textarea>
+  			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"><%=bean.getAnc_cnt()%></textarea>
 		</div>
   				<input type="file" id="uploadFile" name="uploadFile" style="display: none;" onchange="showFileName(this)">
  				<div class= "upload-header">
@@ -202,9 +208,11 @@ function showFileName(input) {
  				<label for="uploadFile" class="custom-upload-button">파일 선택</label>
  				</div>
   				<div class="box4">
-    			<p id="selected-file-name" style="color:black;">선택된 파일 없음</p>
+    			<p id="selected-file-name" style="color:black;">
+    				<%= (bean.getAnc_img() != null && !bean.getAnc_img().isEmpty())? bean.getAnc_img()  : "선택된 파일 없음" %>
+    			</p>
   				</div>
-			<input type="submit" class="complete-btn" value="작성 완료">
+			<input type="submit" class="complete-btn" value="수정">
 		</form>
 	</div>
 </div>
