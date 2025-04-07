@@ -734,21 +734,13 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	    if (musicListContainer) musicListContainer.style.display = 'flex';
 	}
 	
-	function previewImage(event) {
-	    const reader = new FileReader();
-	    reader.onload = function (e) {
-	        document.getElementById('mplistImg').src = e.target.result;
-	    };
-	    reader.readAsDataURL(event.target.files[0]);
-	}
-	
 	//수정 기능
 	function previewImage(event) {
 	    const reader = new FileReader();
 	    reader.onload = function (e) {
 	        document.getElementById('mplistImg').src = e.target.result;
 	    };
-    	reader.readAsDataURL(event.target.files[0]);
+	    reader.readAsDataURL(event.target.files[0]);
 	}
 
 	function submitEditForm() {
