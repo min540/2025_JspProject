@@ -28,7 +28,7 @@ public class AncMgr {
 		Vector<AncBean> vlist = new Vector<AncBean>();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc limit ?, ?";
+			sql = "select * from anc ORDER BY anc_id DESC limit ?, ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, (page - 1) * perPage);
 			pstmt.setInt(2, perPage);
@@ -49,6 +49,27 @@ public class AncMgr {
 			pool.freeConnection(con, pstmt, rs);
 		}
 		return vlist;
+	}
+	
+	//총 게시물 수 
+	public int getTotalCount() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		int totalCnt = 0;
+		try {
+			con = pool.getConnection();
+			sql = "SELECT COUNT(*) FROM anc";
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) totalCnt = rs.getInt(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return totalCnt;
 	}
 	
 	//공지사항 리스트

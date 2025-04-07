@@ -1,4 +1,4 @@
-<!-- deleteAncProc.jsp -->
+<!-- ancDeleteProc.jsp -->
 <%@page import="java.util.Arrays"%>
 <%@page import="jspproject.UserBean"%>
 <%@page import="jspproject.AncMgr"%>
