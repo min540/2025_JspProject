@@ -1,4 +1,5 @@
 <!-- userAncDetail.jsp -->
+<%@page import="java.util.Vector"%>
 <%@page import="jspproject.AncBean"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
@@ -82,6 +83,8 @@ header h3, header h4 {
 .ntitle{
 	margin-left: 20px;
 	color: white;
+	/* margin-bottom: 0px;*/
+	margin-top: 5px; 
 }
 .container {
   display: flex;
@@ -153,6 +156,32 @@ header h3, header h4 {
   margin-top: 70px;
   pointer-events: none;
 }
+.newtext{
+  	margin-left: 125px;
+  	color: white;
+  	font-size: 10px;
+  	 line-height: 2;
+}
+.new{
+	margin-left: auto;
+	margin-right: 110px;
+	margin-top: 70px;
+	color: white;
+	font-weight: bold;
+	 line-height: 2;
+}
+.newtext h4 {
+	margin: 0;
+  	padding: 0;
+}
+ a {
+  color: white;           
+  text-decoration: none;   
+} 
+a:hover {
+  color: #32225B;        
+  text-decoration: underline; /* 또는 none 유지 가능 */
+}
 </style>
 <script>
 </script>
@@ -160,8 +189,6 @@ header h3, header h4 {
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<h4><a href="anc.jsp">공지사항</a></h4>
-	<h4><a href="ancPost.jsp">글쓰기</a></h4>
 	</header>
 <div class="image-wrapper">
   <img src="http://localhost/2025_JspProject/jspproject/images/loginimg.jpg" class="main-image" />
@@ -207,6 +234,23 @@ header h3, header h4 {
 			</div>
 			<div class="rtext">작성자</div>
 			<div class="rdtext"><%=bean.getUser_id()%></div>
+			
+			<div style="display: flex; flex-direction: column; align-items: flex-start;">
+					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
+				<%
+    				Vector<AncBean> hlist = amgr.getHighlightAncList();
+    				if (hlist != null && hlist.size() > 0) {
+        				for (int i = 0; i < hlist.size(); i++) {
+            					AncBean hbean = hlist.get(i);
+				%>
+            		<div class="newtext">
+                		<h4><a href="ancDetail.jsp?anc_id=<%=hbean.getAnc_id()%>"><%=hbean.getAnc_title()%></a></h4>
+            		</div>
+				<% }
+        		} else {%>
+					<div class="newtext">하이라이트 공지가 없습니다.</div>
+				<%}%>
+				</div>
 			</div>
 		</div>
 	</div>

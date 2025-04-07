@@ -555,23 +555,33 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	
 	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)
 	document.addEventListener('DOMContentLoaded', function () {
-	  document.querySelectorAll('.music-list-item input[type="checkbox"]').forEach(checkbox => {
-	    checkbox.addEventListener('change', function (e) {
-	      const item = e.target.closest('.music-list-item');
-	      const bgmId = item.getAttribute('data-bgm-id');
-	      const bgmName = item.getAttribute('data-bgm-name');
-	      const bgmCnt = item.getAttribute('data-bgm-cnt');
-	      const bgmImage = item.getAttribute('data-bgm-image');
+	    const selectAllCheckbox = document.getElementById('selectAll');
 	
-	      if (e.target.checked) {
-	        showBgmDetail(bgmId, bgmName, bgmCnt, bgmImage);
-	      } else {
-	        document.getElementById('bgmName').innerText = '선택된 음악 없음';
-	        document.getElementById('bgmCnt').innerText = '0';
-	        document.getElementById('bgmImg').src = 'img/default.png';
-	      }
-	    });
-	  });
+	    if (selectAllCheckbox) {
+	        selectAllCheckbox.addEventListener('change', function () {
+	            const isChecked = this.checked;
+	            const checkboxes = document.querySelectorAll('.music-list-item input[type="checkbox"]');
+	
+	            checkboxes.forEach(chk => {
+	                chk.checked = isChecked;
+	
+	                // 체크에 따라 오른쪽 정보 업데이트 (단일 선택만 보이도록 제한)
+	                if (isChecked) {
+	                    const parent = chk.closest('.music-list-item');
+	                    const bgmId = parent.getAttribute("data-bgm-id");
+	                    const bgmName = parent.getAttribute("data-bgm-name");
+	                    const bgmCnt = parent.getAttribute("data-bgm-cnt");
+	                    const bgmImage = parent.getAttribute("data-bgm-image");
+	
+	                    showBgmDetail(bgmId, bgmName, bgmCnt, bgmImage);
+	                } else {
+	                    document.getElementById('bgmName').innerText = '선택된 음악 없음';
+	                    document.getElementById('bgmCnt').innerText = '0';
+	                    document.getElementById('bgmImg').src = 'img/default.png';
+	                }
+	            });
+	        });
+	    }
 	});
 	
 	function switchToPlayList() {
@@ -752,6 +762,49 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	    setupCheckboxListeners();
+	});
+	
+	//삭제 기능
+	document.addEventListener('DOMContentLoaded', function () {
+	    const deleteBtn = document.querySelector('.delete-selected');
+	    if (!deleteBtn) return;
+	
+	    deleteBtn.addEventListener('click', function () {
+	        const checkedItems = document.querySelectorAll('.music-list-item input[type="checkbox"]:checked');
+	        if (checkedItems.length === 0) {
+	            alert("삭제할 음악을 선택해주세요.");
+	            return;
+	        }
+	
+	        if (!confirm("선택한 음악을 정말 삭제하시겠습니까?")) return;
+	
+	        const bgmIds = Array.from(checkedItems).map(chk => Number(chk.value));
+	
+	        fetch('<%=request.getContextPath()%>/bgmDelete', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
+	            },
+	            body: JSON.stringify({ bgmIds })
+	        })
+	        .then(res => {
+	            if (!res.ok) throw new Error("삭제 실패");
+	            return res.json();
+	        })
+	        .then(data => {
+	            if (data.success) {
+	                alert("삭제 완료!");
+	                // DOM에서 바로 제거
+	                checkedItems.forEach(item => item.closest(".music-list-item").remove());
+	            } else {
+	                alert("삭제 중 오류 발생");
+	            }
+	        })
+	        .catch(err => {
+	            console.error(err);
+	            alert("삭제 요청 중 오류 발생");
+	        });
+	    });
 	});
 	
 </script>
