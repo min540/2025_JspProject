@@ -3,7 +3,8 @@
 <%@page import="java.beans.beancontext.BeanContext"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
-<jsp:useBean id="bean" class ="jspproject.UserBean"/>
+<jsp:useBean id="bean" class ="jspproject.UserBean" scope = "session"/>
+
 <jsp:setProperty property="*" name="bean"/>
 <%
 String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
@@ -19,39 +20,35 @@ UserBean ubean = lmgr.getUser(user_id);
 if (ubean == null) {
 	ubean = new UserBean();
 }
-//폼이 제출되었는지 확인
-if ("POST".equalsIgnoreCase(request.getMethod())) {
- // 기존 updateUser 메서드는 HttpServletRequest를 매개변수로 받음
- boolean updated = lmgr.updateUser(request);
- 
- if (updated) {
-     // 페이지 새로고침하여 업데이트된 정보 보여주기
-     response.sendRedirect(request.getRequestURI());
- } else {
 
- }
-}
+
     %>
     <!-- 파일 업로드를 위한 enctype 추가 -->
     <script>
     function update() {
+    	alert("수정이 완료 되었습니다");
 		document.frm.submit();
     }
-        function previewImage(event) {
+    function previewImage(event) {
+        if (event.target.files && event.target.files[0]) {
             const reader = new FileReader();
-            reader.onload = function() {
+            reader.onload = function(e) {
                 const profileImg = document.getElementById('profileImg');
-                profileImg.src = reader.result;
-                profileImg.style.display = 'block';
+                profileImg.src = e.target.result;
+                profileImg.style.display = 'block'; // 이미지를 반드시 보이게 설정
             }
             reader.readAsDataURL(event.target.files[0]);
         }
+    }
+    
          function enableEdit() {
 		document.getElementById('password').disabled = false;			
 		document.getElementById('name').disabled = false;			
 		document.getElementById('phone').disabled = false;			
 		document.getElementById('email').disabled = false;		
 		document.getElementById('success').disabled = false;	
+		document.getElementById('profileImg').disabled = false;	
+		
 		}
          
          window.onload = function() {
@@ -61,8 +58,10 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
              document.getElementById('phone').disabled = true;
              document.getElementById('email').disabled = true;
              document.getElementById('success').disabled = true;    
+             document.getElementById('profileImg').disabled = true;    
+            
          }
-       
+
          
     </script>
 <style>        
@@ -102,40 +101,45 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 	    cursor: pointer;
 	}
 	
-	.profile-circle {
-	    width: 250px;
-	    height: 250px;
-	    background-color: #5a4c64;
-	    border-radius: 50%;
-	    margin: 0 auto;
-	    cursor: pointer;
-	    position: relative;
-	    overflow: hidden;
-	    transition: transform 0.2s ease;
-	}
+.profile-circle {
+        width: 250px;
+        height: 250px;
+        background-color: #5a4c64;
+        border-radius: 50%;
+        margin: 0 auto;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
 	.profile-circle:hover {
 	    transform: scale(1.05);
 	}
-	.profile-circle:hover::before {
-	    content: "사진 업로드";
-	    position: absolute;
-	    width: 100%;
-	    height: 100%;
-	    background-color: rgba(0, 0, 0, 0.5);
-	    color: white;
-	    display: flex;
-	    align-items: center;
-	    justify-content: center;
-	    border-radius: 50%;
-	    font-size: 14px;
-	}
+.profile-circle:hover::before {
+        content: "사진 업로드";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 14px;
+        z-index: 5;
+    }
 	
 	#profileImg {
 	    width: 100%;
 	    height: 100%;
 	    border-radius: 50%;
 	    object-fit: cover;
-	    display: none;
+	 
 	}
 	
 	.form-group {
@@ -186,12 +190,13 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 		</div>
 		
 		<label for="profileImage" class="profile-circle">
-    <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>" alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+    <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>"
+     alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
 </label>
       
         
         <!-- 같은 페이지로 폼 제출 -->
-        <form action=""  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
+        <form action="profileUpdate"  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
         <input type="file" name="profile" id="profileImage" onchange="previewImage(event)" style="display: none;">
         
        
