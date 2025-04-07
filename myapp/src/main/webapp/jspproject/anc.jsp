@@ -4,8 +4,11 @@
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
+/* 	int anc_id = Integer.parseInt(request.getParameter("anc_id")); */
 	AncMgr amgr = new AncMgr();
 	Vector<AncBean> vlist = amgr.listAnc();
+	AncBean recent = amgr.viewAnc();
+/* 	AncBean pbean = amgr.beforeImg(anc_id); */
 %>
 <html>
 <head>
@@ -99,7 +102,7 @@ header h3, header h4 {
 } 
 .box2{
  width:415px;
- height:400px;
+ height:400px auto;
  background-color: #5C4B85;
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
@@ -184,7 +187,7 @@ function confirmDelete() {
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<h4>공지사항</h4>
+	<a href="anc.jsp"><h4>공지사항</h4></a>
 	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
 <div class="image-wrapper">
@@ -199,10 +202,23 @@ function confirmDelete() {
 	<div class="container-box">
 		<!-- 왼쪽 -->
 		<div class="left-section">
-			<h2 class="ntitle">최신 업데이트 제목</h2>
-			<div class="box2" style="color: white;">여기에 가장 첫번째 게시물 불러오기 넘으로 받아오면 될듯</div>
+		<% if (recent.getAnc_title() != null) { %>
+			<h2 class="ntitle"><%=recent.getAnc_title()%></h2>
+			<% }else{ %>
+			<h2 class="ntitle">최신 공지가 없습니다.</h2>
+			<% } %>
+			<div class="box2" style="color: white;">
+			<% if (recent.getAnc_img() != null) { %>
+				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= recent.getAnc_img() %>" width="415" height="200">
+			<% } %>
+			<% if (recent.getAnc_cnt() != null) { %>
+			<%=recent.getAnc_cnt()%>
+			<% }else{ %>
+			<h3>최신 공지가 없습니다.</h3>
+			<% } %>
+			</div>
 			<h2 class="ntitle">공지사항 목록</h2>
-			<form action="deleteAncProc.jsp" method="post" onsubmit="return confirmDelete();">
+			<form action="ancDeleteProc.jsp" method="post" onsubmit="return confirmDelete();">
 			<div class="box3">
 			<table  cellspacing="0" style="color: white;">
 				<tr align="center" bgcolor="#32225B" >
@@ -239,8 +255,10 @@ function confirmDelete() {
 			 <div class="divider"></div>	
 			 <div class="right-section">
 				<div style="display: flex; flex-direction: column; align-items: flex-start;">
-					<div class=" ntitle new ">주요 공지</div>
-					<div class=" newtext ">1차업데이트</div>
+					
+					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
+					<div class=" newtext ">1차 업데이트</div>
+				
 				</div>
 			 </div>
 			 </div>

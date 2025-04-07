@@ -199,6 +199,7 @@ public class BgmMgr {
 	        multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
 
 	        int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
+	        String bgm_name = multi.getParameter("bgm_name");
 	        String bgm_cnt = multi.getParameter("bgm_cnt");
 	        int mplist_id = Integer.parseInt(multi.getParameter("mplist_id")); // ✅ 추가
 
@@ -221,13 +222,14 @@ public class BgmMgr {
 
 	        //DB 업데이트
 	        con = pool.getConnection();
-	        sql = "UPDATE bgm SET bgm_cnt = ?, bgm_music = ?, bgm_image = ?, mplist_id = ? WHERE bgm_id = ?";
+	        sql = "UPDATE bgm SET bgm_name = ?, bgm_cnt = ?, bgm_music = ?, bgm_image = ?, mplist_id = ? WHERE bgm_id = ?";
 	        pstmt = con.prepareStatement(sql);
-	        pstmt.setString(1, bgm_cnt);
-	        pstmt.setString(2, bgm_music);
-	        pstmt.setString(3, bgm_image);
-	        pstmt.setInt(4, mplist_id);
-	        pstmt.setInt(5, bgm_id);
+	        pstmt.setString(1, bgm_name);
+	        pstmt.setString(2, bgm_cnt);
+	        pstmt.setString(3, bgm_music);
+	        pstmt.setString(4, bgm_image);
+	        pstmt.setInt(5, mplist_id);
+	        pstmt.setInt(6, bgm_id);
 	        pstmt.executeUpdate();
 	        return true;
 	    } catch (Exception e) {
@@ -276,7 +278,7 @@ public class BgmMgr {
 	        pool.freeConnection(con, pstmt);
 	    }
 	}
-
+	
 	// mplist 리스트 불러오기
 	public Vector<MplistBean> getMplist(String user_id) {
 		Connection con = null;

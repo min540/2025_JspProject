@@ -7,9 +7,9 @@
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <jsp:useBean id="mgr" class ="jspproject.AncMgr"/>
 <%
-	//파일경로
-	String path = application.getRealPath("/upload");
-	//폴더 생성
+
+	//파일경로- 경로 바꿔줘야함
+	String path = application.getRealPath("/jspproject/upload");
 	java.io.File uploadDir = new java.io.File(path);// 없으면 폴더 생성
 	if (!uploadDir.exists()) {
     	uploadDir.mkdirs();  

@@ -82,7 +82,7 @@ public class AncMgr {
 	}
 	
 	//공지사항 미리보기
-	public AncBean viewAnc(int anc_id) {
+	public AncBean viewAnc() {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -90,16 +90,15 @@ public class AncMgr {
 		AncBean bean = new AncBean();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by anc_id desc";
+			sql = "SELECT * FROM anc ORDER BY anc_id DESC LIMIT 1";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, anc_id);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				bean.setAnc_id(rs.getInt("anc_id"));
 				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_regdate(rs.getString("anc_regdate"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
@@ -128,7 +127,7 @@ public class AncMgr {
 				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
 				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
+				bean.setAnc_regdate(rs.getString("anc_regdate"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
@@ -148,16 +147,13 @@ public class AncMgr {
 		AncBean bean = new AncBean();
 		try {
 			con = pool.getConnection();
-			sql = "select * from anc order by anc_id desc limit 1, 1";
+			sql = "SELECT * FROM anc WHERE anc_id < ? ORDER BY anc_id DESC LIMIT 1";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, anc_id);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				bean.setAnc_id(rs.getInt("anc_id"));
-				bean.setUser_id(rs.getString("user_id"));
 				bean.setAnc_title(rs.getString("anc_title"));
-				bean.setAnc_cnt(rs.getString("anc_cnt"));
-				bean.setAnc_regdate(rs.getString("reg_date"));
 				bean.setAnc_img(rs.getString("anc_img"));
 			}
 		} catch (Exception e) {
