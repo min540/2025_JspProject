@@ -158,7 +158,6 @@ header h3, header h4 {
 	margin-top: 10px;
 	background: none;
 
-    
 }
 button.text-button{
 	background: none;
