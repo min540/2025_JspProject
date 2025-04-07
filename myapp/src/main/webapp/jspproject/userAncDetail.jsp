@@ -1,8 +1,8 @@
-<!-- ancDetail.jsp -->
+<!-- userAncDetail.jsp -->
 <%@page import="jspproject.AncBean"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<%	
+<%
 	int anc_id = Integer.parseInt(request.getParameter("anc_id"));
 	AncMgr amgr = new AncMgr();
 	AncBean bean = amgr.getAnc(anc_id);
@@ -120,7 +120,7 @@ header h3, header h4 {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 선택: 그림자 효과 */
   	margin-left: auto;
 	margin-right: 45px;
-	margin-top: 60px;
+	margin-top: 70px;
 	color: white;
 }
 .rtext{
@@ -150,23 +150,8 @@ header h3, header h4 {
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 45px;
-  margin-top: 90px;
+  margin-top: 70px;
   pointer-events: none;
-}
-.sbtn{
-	margin-left: 200px;
-	margin-top: 10px;
-	background: none;
-
-    
-}
-button.text-button{
-	background: none;
-    border: none;
-	font: inherit;  
-    cursor: pointer; 
-    text-decoration: underline;
-    color: white;
 }
 </style>
 <script>
@@ -175,8 +160,8 @@ button.text-button{
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<a href="anc.jsp"><h4>공지사항</h4></a>
-	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
+	<h4><a href="anc.jsp">공지사항</a></h4>
+	<h4><a href="ancPost.jsp">글쓰기</a></h4>
 	</header>
 <div class="image-wrapper">
   <img src="http://localhost/2025_JspProject/jspproject/images/loginimg.jpg" class="main-image" />
@@ -199,17 +184,13 @@ button.text-button{
 			<div class="divider"></div>	
 			
 			<div class="right-section">
-			<!-- 수정 | 삭제 -->
-			<div class="sbtn">
-			<a href="ancUpdate.jsp?anc_id=<%=bean.getAnc_id()%>"><button  class="text-button">수정</button></a>
-			<button  class="text-button">삭제</button>
-			</div>
 			<!-- 이전공지 업데이트-->
 			<div class="box1">
 			
 			<% if (pbean.getAnc_img() != null) { %>
 		
 			<div class="image-overlay-text">
+			
       			<%=pbean.getAnc_title()%>
     		</div>
 			<a href="ancDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">

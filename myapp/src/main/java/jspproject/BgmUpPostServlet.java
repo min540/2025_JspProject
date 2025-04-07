@@ -15,10 +15,10 @@ public class BgmUpPostServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		BgmMgr bmgr = new BgmMgr();
 		if(bmgr.updateBgm(request)) {
-			response.sendRedirect("musiclist.jsp");
+			response.sendRedirect("mainScreen.jsp");
 		}else {
 			System.out.println("배경음악 수정 실패");
-			response.sendRedirect("musiclist.jsp?error=insertfail");
+			response.sendRedirect("musicList.jsp?error=insertfail");
 		}
 	}
 

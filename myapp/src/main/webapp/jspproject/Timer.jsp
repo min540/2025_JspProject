@@ -3,41 +3,56 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>타이머 팝업</title>
-<link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/Timer.css" />
+  <title>타이머 탭</title>
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/Timer.css" />
 </head>
 <body>
-  <div class="popup" id="timerPopup">
-    <div class="content-wrapper">
-      <div class="left-panel">
-        <div class="top-tabs" id="dragHandle">
-          <div>배경화면</div>
-          <div>타이머</div>
-        </div>
-
-        <div class="search-bar">
-          <button><img src="icon/아이콘_오래된순_최신순_1.png" alt="오래된순" /></button>
-          <button><img src="icon/아이콘_글자순_1.png" alt="글자순" /></button>
-          <input type="text" placeholder="타이머 검색" />
-          <button><img src="icon/아이콘_검색_1.png" alt="검색" /></button>
-        </div>
-
-        <div class="grid" id="timerGrid"></div>
+  <div class="timer-container">
+    <!-- 왼쪽 타이머 목록 패널 -->
+    <div class="timer-left">
+      <div class="timer-tab">
+        <button class="tab-btn" onclick="location.href='Background.jsp'">배경화면</button>
+        <button class="tab-btn active">타이머</button>
       </div>
 
-      <div class="right-panel">
-        <div class="panel-icons">
-          <img src="img/setting.png" alt="설정" class="icon-btn" />
-          <img src="img/delete.png" alt="삭제" class="icon-btn" />
+      <div class="timer-header">
+        <div class="header-left">
+          <label>타이머 목록</label>
         </div>
-        <div class="preview-box" id="timerPreviewBox"></div>
-        <div class="timer-title">타이머 설정</div>
-        <textarea class="desc-box" placeholder="타이머 설명"></textarea>
-        <button class="cancel-btn">타이머 취소</button>
-        <div class="apply-wrap">
-          <button class="apply-btn" onclick="applyTimer()">적용</button>
+        <div class="header-right">
+           <img class="icontimerList" src="icon/아이콘_글자순_1.png" alt="글자순 정렬">
+		  <img class="icontimerList" src="icon/아이콘_오래된순_최신순_1.png" alt="최신순 정렬"> <!-- 🔥 추가된 아이콘 -->
+		  <input class="timer-search" type="text" placeholder="타이머 검색" />
+		  <img id="searchTimerBtn" class="icontimerList" src="icon/아이콘_검색_1.png" alt="검색">
+          
         </div>
       </div>
+
+      <div class="timer-list" id="timerGrid"></div>
+    </div>
+
+    <!-- 오른쪽 미리보기/설정 -->
+    <div class="timer-right">
+      <div class="preview-icons">
+        <img class="icontimerList" src="icon/아이콘_수정_1.png" alt="수정" />
+        <img class="icontimerList" src="icon/아이콘_삭제_1.png" alt="삭제" />
+      </div>
+
+      <div class="timer-preview-wrapper">
+        <div id="timerPreviewBox" class="timer-preview-box"></div>
+      </div>
+
+      <div class="timer-description">
+        <textarea placeholder="타이머 설명을 입력하세요."></textarea>
+      </div>
+
+      <div class="timer-cancel-button">
+        <button class="btn-purple">타이머 취소</button>
+      </div>
+
+	<div class="timer-right-buttons">
+	  <button class="btn-purple" onclick="applyTimer()">적용</button>
+	</div>
     </div>
   </div>
 
@@ -62,7 +77,7 @@
       7: "<div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>03:00</div>",
       8: "<div style='width: 100px; height: 100px; border: 2px dashed #683FE2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white;'>5분</div>",
       9: "<div style='background: white; padding: 12px 16px; border-radius: 8px; color: #000;'>12:00</div>",
-      10: "<div style='font-size: 20px; color: white;'>⏳ 지중 시작</div>",
+      10: "<div style='font-size: 20px; color: white;'>⏳ 집중 시작</div>",
       11: "<div style='width: 60px; height: 60px; background: #683FE2; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px;'>25</div>",
       12: "<div style='background: #ddd; padding: 16px 20px; border-radius: 8px;'>▶ 00:45</div>",
       13: "<div style='display: flex; gap: 8px; color: white;'>🕒 <span>01:15</span></div>",
@@ -79,6 +94,7 @@
     timerData.forEach((label, index) => {
       const div = document.createElement("div");
       div.textContent = label;
+      div.className = "timer-button";
       div.onclick = () => selectTimer(index + 1);
       grid.appendChild(div);
     });
@@ -89,6 +105,10 @@
       previewBox.innerHTML = styles[num] || `<div style='color:white;'>${timerData[num - 1]}</div>`;
     }
 
+    document.addEventListener("DOMContentLoaded", () => {
+      selectTimer(1);
+    });
+
     function applyTimer() {
       if (selectedTimer === null) {
         alert("먼저 타이머를 선택해주세요!");
@@ -96,31 +116,6 @@
       }
       alert(`타이머 ${selectedTimer}번이 적용되었습니다!`);
     }
-
-    function makeDraggable(popup, handle) {
-      let offsetX = 0, offsetY = 0, isDragging = false;
-      handle.onmousedown = function (e) {
-        isDragging = true;
-        offsetX = e.clientX - popup.offsetLeft;
-        offsetY = e.clientY - popup.offsetTop;
-        document.onmousemove = function (e) {
-          if (!isDragging) return;
-          popup.style.left = e.clientX - offsetX + 'px';
-          popup.style.top = e.clientY - offsetY + 'px';
-        };
-        document.onmouseup = function () {
-          isDragging = false;
-          document.onmousemove = null;
-          document.onmouseup = null;
-        };
-      };
-    }
-
-    window.onload = function () {
-      const popup = document.getElementById('timerPopup');
-      const handle = document.getElementById('dragHandle');
-      makeDraggable(popup, handle);
-    };
   </script>
 </body>
 </html>
