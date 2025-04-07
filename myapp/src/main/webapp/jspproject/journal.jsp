@@ -55,9 +55,9 @@
       </div>
 
       <form id="deleteForm" action="jourDelete" method="post">
-        <input type="hidden" name="rnum" id="delete_id" />
-        <button type="submit" class="delete-button">삭제</button>
-      </form>
+		  <div id="deleteInputs"></div> <!-- 동적으로 체크된 ID들을 여기에 추가 -->
+		  <button type="submit" class="delete-button">삭제</button>
+		</form>
     </div>
 
     <!-- 우측 상세 보기 -->
@@ -104,9 +104,34 @@
         checkboxes.forEach(cb => cb.checked = this.checked);
       });
 
-      document.getElementById('hideContentIcon').addEventListener('click', () => {
-        document.getElementById('contentPanel').style.display = 'none';
-      });
+      document.getElementById('hideContentIcon').addEventListener('click', async () => {
+    	  const jourId = document.getElementById('jour_id').value;
+
+    	  if (!jourId) {
+    	    alert("삭제할 일지를 먼저 선택하세요.");
+    	    return;
+    	  }
+
+    	  if (!confirm("이 일지를 삭제하시겠습니까?")) return;
+
+    	  const params = new URLSearchParams();
+    	  params.append("rnum", jourId);
+
+    	  const response = await fetch("jourDelete", {
+    	    method: "POST",
+    	    headers: {
+    	      "Content-Type": "application/x-www-form-urlencoded"
+    	    },
+    	    body: params.toString()
+    	  });
+
+    	  if (response.ok) {
+    		  // ✅ 전체 새로고침 or 메인으로 리다이렉트
+    		  location.href = "mainScreen.jsp"; // 또는 location.reload(); 도 가능
+    		}
+
+    	});
+
 
       document.getElementById('editDiaryIcon').addEventListener('click', () => {
         titleInput.disabled = false;
@@ -181,7 +206,33 @@
 	      document.getElementById("updateBtn").style.display = "block";
 	      document.getElementById("contentPanel").style.display = "flex";
 	    });
-  }
+  	}
+	  
+	  document.getElementById('deleteForm').addEventListener('submit', function (e) {
+		  const deleteInputs = document.getElementById('deleteInputs');
+		  deleteInputs.innerHTML = ''; // 초기화
+
+		  const checkedEntries = document.querySelectorAll('.entry input[type="checkbox"]:checked');
+		  
+		  if (checkedEntries.length === 0) {
+		    e.preventDefault();
+		    alert("삭제할 항목을 선택하세요.");
+		    return;
+		  }
+
+		  checkedEntries.forEach(entryCheckbox => {
+		    const entryDiv = entryCheckbox.closest('.entry');
+		    const jourId = entryDiv.dataset.id;
+
+		    const input = document.createElement('input');
+		    input.type = 'hidden';
+		    input.name = 'rnum';
+		    input.value = jourId;
+
+		    deleteInputs.appendChild(input);
+		  });
+		});
+	  
   </script>
 </body>
 </html>
