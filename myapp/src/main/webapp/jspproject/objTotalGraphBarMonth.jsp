@@ -99,7 +99,7 @@
 	.graph-box canvas {
 	    width: 100% !important;
 	    height: auto !important; /* ✅ 높이 제한 해제 */
-	    aspect-ratio: 4 / 3;      /* ✅ 비율로 조정해서 반응형 유지 */
+	    aspect-ratio: 3 / 2;      /* ✅ 비율로 조정해서 반응형 유지 */
 	}
 	
 	.graph-label {

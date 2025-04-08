@@ -88,7 +88,6 @@
 	    width: 100%; /* ✅ 살짝 줄여서 gap과 함께 넓게 배치 */
 	    height: 100%;
 	    display: flex;
-	    padding: 10px;
 	    flex-direction: column;
 	    align-items: center;
 	    justify-content: center;
@@ -99,7 +98,7 @@
 	.graph-box canvas {
 	    width: 100% !important;
 	    height: auto !important; /* ✅ 높이 제한 해제 */
-	    aspect-ratio: 4 / 3;      /* ✅ 비율로 조정해서 반응형 유지 */
+	    aspect-ratio: 3 / 2;      /* ✅ 비율로 조정해서 반응형 유지 */
 	}
 	
 	.graph-label {

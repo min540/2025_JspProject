@@ -71,7 +71,7 @@
 	
 	.graph-card {
 	    width: 95%;
-	    height: 95%;
+	    height: 93%;
 	    background-color: white;
 	    border-radius: 10px;
 	    padding: 20px;
