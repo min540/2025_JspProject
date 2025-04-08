@@ -17,6 +17,7 @@ body, html {
     height: 100%;
     background-color:#372358;
 }
+ 
 header{
 	display: flex;
 	justify-content: center;
@@ -24,22 +25,26 @@ header{
   	margin-bottom: 20px;
   	padding-right: 370px; 
 }
+
 header h3, header h4 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
 }
+
 .image-wrapper {
   position: relative;
   width: auto;
   margin: 0 auto;
 }
+
 .main-image {
   width: 100%;
   height: 400px;
   object-fit: cover;
   display: block;
 }
+
 .blur-left, .blur-right {
   position: absolute;
   top: 0;
@@ -48,14 +53,17 @@ header h3, header h4 {
   z-index: 2;
   pointer-events: none;
 }
+
 .blur-left {
   left: 0;
   background: linear-gradient(to right, rgba(55, 35, 88, 1), transparent);
 }
+
 .blur-right {
   right: 0;
   background: linear-gradient(to left, rgba(55, 35, 88, 1), transparent);
 }
+
 .inner-effect {
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
   position: absolute;
@@ -65,21 +73,24 @@ header h3, header h4 {
   z-index: 2;
   pointer-events: none;
 }
+
 .box{
 	width: 600px;
-	height: 1000px;
+	height: 950px;
 	background-color: #4A3C6E;
 	margin: 0 auto;
-	top: -140px;
+	top: -200px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 	position: relative;
 	z-index: 10;
 	/* padding: 20px; */
 }
+
 .ntitle{
 	margin-left: 20px;
 	color: white;
 }
+
 .container {
   display: flex;
   width: 100%;
@@ -87,6 +98,7 @@ header h3, header h4 {
   margin: 0 auto;
   align-items: stretch;
 }
+
 .divider {
   position: absolute;
   top:70px;
@@ -97,6 +109,7 @@ header h3, header h4 {
   background-color: #888;
   margin: 0 16px;
 } 
+
 .box2{
  width:415px;
  height:30px;
@@ -104,6 +117,7 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
+
 .box3{
  width:415px;
  height:400px;
@@ -111,6 +125,7 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
+
 .box4{
  width:415px;
  min-height: 100px;
@@ -119,16 +134,24 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
+
 .container-box {
   	display: flex;
   	position: relative;
-  	
 }
+.Ititle1{
+color: white;
+	 margin-left: 90px;
+	 padding-top: 30px;
+}
+
 .Ititle{
 	 color: white;
 	 margin-left: 90px;
 	 padding-top: 30px;
+	 margin-top:0px;
 }
+
 .custom-upload-button {
   display: inline-block;
   padding: 10px 18px;
@@ -140,23 +163,26 @@ header h3, header h4 {
   margin-top: 40px;
   margin-right: 100px;
 }
+
 .upload-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .complete-btn {
   background-color: #19092D;        
   color: white;
   padding: 12px 40px;              
   border: 1.5px solid white;
-  border-radius: 25px;             
+  border-radius: 10px;             
   font-size: 16px;
   font-weight: bold;
   text-align: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-left: 100px;
+   margin-top: 30px;
   width: 400px;
 }
 
@@ -190,7 +216,7 @@ function showFileName(input) {
 	<div class="box">
 		<div>
 	<form action="ancUploadProc.jsp" method="post" enctype="multipart/form-data">
-		<h2 class="Ititle" >제목</h2>
+		<h2 class="Ititle1" >제목</h2>
 			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2">
 		<div>
 		<h2 class="Ititle" >내용</h2>

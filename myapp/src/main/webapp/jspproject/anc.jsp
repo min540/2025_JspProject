@@ -84,7 +84,9 @@ header h3, header h4 {
 .ntitle{
 	margin-left: 20px;
 	color: white;
-}
+	margin-top:20px;
+	
+	}
 .container {
   display: flex;
   width: 100%;
@@ -107,6 +109,7 @@ header h3, header h4 {
  height:auto;
  background-color: #5C4B85;
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+ margin-bottom: 20px;
 }
 .box3{
  width:415px;
