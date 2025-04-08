@@ -575,11 +575,6 @@ function selectBackground(fileName) {
         textarea.value = "";
     }
 }
-<<<<<<< HEAD
-
-	let backgroundDescriptions = {};
-=======
->>>>>>> branch 'main' of https://github.com/dtada11/2025_JspProject_dtada11.git
 	
 	function saveDescription() {
 	    const titleInput = document.getElementById("backgroundTitleInput");
