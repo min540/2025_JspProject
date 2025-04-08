@@ -1,7 +1,14 @@
 <!-- musicListAdd.jsp -->
+<%@page import="java.util.Vector"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page import="jspproject.UserBean" %>
+<%@ page import="jspproject.BgmBean" %>
+<%@ page import="jspproject.MplistBean" %>
+<%@ page import="jspproject.MplistMgrBean" %>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
 <%
-
+	
 %>
 <style>
 @font-face {
@@ -135,3 +142,6 @@
 	<button class="add-playlist-btn">추가</button>
 </div>
 
+<script>
+
+</script>
