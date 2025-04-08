@@ -160,7 +160,7 @@
     </div>
 
     <!-- 하단 텍스트 -->
-    <div class="bottom-text">이번 달 총 작업 시간 : 3000H</div>
+    <div class="bottom-text">이번 달 총 목표 완료 수 : 0개</div>
 </div>
 
 <script>
