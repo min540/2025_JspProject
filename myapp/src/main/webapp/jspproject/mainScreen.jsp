@@ -104,7 +104,6 @@
     <jsp:include page="musicList.jsp" />
 </div>
 
-
 <!-- JavaScript 함수 -->
 <script>
 	let uiVisible = true;
