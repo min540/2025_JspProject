@@ -1,41 +1,85 @@
 <!-- mainScreen.jsp -->
-<%@ page  contentType="text/html; charset=UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <link href="css/style.css?v=2" rel="stylesheet" type="text/css">
-<%@ page import="jspproject.UserBean" %>
-<jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<%@ page import="jspproject.UserBean"%>
+<jsp:useBean id="lmgr" class="jspproject.LoginMgr" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
+
 		String path = request.getContextPath();
 %>
 <!-- 프로필 아이콘 -->
 
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
+<img class="iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""
+	onclick="">
+<img class="iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt=""
+	onclick="toggleProfile()">
 
 <!-- 오른쪽 상단 아이콘들-->
 <div class="icon-container">
+<<<<<<< HEAD
+	<img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0"
+		alt="전체화면" onclick="toggleFullScreen()"> <img
+		class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0"
+		alt="공지사항 확인" onclick="toggleAnc()"> <img
+		class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0"
+		alt="배경화면 설정" onclick="toggleBackground()"> <img
+		class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0"
+		alt="다크모드로 변경"> <img class="iconRightUp uioff"
+		src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
+	<img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0"
+		alt="로그아웃">
+=======
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
     <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
     <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
     <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃" onclick="logout()">
+>>>>>>> branch 'main' of https://github.com/dtada11/2025_JspProject_dtada11.git
 </div>
 
 <!-- 음악 설정 쪽 아이콘-->
 <div class="iconMusic-container">
-	<span>
-		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	<span> <img id="mainPlayToggleBtn" class="iconMusic"
+		src="icon/아이콘_재생_1.png" border="0" alt="음악 재생">
 	</span>
 	<audio id="mainAudioPlayer" src="music/music1.mp3"></audio>
+<<<<<<< HEAD
+	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤">
+	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복">
+	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0"
+		alt="이전 음악 재생"> <img class="iconMusic"
+		src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생"> <img
+		class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거">
+=======
 	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
 	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
 	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
 	<img class="iconMusic" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > 
 	<img id="volumeMuteBtn" class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거">
+>>>>>>> branch 'main' of https://github.com/dtada11/2025_JspProject_dtada11.git
 </div>
 
 <!-- 음악 볼륨바 표시-->
+<<<<<<< HEAD
+<div class="iconMusicVolumbar-container">
+	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0"
+		alt="볼륨 조절1"> <img class="iconMusicVolum"
+		src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절2"> <img
+		class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0"
+		alt="볼륨 조절3"> <img class="iconMusicVolum"
+		src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절4"> <img
+		class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0"
+		alt="볼륨 조절5"> <img class="iconMusicVolum"
+		src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절6"> <img
+		class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0"
+		alt="볼륨 조절7"> <img class="iconMusicVolum"
+		src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절8"> <img
+		class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0"
+		alt="볼륨 조절9"> <img class="iconMusicVolum"
+		src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절10">
+=======
 <div class="iconMusicVolumbar-container" id="volumeBar">
     <% for (int i = 1; i <= 10; i++) { %>
         <img class="iconMusicVolum" 
@@ -44,61 +88,72 @@
              alt="볼륨 조절<%=i%>" 
              data-index="<%=i%>">
     <% } %>
+>>>>>>> branch 'main' of https://github.com/dtada11/2025_JspProject_dtada11.git
 </div>
 
 <!-- 노래 제목 표시-->
-<b class = "musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
+<b class="musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
 
 <!-- 오른쪽 하단 아이콘들 -->
-<div class = "icon-container2">
-	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
-	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
-	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
-	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
-	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
+<div class="icon-container2">
+	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0"
+		alt="음악 변경" onclick="toggleMusicList()"> <img
+		class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0"
+		alt="작업 목표 설정" onclick="toggleObjList()"> <img
+		class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기">
+	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0"
+		alt="통계 보기" onclick="toggleGraphView()"> <img
+		class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0"
+		alt="일지 설정" onclick="toggleJournalList()">
 </div>
 
 <!-- 일지 설정 영역 (처음엔 숨김) -->
-<div id="journalWrapper" style="display:none;">
-    <jsp:include page="journal.jsp" />
+<div id="journalWrapper" style="display: none;">
+	<jsp:include page="journal.jsp" />
 </div>
 
 <!-- 통계 설정 영역 (처음엔 숨김) -->
-<div id="GraphWrapper" style="display:none;">
-    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
-    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
-    <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
-    <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+<div id="GraphWrapper" style="display: none;">
+	<div id="graph-spark-week" style="display: none;"><jsp:include
+			page="objTotalGraphSpark.jsp" /></div>
+	<div id="graph-bar-week" style="display: none;"><jsp:include
+			page="objTotalGraphBar.jsp" /></div>
+	<div id="graph-spark-month" style="display: none;"><jsp:include
+			page="objTotalGraphSparkMonth.jsp" /></div>
+	<div id="graph-bar-month" style="display: none;"><jsp:include
+			page="objTotalGraphBarMonth.jsp" /></div>
 </div>
 
 <!-- 작업 목표 영역 -->
-<div id="objWrapper" style="display:none;">
-    <jsp:include page="Objective.jsp" />
+<div id="objWrapper" style="display: none;">
+	<jsp:include page="Objective.jsp" />
 </div>
 
 <!-- 새로운 리스트 추가 영역 -->
-<div id="listCardWrapper" style="display:none;">
-    <jsp:include page="List.jsp" />
+<div id="listCardWrapper" style="display: none;">
+	<jsp:include page="List.jsp" />
 </div>
 
 <!-- 배경 설정 영역 -->
-<div id="backgroundWrapper" style="display:none;">
-    <jsp:include page="Background.jsp" />
+<div id="backgroundWrapper" style="display: none;">
+	<jsp:include page="Background.jsp" />
 </div>
 
 <!-- 프로필 -->
-<div id="profileWrapper" style="display:none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
-    <jsp:include page="profile.jsp" />
+<div id="profileWrapper"
+	style="display: none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
+	<jsp:include page="profile.jsp" />
 </div>
 
 <!-- 공지사항 -->
-<div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
-    <jsp:include page="ancList.jsp" />
+<div id="ancWrapper"
+	style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
+	<jsp:include page="ancList.jsp" />
 </div>
 
 <!-- 음악 리스트 -->
-<div id="musicListWrapper" style="display:none;">
-    <jsp:include page="musicList.jsp" />
+<div id="musicListWrapper" style="display: none;">
+	<jsp:include page="musicList.jsp" />
 </div>
 
 <!-- JavaScript 함수 -->
@@ -194,6 +249,7 @@
         var objDiv = document.getElementById("objWrapper");
         objDiv.style.display = (objDiv.style.display === "none") ? "block" : "none";
     }
+	
 	
 	// 통계 관련 설정
 	// ✅ 전역 변수

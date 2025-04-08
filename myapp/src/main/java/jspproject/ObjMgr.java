@@ -1,8 +1,9 @@
-package jspproject;
+ package jspproject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 
@@ -24,7 +25,7 @@ public class ObjMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?, ?)";
+			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?, ?)";// 시작시간 추가시 now()가아니라 ?로 받을지 고려
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getUser_id());
 			pstmt.setString(2, bean.getObj_title());
@@ -38,6 +39,47 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	//insert+키(obj_id)값받아오는 매서드
+	public int insertObjAndReturnId(ObjBean bean) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    int obj_id = -1;
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "INSERT INTO obj (user_id, obj_title, obj_check, obj_regdate, obj_sdate, obj_edate, objgroup_id) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
+	        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        pstmt.setString(1, bean.getUser_id());
+	        pstmt.setString(2, bean.getObj_title());
+	        pstmt.setInt(3, bean.getObj_check());
+
+	        String edate = bean.getObj_edate();
+	        if (edate == null || edate.trim().isEmpty()) {
+	            pstmt.setNull(4, java.sql.Types.DATE);
+	        } else {
+	            pstmt.setString(4, edate);
+	        }
+
+	        pstmt.setInt(5, bean.getObjgroup_id());
+
+	        pstmt.executeUpdate();
+
+	        // 생성된 자동 키 받아오기
+	        rs = pstmt.getGeneratedKeys();
+	        if (rs.next()) {
+	            obj_id = rs.getInt(1); // 자동 생성된 obj_id
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return obj_id;
+	}
+
 	
 	//작업 목록 수정
 	public void updateObj(ObjBean bean) {
@@ -95,6 +137,37 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	// insert + 자동 생성된 objgroup_id 반환
+	public int insertObjGroupAndReturnId(ObjGroupBean bean) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    int objgroup_id = -1;
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "INSERT INTO objgroup (objgroup_name, user_id) VALUES (?, ?)";
+	        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        pstmt.setString(1, bean.getObjgroup_name());
+	        pstmt.setString(2, bean.getUser_id());
+	        pstmt.executeUpdate();
+
+	        // 생성된 자동 키 받아오기
+	        rs = pstmt.getGeneratedKeys();
+	        if (rs.next()) {
+	            objgroup_id = rs.getInt(1); // 자동 생성된 objgroup_id
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+
+	    return objgroup_id;
+	}
+
 	
 	//작업 목록 카테고리 수정
 	public void updateObjGroup(ObjGroupBean bean) {

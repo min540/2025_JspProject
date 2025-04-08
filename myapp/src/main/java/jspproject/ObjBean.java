@@ -66,11 +66,14 @@ public class ObjBean {
 	public void setObj_edate(String obj_edate) {
 		this.obj_edate = obj_edate;
 	}
+
 	public int getObjgroup_id() {
 		return objgroup_id;
 	}
+
 	public void setObjgroup_id(int objgroup_id) {
 		this.objgroup_id = objgroup_id;
 	}
-	
+
+
 }
