@@ -6,7 +6,7 @@
 
 <%
     // 로그인 세션 확인
-    String userId = (String) session.getAttribute("id");
+    String userId = (String) session.getAttribute("user_id");
     if (userId == null) {
         response.sendRedirect("login.jsp"); // 로그인 페이지로 리디렉트
         return;
