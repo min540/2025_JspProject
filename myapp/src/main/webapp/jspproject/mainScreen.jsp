@@ -32,21 +32,18 @@
 	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
 	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
 	<img class="iconMusic" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > 
-	<img class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거" > 
+	<img id="volumeMuteBtn" class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거">
 </div>
 
 <!-- 음악 볼륨바 표시-->
-<div class = "iconMusicVolumbar-container">
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절1" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절2" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절3" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절4" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절5" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절6" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절7" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절8" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절9" >
-	<img class="iconMusicVolum" src="icon/아이콘_볼륨바_2.png" border="0" alt="볼륨 조절10" >
+<div class="iconMusicVolumbar-container" id="volumeBar">
+    <% for (int i = 1; i <= 10; i++) { %>
+        <img class="iconMusicVolum" 
+             src="icon/아이콘_볼륨바_2.png" 
+             border="0" 
+             alt="볼륨 조절<%=i%>" 
+             data-index="<%=i%>">
+    <% } %>
 </div>
 
 <!-- 노래 제목 표시-->
@@ -552,6 +549,59 @@
 
 	                audio.pause();
 	            }
+	        });
+	    }
+	});
+	
+	// 볼륨 조절 관련 메소드
+	document.addEventListener("DOMContentLoaded", function () {
+	    const audio = document.getElementById('mainAudioPlayer');
+	    const volumeImages = document.querySelectorAll('.iconMusicVolum');
+	    const muteBtn = document.getElementById('volumeMuteBtn');
+	
+	    let isMuted = false;
+	    let lastVolumeLevel = 10; // 기본은 10 (100%)
+	    if (audio) audio.volume = 1.0;
+	
+	    // 볼륨 바 클릭 시
+	    volumeImages.forEach(img => {
+	        img.addEventListener('click', function () {
+	            const selectedLevel = parseInt(img.getAttribute('data-index'));
+	            lastVolumeLevel = selectedLevel;
+	            isMuted = false;
+	
+	            // 볼륨 조절
+	            if (audio) audio.volume = selectedLevel / 10;
+	
+	            // 아이콘 업데이트
+	            updateVolumeBar(selectedLevel);
+	            muteBtn.src = 'icon/아이콘_볼륨_1.png';
+	        });
+	    });
+	
+	    // 음소거 버튼 클릭 시
+	    muteBtn.addEventListener('click', function () {
+	        if (!isMuted) {
+	            // 🔇 음소거 모드
+	            isMuted = true;
+	            if (audio) audio.volume = 0;
+	            muteBtn.src = 'icon/아이콘_음소거_1.png';
+	            updateVolumeBar(0);
+	        } else {
+	            // 🔊 복원 모드
+	            isMuted = false;
+	            if (audio) audio.volume = lastVolumeLevel / 10;
+	            muteBtn.src = 'icon/아이콘_볼륨_1.png';
+	            updateVolumeBar(lastVolumeLevel);
+	        }
+	    });
+	
+	    // 볼륨바 아이콘 갱신 함수
+	    function updateVolumeBar(activeLevel) {
+	        volumeImages.forEach((bar, idx) => {
+	            bar.src = idx < activeLevel
+	                ? 'icon/아이콘_볼륨바_2.png'
+	                : 'icon/아이콘_볼륨바off_2.png';
 	        });
 	    }
 	});
