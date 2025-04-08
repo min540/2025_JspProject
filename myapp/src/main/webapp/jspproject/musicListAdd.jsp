@@ -8,7 +8,15 @@
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
 <%
-	
+String user_id = (String) session.getAttribute("id");
+if (user_id == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+
+
+Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
+Vector<MplistBean> mplist = bmgr.getMplist(user_id);
 %>
 <style>
 @font-face {
@@ -129,19 +137,62 @@
 
 </style>
 
-<div class="add-playlist-container">
-	<div class="add-playlist-title">재생 목록에 추가</div>
-	<div class="add-playlist-list">
-		<% for (int i = 1; i <= 5; i++) { %>
-			<label class="playlist-item">
-				<input type="checkbox" />
-				<span>재생 목록 <%= i %></span>
-			</label>
-		<% } %>
-	</div>
-	<button class="add-playlist-btn">추가</button>
-</div>
+<form id="playlistAssignForm" method="POST" action="<%= request.getContextPath() %>/jspproject/bgmAssignPlaylist">
+  <!-- bgm_id: 오른쪽 화면 곡 선택 시 세팅 -->
+  <input type="hidden" name="bgm_id" id="hiddenBgmId" value="">
+  
+  
+  <div class="add-playlist-container">
+    <div class="add-playlist-title">재생 목록에 추가</div>
+    <div class="add-playlist-list">
+      <% for (MplistBean m : mplist) { %>
+        <label class="playlist-item">
+          <input type="checkbox" name="mplist_id" value="<%=m.getMplist_id()%>"/>
+          <span><%=m.getMplist_name()%></span>
+        </label>
+      <% } %>
+    </div>
+    <!-- 버튼 type을 명시하여 기본 폼 제출을 방지 -->
+    <button type="button" class="add-playlist-btn">추가</button>
+  </div>
+</form>
 
 <script>
+document.querySelector('.add-playlist-btn').addEventListener('click', function(e){
+	  e.preventDefault(); // 폼 제출 방지
 
+	  const bgmId = document.getElementById('hiddenBgmId').value;
+	  const selectedMplistElem = document.querySelector('input[name="mplist_id"]:checked');
+	  const selectedMplistId = selectedMplistElem ? selectedMplistElem.value : null;
+
+	  if (!bgmId || bgmId === "null" || bgmId.trim() === "") {
+	    alert("노래가 선택되지 않았습니다.");
+	    return;
+	  }
+	  
+	  if (!selectedMplistId) {
+	    alert("재생목록을 선택해주세요.");
+	    return;
+	  }
+
+	  fetch("<%= request.getContextPath() %>/jspproject/bgmAssignPlaylist", {
+	    method: "POST",
+	    headers: {
+	      "Content-Type": "application/json"
+	    },
+	    body: JSON.stringify({
+	      bgm_id: Number(bgmId),
+	      mplist_id: Number(selectedMplistId)
+	    })
+	  })
+	  .then(res => res.json())
+	  .then(data => {
+	    if(data.success) {
+	      alert("재생 목록 업데이트 성공!");
+	    } else {
+	      alert("업데이트 실패: " + data.message);
+	    }
+	  })
+	  .catch(err => console.error(err));
+	});
 </script>
