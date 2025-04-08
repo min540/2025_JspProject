@@ -8,6 +8,7 @@
 	AncMgr amgr = new AncMgr();
 	Vector<AncBean> vlist = amgr.listAnc();
 	AncBean recent = amgr.viewAnc();
+
 	
 /* 	AncBean pbean = amgr.beforeImg(anc_id); */
 %>
@@ -152,6 +153,7 @@ input[type="checkbox"]:checked::after {
 	margin-top: 70px;
 	color: white;
 	font-weight: bold;
+	 line-height: 2;
 }
 .container-box {
   	display: flex;
@@ -164,11 +166,15 @@ input[type="checkbox"]:checked::after {
 }
 .newtext{
   	margin-left: 125px;
-  	margin-top: 5px;
   	color: white;
   	font-size: 10px;
+  	 line-height: 2;
 }
-ul {
+.newtext h4 {
+	margin: 0;
+  	padding: 0;
+}
+ ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -190,12 +196,14 @@ ul {
   justify-content: center;
   margin-top: 15px;
 }
-.pagination-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
+ a {
+  color: white;           
+  text-decoration: none;   
+} 
+a:hover {
+  color: #32225B;        
+  text-decoration: underline; /* 또는 none 유지 가능 */
 }
-
 </style>
 <script>
 function allChk() {
@@ -263,6 +271,7 @@ function confirmDelete() {
                 int currentPage = (pageStr != null && !pageStr.isEmpty()) ? Integer.parseInt(pageStr) : 1;
                 int perPage= 5;
 				Vector<AncBean> slist = amgr.listPageAnc(currentPage, perPage);
+				
 				for(int i=0; i<slist.size();i++){
 					AncBean bean = slist.get(i);
 				%>
@@ -295,10 +304,10 @@ function confirmDelete() {
                     <ul>
                         <% if(currentPage > 1) { %>
                         <li>
-                            <a href="anc.jsp?page=<%= currentPage - 1 %>"><</a>
+                            <a href="anc.jsp?page=<%= currentPage - 1 %>">◀</a>
                         </li>
                         <% } else { %>
-                        <li ><</li>
+                        <li >◀</li>
                         <% } %>
                         <% for(int j = pageStart; j <= pageEnd; j++) {
                                if(j == currentPage) { %>
@@ -313,10 +322,10 @@ function confirmDelete() {
                            } %>
                         <% if(currentPage < totalPage) { %>
                         <li >
-                            <a href="anc.jsp?page=<%= currentPage + 1 %>">></a>
+                            <a href="anc.jsp?page=<%= currentPage + 1 %>">▶</a>
                         </li>
                         <% } else { %>
-                        <li>></li>
+                        <li>▶</li>
                         <% } %>
 						</ul>
 						</div>
@@ -332,10 +341,20 @@ function confirmDelete() {
 			 <div class="divider"></div>	
 			 <div class="right-section">
 				<div style="display: flex; flex-direction: column; align-items: flex-start;">
-					
 					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
-					<div class=" newtext ">1차 업데이트</div>
-				
+				<%
+    				Vector<AncBean> hlist = amgr.getHighlightAncList();
+    				if (hlist != null && hlist.size() > 0) {
+        				for (int i = 0; i < hlist.size(); i++) {
+            					AncBean hbean = hlist.get(i);
+				%>
+            		<div class="newtext">
+                		<h4><a href="ancDetail.jsp?anc_id=<%=hbean.getAnc_id()%>"><%=hbean.getAnc_title()%></a></h4>
+            		</div>
+				<% }
+        		} else {%>
+					<div class="newtext">하이라이트 공지가 없습니다.</div>
+				<%}%>
 				</div>
 			 </div>
 			 </div>
