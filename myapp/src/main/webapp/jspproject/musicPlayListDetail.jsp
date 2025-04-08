@@ -644,16 +644,16 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 			<div class="music-right-buttons2">
 			    <button class="btn-purple" onclick="submitEditForm()">수정</button>
 			</div>
-			
+				<%} %>
+			<%} %>
 			<form id="mplistEditForm_detail" method="post" enctype="multipart/form-data" style="display:none;">
-				<input type="hidden" name="mplist_id" value="<%= m.getMplist_id() %>">
+				<input type="hidden" name="mplist_id" value="">
 				<input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
 				<input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
 				<input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="previewImage(event)">
 			</form>
 	</div>
-	<%} %>
-<%} %>
+	
 </div>
 
 <script>
