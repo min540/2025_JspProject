@@ -7,7 +7,7 @@
 
 <jsp:setProperty property="*" name="bean"/>
 <%
-String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
 if (user_id == null) {
 	//로그인안된 상태이기 때문에 현재의url가지고 login.jsp로 간다
 	StringBuffer url = request.getRequestURL();

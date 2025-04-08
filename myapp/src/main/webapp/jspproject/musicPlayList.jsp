@@ -8,7 +8,7 @@
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
 <%
-String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
 if (user_id == null) {
     response.sendRedirect("login.jsp");
     return;

@@ -5,7 +5,7 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-    String user_id = (String) session.getAttribute("id");
+    String user_id = (String) session.getAttribute("user_id");
 
     // 세션 없을 때 처리
     if (user_id == null) {

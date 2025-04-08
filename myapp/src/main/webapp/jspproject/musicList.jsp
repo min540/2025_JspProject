@@ -8,7 +8,7 @@
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
 <%
-String user_id = (String) session.getAttribute("id");
+String user_id = (String) session.getAttribute("user_id");
 if (user_id == null) {
     response.sendRedirect("login.jsp");
     return;

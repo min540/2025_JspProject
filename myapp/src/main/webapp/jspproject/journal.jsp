@@ -3,7 +3,7 @@
 <%@ page import="jspproject.JourBean" %>
 <jsp:useBean id="jmgr" class="jspproject.JourMgr"/>
 <%
-  String user_id = (String) session.getAttribute("id");
+  String user_id = (String) session.getAttribute("user_id");
   if (user_id == null) {
     response.sendRedirect("login.jsp");
     return;
