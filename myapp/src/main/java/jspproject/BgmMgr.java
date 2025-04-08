@@ -16,7 +16,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 public class BgmMgr {
 	private DBConnectionMgr pool;
 	// 세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
-	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 10 * 1024 * 1024;
 
