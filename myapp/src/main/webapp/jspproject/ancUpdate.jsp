@@ -129,10 +129,16 @@ header h3, header h4 {
   	position: relative;
   	
 }
+.Ititle1{
+	 color: white;
+	 margin-left: 90px;
+	 padding-top: 30px;
+	 }
 .Ititle{
 	 color: white;
 	 margin-left: 90px;
 	 padding-top: 30px;
+	 	 margin-top:0px;
 }
 .custom-upload-button {
   display: inline-block;
@@ -155,13 +161,14 @@ header h3, header h4 {
   color: white;
   padding: 12px 40px;              
   border: 1.5px solid white;
-  border-radius: 25px;             
+  border-radius: 10px;             
   font-size: 16px;
   font-weight: bold;
   text-align: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-left: 100px;
+  margin-top:30px;
   width: 400px;
 }
 
@@ -196,7 +203,7 @@ function showFileName(input) {
 		<div>
 	<form action="ancUpdateProc.jsp" method="post" enctype="multipart/form-data">
 	 <input type="hidden" name="anc_id" value="<%=bean.getAnc_id()%>">
-		<h2 class="Ititle" >제목</h2>
+		<h2 class="Ititle1" >제목</h2>
 			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2" value="<%=bean.getAnc_title()%>">
 		<div>
 		<h2 class="Ititle" >내용</h2>

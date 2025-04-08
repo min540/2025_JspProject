@@ -16,7 +16,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 public class BgmMgr {
 	private DBConnectionMgr pool;
 	// 세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
-	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 10 * 1024 * 1024;
 
@@ -587,7 +587,7 @@ public class BgmMgr {
 	}
 	
 	// 배경음악 재생 여부 토글
-	public void updateBgmOnoff(int bgm_id, int onoff) {
+	public void updateBgmOnoff(int bgm_id, int bgm_onoff) {
 	    Connection con = null;
 	    PreparedStatement pstmt = null;
 	    String sql = null;
@@ -595,7 +595,7 @@ public class BgmMgr {
 	        con = pool.getConnection();
 	        sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
 	        pstmt = con.prepareStatement(sql);
-	        pstmt.setInt(1, onoff);
+	        pstmt.setInt(1, bgm_onoff);
 	        pstmt.setInt(2, bgm_id);
 	        pstmt.executeUpdate();
 	    } catch (Exception e) {

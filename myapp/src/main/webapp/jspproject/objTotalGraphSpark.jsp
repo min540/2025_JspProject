@@ -71,7 +71,7 @@
 	
 	.graph-card {
 	    width: 95%;
-	    height: 95%;
+	    height: 93%;
 	    background-color: white;
 	    border-radius: 10px;
 	    padding: 20px;
@@ -157,7 +157,8 @@
     </div>
 
     <!-- 하단 텍스트 -->
-    <div class="bottom-text">이번 주 총 작업 시간 : 3000H</div>
+	<div id="bottomWeeklySummary" class="bottom-text">이번 주 총 목표 완료 수: 0개</div>
+
 </div>
 
 <script>
