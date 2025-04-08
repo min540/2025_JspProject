@@ -7,7 +7,7 @@
 <jsp:useBean id="amgr" class="jspproject.AncMgr"/>
 <%
 	//파일 업로드 처리
-	String path = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/upload";
+	String path = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/upload";
 	MultipartRequest multi = new MultipartRequest(
 		request, path, 30 * 1024 * 1024, "UTF-8" ,new DefaultFileRenamePolicy());
 	

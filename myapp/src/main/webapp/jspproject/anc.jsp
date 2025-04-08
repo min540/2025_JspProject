@@ -84,7 +84,9 @@ header h3, header h4 {
 .ntitle{
 	margin-left: 20px;
 	color: white;
-}
+	margin-top:20px;
+	
+	}
 .container {
   display: flex;
   width: 100%;
@@ -107,12 +109,17 @@ header h3, header h4 {
  height:auto;
  background-color: #5C4B85;
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+ margin-bottom: 20px;
 }
-.box3{
- width:415px;
- height:200px;
- background-color: #5C4B85;
- box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+.box3 {
+  width: 415px;
+  height: auto; /* 고정 높이 대신 자동 조정 */
+  min-height: 200px; /* 최소 높이 설정 */
+  background-color: #5C4B85;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  position: relative; /* 내부 요소 배치를 위한 기준점 */
+  padding-bottom: 50px; /* 하단 여백 추가 */
 }
 input[type="checkbox"] {
   appearance: none;      
@@ -194,7 +201,31 @@ input[type="checkbox"]:checked::after {
 .pagination-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  width: 100%;
+  position: absolute; /* 절대 위치 설정 */
+  bottom: 15px; /* 박스 하단에서 위치 */
+  left: 0;
+}
+.pagination-wrapper ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pagination-wrapper li {
+  background-color: #5c4b85;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 8px;
+  cursor: pointer;
 }
  a {
   color: white;           
