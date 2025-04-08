@@ -2,11 +2,13 @@
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
 		String path = request.getContextPath();
+
 %>
 <html>
 <head>
 <title>오늘, 내일</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
 body, html {
   	margin: 0;
@@ -41,7 +43,7 @@ body, html {
 	background-color: #4A3C6E;
 	border-radius: 10px;
 	width: 458px;
-	height: 548px;
+	height: 588px;
 	margin-top: 20px;/*세로*/
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -64,6 +66,7 @@ body, html {
 	display: block;
 	width: 400px;
 	height: 50px;
+	
     padding: 10px;
     margin: 18px auto;
     border-radius: 10px;
@@ -130,8 +133,8 @@ body, html {
     .then(res => res.json())
     .then(data => {
       if (data.status === "ok") {
-        // ✅ 절대 경로로 이동
-        window.location.href = contextPath + "/mainScreen.jsp";
+        //  절대 경로로 이동
+        window.location.href = contextPath + "/jspproject/mainScreen.jsp";
       } else {
         alert("구글 로그인에 실패했습니다.");
       }
@@ -154,6 +157,13 @@ body, html {
 			<div class="line"></div>
 			<h2 class= "login-box_text">어서와!</h2>
 			<form action="loginPost" method="post">
+			<%
+				String error = request.getParameter("error");
+				if("login_failed".equals(error)) { %>
+					 <div style="width: 400px; margin: 0 auto; color: #ffcccc; text-align: center; background-color: #7c3f58; padding: 10px; border-radius: 8px;">
+			            아이디 또는 비밀번호가 올바르지 않습니다.
+			        </div>
+				<%} %>
 			<input type="text"  name="user_id" placeholder="이메일" class="input-field">
 			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field">
 			<a href="register.jsp" class="signup-button">회원가입</a>

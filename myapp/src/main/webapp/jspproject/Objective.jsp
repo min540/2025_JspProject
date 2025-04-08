@@ -378,10 +378,45 @@
 
             taskList.appendChild(taskItem);
             renderTasksForCurrentList();
-
+            
+            //user_id 값 가져오기
+          <%--   <%
+            String userId = (String) session.getAttribute("user_id");
+    		if (userId == null) userId = "";
+			%> --%>
+		<%-- 	
+			const user_id = "<%= userId %>";
+		    sessionStorage.setItem("user_id", user_id); 
+		    
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
+            
+         // 🔁 서버에 insert 요청 보내기
+            const taskObj = {
+                user_id: sessionStorage.getItem("user_id") || "user01", // 로그인한 사용자 ID
+                obj_title: "",
+                obj_check: 0,
+                obj_edate: "", // 날짜 선택 전이므로 비워두기
+                objgroup_id: parseInt(localStorage.getItem("currentList"))
+            };
+
+            fetch("objInsertServlet", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(taskObj)
+            })
+            .then(res => res.json())
+            .then(data => {
+                // 응답받은 obj_id 저장
+                taskObj.obj_id = data.obj_id;
+                console.log("서버에 저장된 과제 ID:", taskObj.obj_id);
+
+                // 이후 수정 시 이 ID를 사용
+                taskItem.dataset.objId = taskObj.obj_id; // DOM에 저장해두기
+            });  --%>
 
             const checkbox = taskItem.querySelector('.task-check');
             checkbox.addEventListener('change', updateCompleteCount);
@@ -436,122 +471,108 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const listContainer = document.getElementById('listButtonContainer');
-            const storedLists = JSON.parse(localStorage.getItem("userLists") || "[]");
 
-            const maxVisible = 3;
-            const visibleLists = storedLists.slice(0, maxVisible);
-            const hiddenLists = storedLists.slice(maxVisible);
+            // 🔥 DB에서 리스트 불러오기
+            fetch("getObjGroupList.jsp")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        const defaultBtn = document.createElement('button');
+                        defaultBtn.className = 'obj-edit-btn';
+                        defaultBtn.textContent = '새로운 목록';
+                        defaultBtn.style.width = '370px';
+                        defaultBtn.style.marginRight = '10px';
+                        defaultBtn.style.padding = '10px 15px';
+                        defaultBtn.style.fontFamily = 'PFStarDust, sans-serif';
+                        listContainer.appendChild(defaultBtn);
+                    } else {
+                        // 버튼 생성
+                        const maxVisible = 3;
+                        const visible = data.slice(0, maxVisible);
+                        const hidden = data.slice(maxVisible);
 
-            listContainer.innerHTML = '';
+                        visible.forEach(group => {
+                            const btn = document.createElement('button');
+                            btn.className = 'obj-edit-btn';
+                            btn.textContent = group.objgroup_name;
 
-            // ✅ 리스트가 하나도 없을 경우 "새로운 목록" 기본 버튼만 표시
-            if (storedLists.length === 0) {
-                const defaultBtn = document.createElement('button');
-                defaultBtn.className = 'obj-edit-btn';
-                defaultBtn.textContent = '새로운 목록';
-                defaultBtn.style.width = '370px';
-                defaultBtn.style.marginRight = '10px';
-                defaultBtn.style.padding = '10px 15px';
-                defaultBtn.style.fontFamily = 'PFStarDust, sans-serif'
-                
-                listContainer.appendChild(defaultBtn);
-            } else {
-				//리스트가 있을 경우
-            	visibleLists.forEach(name => {
-            	    const btn = document.createElement('button');
-            	    btn.className = 'obj-edit-btn';
-            	    btn.textContent = name;
+                            btn.addEventListener('click', () => {
+                                localStorage.setItem("currentList", group.objgroup_id);
+                                localStorage.setItem("currentListName", group.objgroup_name);
+                                renderTasksForCurrentList(); // 과제 렌더링
+                            });
 
-            	    // 리스트 버튼 클릭시
-            	    btn.addEventListener('click', () => {
-            	        localStorage.setItem("currentList", name);        // 선택한 리스트 저장
-            	        renderTasksForCurrentList();                      // 해당 리스트 과제 보여주기
-            	    });
-
-            	    listContainer.appendChild(btn);
-            	});
-
-
-                if (hiddenLists.length > 0) {
-                    const dropdownBtn = document.createElement('button');
-                    dropdownBtn.className = 'obj-edit-btn';
-                    dropdownBtn.textContent = '...';
-
-                    const dropdownMenu = document.createElement('div');
-                    dropdownMenu.style.position = 'absolute';
-                    dropdownMenu.style.top = '-80px';
-                    dropdownMenu.style.left = '320px';
-                    dropdownMenu.style.backgroundColor = 'rgba(147, 102, 192, 0.2)';
-                    dropdownMenu.style.border = '1px solid white';
-                    dropdownMenu.style.borderRadius = '10px';
-                    dropdownMenu.style.padding = '10px';
-                    dropdownMenu.style.display = 'none';
-                    dropdownMenu.style.zIndex = '9999';
-
-                    hiddenLists.forEach(name => {
-                        const item = document.createElement('div');
-                        item.textContent = name;
-                        item.style.padding = '5px 10px';
-                        item.style.color = 'white';
-                        item.style.cursor = 'pointer';
-                        
-                        item.addEventListener('click', () => {
-                        	// 복사본 생성
-                            const updatedLists = [...storedLists]; 
-
-                            // 선택한 항목을 제거
-                            const index = updatedLists.indexOf(name);
-                            if (index !== -1) {
-                            	// 해당 항목 제거
-                                updatedLists.splice(index, 1); 
-                            }
-                            // 선택한 항목을 맨 앞에 삽입
-                            updatedLists.unshift(name);
-                            // localStorage에 저장
-                            localStorage.setItem("userLists", JSON.stringify(updatedLists));
-
-                            localStorage.setItem("currentList", name);
-
-                            
-                            dropdownMenu.style.display = 'none';
-                            location.reload();
+                            listContainer.appendChild(btn);
                         });
 
-                        
-                        dropdownMenu.appendChild(item);
+                        // ...버튼 및 드롭다운 처리
+                        if (hidden.length > 0) {
+                            const dropdownBtn = document.createElement('button');
+                            dropdownBtn.className = 'obj-edit-btn';
+                            dropdownBtn.textContent = '...';
+
+                            const dropdownMenu = document.createElement('div');
+                            dropdownMenu.style.position = 'absolute';
+                            dropdownMenu.style.top = '-80px';
+                            dropdownMenu.style.left = '320px';
+                            dropdownMenu.style.backgroundColor = 'rgba(147, 102, 192, 0.2)';
+                            dropdownMenu.style.border = '1px solid white';
+                            dropdownMenu.style.borderRadius = '10px';
+                            dropdownMenu.style.padding = '10px';
+                            dropdownMenu.style.display = 'none';
+                            dropdownMenu.style.zIndex = '9999';
+
+                            hidden.forEach(group => {
+                                const item = document.createElement('div');
+                                item.textContent = group.objgroup_name;
+                                item.style.padding = '5px 10px';
+                                item.style.color = 'white';
+                                item.style.cursor = 'pointer';
+
+                                item.addEventListener('click', () => {
+                                    localStorage.setItem("currentList", group.objgroup_id);
+                                    localStorage.setItem("currentListName", group.objgroup_name);
+                                    dropdownMenu.style.display = 'none';
+                                    renderTasksForCurrentList(); // 과제 렌더링
+                                });
+
+                                dropdownMenu.appendChild(item);
+                            });
+
+                            dropdownBtn.addEventListener('click', () => {
+                                dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+                            });
+
+                            listContainer.appendChild(dropdownBtn);
+                            listContainer.appendChild(dropdownMenu);
+                        }
+                    }
+
+                    // ✎ 편집 버튼
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'obj-edit-btn';
+                    editBtn.textContent = '✎';
+                    editBtn.addEventListener('click', () => {
+                        const rect = document.getElementById('cardWrapper').getBoundingClientRect();
+                        localStorage.setItem("cardLeft", Math.floor(rect.left));
+                        localStorage.setItem("cardTop", Math.floor(rect.top));
+                        document.getElementById("cardWrapper").style.display = "none";
+                        document.getElementById("listCardWrapper").style.display = "block";
                     });
+                    listContainer.appendChild(editBtn);
+                })
+                .catch(err => {
+                    console.error("❌ 리스트 불러오기 실패:", err);
+                });
 
-                    dropdownBtn.addEventListener('click', () => {
-                        dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
-                    });
-
-                    listContainer.appendChild(dropdownBtn);
-                    listContainer.appendChild(dropdownMenu);
-                }
-            }
-
-            // ✎ 연필 버튼은 항상 마지막에 붙이기
-            const editBtn = document.createElement('button');
-            editBtn.className = 'obj-edit-btn';
-            editBtn.textContent = '✎';
-            editBtn.addEventListener('click', () => {
-                const rect = document.getElementById('cardWrapper').getBoundingClientRect();
-                localStorage.setItem("cardLeft", Math.floor(rect.left));
-                localStorage.setItem("cardTop", Math.floor(rect.top));
-
-                // ✅ 현재 카드 숨기고 listCardWrapper 표시
-                document.getElementById("cardWrapper").style.display = "none";
-                document.getElementById("listCardWrapper").style.display = "block";
-            });
-            listContainer.appendChild(editBtn);
-
-            // 위치 복원
+            // 💾 위치 복원
             const savedLeft = localStorage.getItem("cardLeft") || "100";
             const savedTop = localStorage.getItem("cardTop") || "100";
             document.getElementById("cardWrapper").style.left = savedLeft + "px";
             document.getElementById("cardWrapper").style.top = savedTop + "px";
-            renderTasksForCurrentList();
+            renderTasksForCurrentList(); // ✅ 초기 렌더링
         });
+
 
         function renderTasksForCurrentList() {
             const currentList = localStorage.getItem("currentList");
@@ -617,9 +638,7 @@
             });
             
             updateCompleteCount();
-        }
-
-        
+        }      
     </script>
 
 </body>

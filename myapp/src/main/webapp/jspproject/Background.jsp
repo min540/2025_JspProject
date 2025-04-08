@@ -575,7 +575,7 @@ function selectBackground(fileName) {
         textarea.value = "";
     }
 }
-=======
+
 	let backgroundDescriptions = {};
 	
 	function saveDescription() {

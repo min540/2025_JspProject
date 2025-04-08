@@ -22,7 +22,7 @@ public class LoginPostServlet extends HttpServlet {
 
 					if (user != null) {
 					    request.getSession().setAttribute("user", user);                 // 기존 유지
-					    request.getSession().setAttribute("id", user.getUser_id());     // ✅ user_id 따로 저장 (추가)
+					    request.getSession().setAttribute("user_id", user.getUser_id());     // ✅ user_id 따로 저장 (추가)
 					    request.getSession().setAttribute("grade", user.getGrade()); 
 
 					    if (user.getGrade() == 2) {
@@ -39,6 +39,9 @@ public class LoginPostServlet extends HttpServlet {
 					    response.sendRedirect("login.jsp?error=login_failed");
 					    return;
 				}
+			}else {
+				response.sendRedirect("login.jsp?error=login_failed");
+			    return;
 			}
 		}
 	}
