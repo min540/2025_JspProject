@@ -587,7 +587,7 @@ public class BgmMgr {
 	}
 	
 	// 배경음악 재생 여부 토글
-	public void updateBgmOnoff(int bgm_id, int onoff) {
+	public void updateBgmOnoff(int bgm_id, int bgm_onoff) {
 	    Connection con = null;
 	    PreparedStatement pstmt = null;
 	    String sql = null;
@@ -595,7 +595,7 @@ public class BgmMgr {
 	        con = pool.getConnection();
 	        sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
 	        pstmt = con.prepareStatement(sql);
-	        pstmt.setInt(1, onoff);
+	        pstmt.setInt(1, bgm_onoff);
 	        pstmt.setInt(2, bgm_id);
 	        pstmt.executeUpdate();
 	    } catch (Exception e) {
