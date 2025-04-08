@@ -161,7 +161,6 @@ public class ObjMgr {
 		Vector<ObjBean> vlist = new Vector<ObjBean>();
 		try {
 			con = pool.getConnection();
-			sql = "SELECT * FROM obj WHERE user_id = ? ORDER BY obj_id DESC";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			rs = pstmt.executeQuery();
