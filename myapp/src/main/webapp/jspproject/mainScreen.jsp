@@ -275,7 +275,10 @@
 	                        datasets: [{
 	                            label: '요일별 목표 완료 수',
 	                            data: goalValues,
-	                            backgroundColor: '#4caf50',
+	                            backgroundColor: [
+	                                '#ff4d4d', '#ff9933', '#ffff66',
+	                                '#66cc66', '#3399ff', '#3366cc', '#9933ff'
+	                            ],
 	                            borderRadius: 8
 	                        }]
 	                    },
@@ -305,7 +308,10 @@
 	                        datasets: [{
 	                            label: '요일별 일지 작성 수',
 	                            data: journalValues,
-	                            backgroundColor: '#9966ff',
+	                            backgroundColor: [
+	                                '#ff4d4d', '#ff9933', '#ffff66',
+	                                '#66cc66', '#3399ff', '#3366cc', '#9933ff'
+	                            ],
 	                            borderRadius: 8
 	                        }]
 	                    },
@@ -358,7 +364,10 @@
 	                        datasets: [{
 	                            label: '월간 목표 완료 수',
 	                            data: goalValues,
-	                            backgroundColor: '#4caf50',
+	                            backgroundColor: [
+		                            '#ff4d4d', '#ff9933', '#ffff66',
+		                            '#66cc66', '#3399ff', '#3366cc'
+		                        ],
 	                            borderRadius: 8
 	                        }]
 	                    },
@@ -385,7 +394,10 @@
 	                        datasets: [{
 	                            label: '월간 일지 작성 수',
 	                            data: journalValues,
-	                            backgroundColor: '#9966ff',
+	                            backgroundColor: [
+		                            '#ff4d4d', '#ff9933', '#ffff66',
+		                            '#66cc66', '#3399ff', '#3366cc'
+		                        ],
 	                            borderRadius: 8
 	                        }]
 	                    },

@@ -112,8 +112,8 @@
 	}
 	
 	.graph-card2 {
-	    width: 95%;
-	    height: 95%;
+	    width: 98%;
+	    height: 98%;
 	    border-radius: 10px;
 	    padding: 10px; /* ✅ 패딩 줄이기 */
 	    box-sizing: border-box;
