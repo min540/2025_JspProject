@@ -1,276 +1,272 @@
- body {
-            font-family: Arial, sans-serif;
-            color: #ffffff;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-		  .container {
-		  position: fixed; 
-		  top: 50%;
-		  left: 50%;
-		  transform: translate(-50%, -54%);
-		  width: 1100px;
-		  height: 716px;
-		  display: flex;
-		  gap: 6px;
-		  border-radius: 10px;
-		  background: rgba(47, 9, 84, 0.4);
-		  box-shadow: 0 0 20px rgba(255,255,255,0.4);
-		}
-
-
-		.sidebar {
-		  width: 298px;
-		  display: flex;
-		  flex-direction: column;
-		  justify-content: space-between; /* ✅ 하단 버튼 고정 */
-		  background-color: rgba(29, 16, 45, 0.35);
-		  border: 3px solid rgba(255, 255, 255, 0.8);
-		  padding: 20px;
-		  border-radius: 12px;
-		  overflow: hidden;
-		}
-		
-		.top-section {
-		  flex-grow: 1;
-		  display: flex;
-		  flex-direction: column;
-		  overflow: hidden;
-		}
-		
-		.diary-list::-webkit-scrollbar {
-		  width: 8px; /* 스크롤 너비 */
-		}
-		
-		.diary-list::-webkit-scrollbar-track {
-		  background: transparent;
-		}
-		
-		.diary-list::-webkit-scrollbar-thumb {
-		  background-color: #663399;  /* ✅ 보라색 */
-		  border-radius: 4px;
-		}
-		
-		.diary-list::-webkit-scrollbar-thumb:hover {
-		  background-color: #8A2BE2;  /* 마우스 오버 시 더 밝은 보라색 */
-		}
-
-
-	.content {
-	  flex-grow: 1;
-	  border: 3px solid rgba(255, 255, 255, 0.8);
-  	  background: rgba(47, 9, 84, 0.25);
-	  padding: 20px;
-	  border-radius: 12px;  /* ✅ 전체 둥글게 */
-	  display: flex;
-	  flex-direction: column;
-	}
-
-    .button {
-       width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  background: #230B3D;
-  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-    }
-
-    .diary-list {
-      flex-grow: 1;
-      overflow-y: auto;
-      margin-top: 10px;
-    }
-
-    .placeholder {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.6);
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    .entry {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .entry input[type="checkbox"] {
-      accent-color: #8A2BE2; /* 체크박스 선택된 색 */
-  	margin-right: 10px;
-    }
-    
-    #select-all {
-  accent-color: #8A2BE2;
+body {
+	font-family: Arial, sans-serif;
+	color: #ffffff;
+	margin: 0;
+	display: flex;
+	height: 100vh;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
 }
 
-    .entry .title {
-      color: white;
-      font-weight: bold;
-      flex-grow: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
+.container {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -54%);
+	width: 1100px;
+	height: 716px;
+	display: flex;
+	gap: 6px;
+	border-radius: 10px;
+	background: rgba(47, 9, 84, 0.4);
+	box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
 
-    .entry .date {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-left: 8px;
-    }
+.sidebar {
+	width: 298px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between; /* ✅ 하단 버튼 고정 */
+	background-color: rgba(29, 16, 45, 0.35);
+	border: 3px solid rgba(255, 255, 255, 0.8);
+	padding: 20px;
+	border-radius: 12px;
+	overflow: hidden;
+}
 
-    .delete-button {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  background: #230B3D;
-  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+.top-section {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.diary-list::-webkit-scrollbar {
+	width: 8px; /* 스크롤 너비 */
+}
+
+.diary-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.diary-list::-webkit-scrollbar-thumb {
+	background-color: #663399; /* ✅ 보라색 */
+	border-radius: 4px;
+}
+
+.diary-list::-webkit-scrollbar-thumb:hover {
+	background-color: #8A2BE2; /* 마우스 오버 시 더 밝은 보라색 */
+}
+
+.content {
+	flex-grow: 1;
+	border: 3px solid rgba(255, 255, 255, 0.8);
+	background: rgba(47, 9, 84, 0.25);
+	padding: 20px;
+	border-radius: 12px; /* ✅ 전체 둥글게 */
+	display: flex;
+	flex-direction: column;
+}
+
+.button {
+	width: 100%;
+	padding: 12px;
+	margin-bottom: 15px;
+	background: #230B3D;
+	border: 3px solid rgba(255, 255, 255, 0.8); /* ✅ 흰색 테두리 */
+	border-radius: 8px;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.diary-list {
+	flex-grow: 1;
+	overflow-y: auto;
+	margin-top: 10px;
+}
+
+.placeholder {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.6);
+	padding: 10px;
+	font-size: 14px;
+}
+
+.entry {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+	background: rgba(255, 255, 255, 0.1);
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	padding: 10px;
+	border-radius: 6px;
+	margin-bottom: 8px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.entry input[type="checkbox"] {
+	accent-color: #8A2BE2; /* 체크박스 선택된 색 */
+	margin-right: 10px;
+}
+
+#select-all {
+	accent-color: #8A2BE2;
+}
+
+.entry .title {
+	color: white;
+	font-weight: bold;
+	flex-grow: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.entry .date {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.7);
+	margin-left: 8px;
+}
+
+.delete-button {
+	width: 100%;
+	padding: 12px;
+	margin-bottom: 15px;
+	background: #230B3D;
+	border: 3px solid rgba(255, 255, 255, 0.8); /* ✅ 흰색 테두리 */
+	border-radius: 8px;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-right: 10px;
-  gap: 10px;
-  position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+	padding-right: 10px;
+	gap: 10px;
+	position: relative;
 }
 
-		.title-input {
-	  flex: 1; /* 전체 너비 대신 남는 공간만 차지하게 */
-	  padding: 10px 5px;
-	  font-size: 16px;
-	  border: none;
-	  border-bottom: 1px solid white;
-	  border-radius: 0;
-	  background: transparent;
-	  color: white;
-	  outline: none;
-	  min-width: 0;
-	   width: calc(100% - 100px);
-	}
-
+.title-input {
+	flex: 1; /* 전체 너비 대신 남는 공간만 차지하게 */
+	padding: 10px 5px;
+	font-size: 16px;
+	border: none;
+	border-bottom: 1px solid white;
+	border-radius: 0;
+	background: transparent;
+	color: white;
+	outline: none;
+	min-width: 0;
+	width: calc(100% - 100px);
+}
 
 .title-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+	color: rgba(255, 255, 255, 0.7);
 }
-
 
 .diary-icon-container {
-  position: static;
-  top: 5px;      
-  right: 100px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+	position: static;
+	top: 5px;
+	right: 100px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
-	.diary-icon {
-	  width: 30px;
-	  height: 30px;
-	  cursor: pointer;
-	  filter: brightness(0) invert(1); /* 밝게 */
-	  position: relative; /* 꼭 붙이자 */
-	}
+.diary-icon {
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	filter: brightness(0) invert(1); /* 밝게 */
+	position: relative; /* 꼭 붙이자 */
+}
 
-
-  .input-field {
-  flex-grow: 1;
-  width: 95%;
-  height: 300px; /* ✅ 원하는 고정 높이 설정 */
-  padding: 16px;
-  font-size: 15px;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  color: white;
-  outline: none;
-  margin-top: 10px;
-  resize: none; /* ✅ 크기 조절 막기 */
+.input-field {
+	flex-grow: 1;
+	width: 95%;
+	height: 300px; /* ✅ 원하는 고정 높이 설정 */
+	padding: 16px;
+	font-size: 15px;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	color: white;
+	outline: none;
+	margin-top: 10px;
+	resize: none; /* ✅ 크기 조절 막기 */
 }
 
 .input-field::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+	color: rgba(255, 255, 255, 0.6);
 }
 
- .edit-btn {
-    position: absolute;
-    bottom: 30px;
-    right: 40px;
-    padding: 10px 20px;
-    background: #230B3D;
-    color: white;
-    border: 2px solid white;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 9999;
-  }
+.edit-btn {
+	position: absolute;
+	bottom: 30px;
+	right: 40px;
+	padding: 10px 20px;
+	background: #230B3D;
+	color: white;
+	border: 2px solid white;
+	border-radius: 6px;
+	cursor: pointer;
+	z-index: 9999;
+}
 
-  /*콘텐츠 안에서 위치 */
-  .content {
-    position: relative;
-  }
+/*콘텐츠 안에서 위치 */
+.content {
+	position: relative;
+}
 
+/* 모달 스타일 */
+#deleteModal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
 
-    /* 모달 스타일 */
-    #deleteModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+#deleteModal .modal-box {
+	background: white;
+	padding: 30px;
+	border-radius: 10px;
+	width: 350px;
+	text-align: center;
+	color: black;
+}
 
-    #deleteModal .modal-box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 350px;
-      text-align: center;
-      color: black;
-    }
+#deleteModal img {
+	width: 40px;
+	height: 40px;
+	margin-bottom: 15px;
+}
 
-    #deleteModal img {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 15px;
-    }
+#deleteModal button {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
 
-    #deleteModal button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+#deleteModal .cancel {
+	background: #ccc;
+}
 
-    #deleteModal .cancel {
-      background: #ccc;
-    }
-
-    #deleteModal .confirm {
-      background: #d33;
-      color: white;
-    }
+#deleteModal .confirm {
+	background: #d33;
+	color: white;
+}
