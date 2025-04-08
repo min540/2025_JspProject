@@ -220,7 +220,7 @@ a:hover {
 			
       			<%=pbean.getAnc_title()%>
     		</div>
-			<a href="ancDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
+			<a href="userAncDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
 			<img src="<%= request.getContextPath() %>/jspproject/upload/<%= pbean.getAnc_img() %>" width="130" height="130"></img>
 			</a>
 			

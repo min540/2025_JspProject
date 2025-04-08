@@ -636,20 +636,20 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	        	for (MplistBean m : mplist) {
 	        %>
 	        <img id="mplistImg" class="musicImg2" src="img/<%= m.getMplist_img() %>" alt="음악 이미지" onclick="document.getElementById('mplistImgInput').click()" />
-			<h2 id="mplistName" contenteditable="true"><%= m.getMplist_name() %></h2>
+			<h2 id="mplistName_detail" contenteditable="true"><%= m.getMplist_name() %></h2>
 			<div class="music-description3">
-				 <div id="mplistCnt" contenteditable="true"><%= m.getMplist_cnt() %></div>
+				 <div id="mplistCnt_detail" contenteditable="true"><%= m.getMplist_cnt() %></div>
 			</div>
 	        	
 			<div class="music-right-buttons2">
 			    <button class="btn-purple" onclick="submitEditForm()">수정</button>
 			</div>
 			
-			<form id="mplistEditForm" method="post" enctype="multipart/form-data" style="display:none;">
+			<form id="mplistEditForm_detail" method="post" enctype="multipart/form-data" style="display:none;">
 				<input type="hidden" name="mplist_id" value="<%= m.getMplist_id() %>">
-				<input type="hidden" name="mplist_name" id="hiddenMplistName">
-				<input type="hidden" name="mplist_cnt" id="hiddenMplistCnt">
-				<input type="file" name="mplist_img" id="mplistImgInput" onchange="previewImage(event)">
+				<input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
+				<input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
+				<input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="previewImage(event)">
 			</form>
 	</div>
 	<%} %>
@@ -744,13 +744,13 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	}
 
 	function submitEditForm() {
-	    const name = document.getElementById('mplistName').innerText.trim();
-	    const cnt = document.getElementById('mplistCnt').innerText.trim();
+	    const name = document.getElementById('mplistName_detail').innerText.trim();
+	    const cnt = document.getElementById('mplistCnt_detail').innerText.trim();
 
-	    document.getElementById('hiddenMplistName').value = name;
-	    document.getElementById('hiddenMplistCnt').value = cnt;
+	    document.getElementById('hiddenMplistName_detail').value = name;
+	    document.getElementById('hiddenMplistCnt_detail').value = cnt;
 
-	    document.getElementById('mplistEditForm').submit();
+	    document.getElementById('mplistEditForm_detail').submit();
 	}
 	
 </script>

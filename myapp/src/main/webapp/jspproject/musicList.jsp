@@ -459,7 +459,9 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 		             data-bgm-id="<%=b.getBgm_id()%>"
 		             data-bgm-name="<%=b.getBgm_name()%>"
 		             data-bgm-cnt="<%=b.getBgm_cnt()%>"
-		             data-bgm-image="img/<%=b.getBgm_image()%>">
+		             data-bgm-image="img/<%=b.getBgm_image()%>"
+		             data-bgm-music="<%= b.getBgm_music() %>"
+		             data-bgm-onoff="<%= b.getBgm_onoff() %>">
 		            <input type="checkbox" name="bgm_id" value="<%=b.getBgm_id()%>"/>
 		            <span><%=b.getBgm_name()%></span>
 		            <img class="iconPlusPlay" src="icon/아이콘_플레이리스트추가_1.png" alt="추가">
@@ -492,9 +494,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
         <div class="music-controls">
 		    <span><img class="iconMusic2" src="icon/아이콘_이전음악_1.png" alt="이전"></span>
 		    <span>
-		      <img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" data-state="paused" alt="재생">
+		    	<audio id="playAudioPlayer">
+		    		<source src="<%= request.getContextPath() %>/jspproject/music/" type="audio/mpeg">
+		    	</audio>
+		      	<img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" data-state="paused" alt="재생">
 		    </span>
-		    <audio id="playAudioPlayer" src=""></audio>
 		    <span><img class="iconMusic2" src="icon/아이콘_다음음악_1.png" alt="다음"></span>
 		  </div>
 
@@ -669,13 +673,32 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 		reader.readAsDataURL(event.target.files[0]);
 	}
 	
-	function showBgmDetail(bgmId, bgmName, bgmCnt, bgmImgPath) {
+	function showBgmDetail(bgmId, bgmName, bgmCnt, bgmImgPath, bgmMusic, bgmOnoff) {
+		// 오른쪽 앨범이미지, 이름, 재생횟수 등 표시
 		document.getElementById("bgmImg").src = bgmImgPath || "img/default.png";
 		document.getElementById("bgmName").innerText = bgmName || "제목 없음";
 		document.getElementById("bgmCnt").innerText = bgmCnt || "0";
+		// hidden 필드에도 저장 (수정 기능 등을 위해)
 		document.getElementById("hiddenBgmId").value = bgmId;
 		document.getElementById("hiddenBgmName").value = bgmName;
 		document.getElementById("hiddenBgmCnt").value = bgmCnt;
+		
+		// 오디오 파일 경로를 세팅
+	    const audioPlayer = document.getElementById("playAudioPlayer");
+	    // 필요하면 서버 업로드 경로 포함, 예: "/upload/music/" + bgmMusic
+	    audioPlayer.src = "<%= request.getContextPath() %>/jspproject/music/" + bgmMusic; 
+	    
+	    // bgm_onoff에 따라 버튼 아이콘 초기 상태 결정
+	    const playBtn = document.getElementById('playToggleBtn');
+	    if (Number(bgmOnoff) === 1) {
+	      // DB에서 1이면 재생 상태
+	      playBtn.src = "icon/아이콘_일시정지_1.png";
+	      playBtn.setAttribute('data-state', 'playing');
+	    } else {
+	      // DB에서 0이면 정지 상태
+	      playBtn.src = "icon/아이콘_재생_1.png";
+	      playBtn.setAttribute('data-state', 'paused');
+	    }
 	}
 
 	function submitBgmEdit() {
@@ -739,25 +762,29 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 
 	// 체크박스 선택 시 음악 정보 표시
 	function setupCheckboxListeners() {
-	    const checkboxes = document.querySelectorAll('.music-list-item input[type="checkbox"]');
-	    checkboxes.forEach(checkbox => {
-	        checkbox.addEventListener('change', function (e) {
-	            const parent = e.target.closest('.music-list-item');
-	            const span = parent.querySelector('span');
-	            const bgmId = parent.getAttribute("data-bgm-id");
-	            const bgmName = parent.getAttribute("data-bgm-name");
-	            const bgmCnt = parent.getAttribute("data-bgm-cnt"); // ✅ 여기서 가져오기
-	            const bgmImage = parent.getAttribute("data-bgm-image");
+	  const checkboxes = document.querySelectorAll('.music-list-item input[type="checkbox"]');
+	  checkboxes.forEach(checkbox => {
+	    checkbox.addEventListener('change', function (e) {
+	      const parent = e.target.closest('.music-list-item');
+	      const bgmId = parent.getAttribute("data-bgm-id");
+	      const bgmName = parent.getAttribute("data-bgm-name");
+	      const bgmCnt = parent.getAttribute("data-bgm-cnt");
+	      const bgmImage = parent.getAttribute("data-bgm-image");
+	      const bgmMusic = parent.getAttribute("data-bgm-music");
+	      const bgmOnoff = parent.getAttribute("data-bgm-onoff");
 	
-	            if (e.target.checked) {
-	                showBgmDetail(bgmId, bgmName, bgmCnt, bgmImage);
-	            } else {
-	                document.getElementById('bgmName').innerText = '선택된 음악 없음';
-	                document.getElementById('bgmCnt').innerText = '0';
-	                document.getElementById('bgmImg').src = 'img/default.png';
-	            }
-	        });
+	      if (this.checked) {
+	        // 체크되었다면 상세정보 표시
+	        showBgmDetail(bgmId, bgmName, bgmCnt, bgmImage, bgmMusic, bgmOnoff);
+	      } else {
+	        // 체크 해제 시, 기본값으로 리셋
+	        document.getElementById('bgmName').innerText = '선택된 음악 없음';
+	        document.getElementById('bgmCnt').innerText = '0';
+	        document.getElementById('bgmImg').src = 'img/default.png';
+	        // 필요하면 audio 중단 등 처리
+	      }
 	    });
+	  });
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -806,5 +833,72 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	        });
 	    });
 	});
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		  const playBtn = document.getElementById('playToggleBtn');
+		  const audio = document.getElementById('playAudioPlayer');
+
+		  playBtn.addEventListener('click', function () {
+		    // 현재 버튼 상태
+		    const currentState = playBtn.getAttribute('data-state');
+		    
+		    // 오른쪽에 선택된 bgm_id (hidden 필드 등에서 가져옴)
+		    const bgmId = document.getElementById("hiddenBgmId").value;
+		    if (!bgmId) {
+		      alert("음악이 선택되지 않았습니다.");
+		      return;
+		    }
+
+		    // ★ 0 또는 1을 결정
+		    let newOnoff;
+		    if (currentState === 'paused') {
+		      // [paused -> playing]으로 전환 
+		      newOnoff = 1;
+		    } else {
+		      // [playing -> paused]로 전환
+		      newOnoff = 0;
+		    }
+
+		    // 서버 측 Servlet(bgmOnOff)으로 POST 전송
+		    fetch("<%=request.getContextPath()%>/jspproject/bgmOnOff", {
+		      method: "POST",
+		      headers: { "Content-Type": "application/json" },
+		      body: JSON.stringify({
+		        bgm_id: parseInt(bgmId, 10),
+		        bgm_onoff: newOnoff
+		      })
+		    })
+		    .then(res => res.json())
+		    .then(data => {
+		      if (data.success) {
+		        // DB 업데이트 성공 시, 실제 오디오를 재생/정지
+		        if (newOnoff === 1) {
+		          // 재생
+		          audio.play();
+		          // 아이콘 교체
+		          playBtn.src = 'icon/아이콘_일시정지_1.png';
+		          playBtn.alt = '일시정지';
+		          playBtn.setAttribute('data-state', 'playing');
+		        } else {
+		          // 일시정지
+		          audio.pause();
+		          // 원하는 경우 재생 위치를 0으로 (즉, 처음부터)
+		          audio.currentTime = 0; 
+		          
+		          // 아이콘 교체
+		          playBtn.src = 'icon/아이콘_재생_1.png';
+		          playBtn.alt = '재생';
+		          playBtn.setAttribute('data-state', 'paused');
+		        }
+		      } else {
+		        alert("배경음악 재생 여부 변경에 실패했습니다. 다시 시도해주세요.");
+		      }
+		    })
+		    .catch(err => {
+		      console.error(err);
+		      alert("서버와 통신 중 오류가 발생했습니다.");
+		    });
+		  });
+		});
 	
 </script>
