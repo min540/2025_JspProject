@@ -88,7 +88,6 @@
 	    width: 100%; /* ✅ 살짝 줄여서 gap과 함께 넓게 배치 */
 	    height: 100%;
 	    display: flex;
-	    padding: 10px;
 	    flex-direction: column;
 	    align-items: center;
 	    justify-content: center;
@@ -99,7 +98,7 @@
 	.graph-box canvas {
 	    width: 100% !important;
 	    height: auto !important; /* ✅ 높이 제한 해제 */
-	    aspect-ratio: 4 / 3;      /* ✅ 비율로 조정해서 반응형 유지 */
+	    aspect-ratio: 3 / 2;      /* ✅ 비율로 조정해서 반응형 유지 */
 	}
 	
 	.graph-label {
@@ -112,8 +111,8 @@
 	}
 	
 	.graph-card2 {
-	    width: 95%;
-	    height: 95%;
+	    width: 100%;
+	    height: 100%;
 	    border-radius: 10px;
 	    padding: 10px; /* ✅ 패딩 줄이기 */
 	    box-sizing: border-box;
@@ -203,8 +202,8 @@
     </div>
 
     <!-- 하단 텍스트 -->
-    <div class="bottom-text">이번 주 총 작업 시간 : 3000H</div>
-    <div class="bottom-text">작성한 일지 수 : 3000개</div>
+    <div class="bottom-text">이번 달 총 목표 완료 수 : 0개</div>
+    <div class="bottom-text">이번 주 작성한 일지 수 : 0개</div>
 </div>
 
 <script>

@@ -1,272 +1,286 @@
-body {
-	font-family: Arial, sans-serif;
-	color: #ffffff;
-	margin: 0;
-	display: flex;
-	height: 100vh;
-	justify-content: center;
-	align-items: center;
-	overflow: hidden;
+ body {
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+		  .container {
+		  position: fixed; 
+		  top: 50%;
+		  left: 50%;
+		  transform: translate(-50%, -54%);
+		  width: 1100px;
+		  height: 716px;
+		  display: flex;
+		  gap: 6px;
+		  border-radius: 10px;
+		  background: rgba(47, 9, 84, 0.4);
+		  box-shadow: 0 0 20px rgba(255,255,255,0.4);
+		}
+
+
+		.sidebar {
+		  width: 298px;
+		  display: flex;
+		  flex-direction: column;
+		  justify-content: space-between; /* ✅ 하단 버튼 고정 */
+		  background-color: rgba(29, 16, 45, 0.35);
+		  border: 3px solid rgba(255, 255, 255, 0.8);
+		  padding: 20px;
+		  border-radius: 12px;
+		  overflow: hidden;
+		}
+		
+		.top-section {
+		  flex-grow: 1;
+		  display: flex;
+		  flex-direction: column;
+		  overflow: hidden;
+		}
+		
+		.diary-list::-webkit-scrollbar {
+		  width: 10px; /* 스크롤 너비 */
+		}
+		
+		.diary-list::-webkit-scrollbar-track {
+		  background: transparent;
+		}
+		
+		.diary-list::-webkit-scrollbar-thumb {
+		  background-color: white;  /* 스크롤바 색상 */
+		  border-radius: 10px;
+		  border: 2px solid transparent;
+		  background-clip: content-box; /* 부드러운 느낌 */
+		}
+		
+		.diary-list::-webkit-scrollbar-button {
+		    display: none; /* 🔥 위아래 화살표 제거 */
+		}
+
+	.content {
+	  flex-grow: 1;
+	  border: 3px solid rgba(255, 255, 255, 0.8);
+  	  background: rgba(47, 9, 84, 0.25);
+	  padding: 20px;
+	  border-radius: 12px;  /* ✅ 전체 둥글게 */
+	  display: flex;
+	  flex-direction: column;
+	}
+
+    .button {
+	  width: 100%;
+	  padding: 12px;
+	  margin-bottom: 5px;
+	  background: #230B3D;
+	  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
+	  border-radius: 8px;
+	  color: white;
+	  font-weight: bold;
+	  cursor: pointer;
+    }
+
+    .diary-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .placeholder {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .entry {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .entry input[type="checkbox"] {
+      accent-color: #8A2BE2; /* 체크박스 선택된 색 */
+  	margin-right: 10px;
+    }
+    
+    #select-all {
+  accent-color: #8A2BE2;
 }
 
-.container {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -54%);
-	width: 1100px;
-	height: 716px;
-	display: flex;
-	gap: 6px;
-	border-radius: 10px;
-	background: rgba(47, 9, 84, 0.4);
-	box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+	.select-all-container {
+	  display: flex;
+	  align-items: center;
+	  gap: 6px; /* ✅ 텍스트와 간격 */
+	  margin-top: 6px;
+	  margin-bottom: 10px; /* ✅ 아래 간격 */
+	}
+
+    .entry .title {
+      color: white;
+      font-weight: bold;
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .entry .date {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 8px;
+    }
+
+    .delete-button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 5px;
+  background: #230B3D;
+  border: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.sidebar {
-	width: 298px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between; /* ✅ 하단 버튼 고정 */
-	background-color: rgba(29, 16, 45, 0.35);
-	border: 3px solid rgba(255, 255, 255, 0.8);
-	padding: 20px;
-	border-radius: 12px;
-	overflow: hidden;
-}
+	.header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  margin-top:5px;
+	  margin-bottom: 15px;
+	  gap: 10px;
+	  padding:5px;
+	  border-bottom: 3px solid rgba(255, 255, 255, 0.8);  /* ✅ 흰색 테두리 */
+	}
 
-.top-section {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-}
+	/* 다이어리 제목 input만 별도 스타일 적용 (우선순위 높이기 위해 더 구체적 선택자 사용) */
+	.header input.title-input1 {
+	    flex-grow: 1;
+	    padding: 10px;
+	    font-size: 16px;
+	    border: none;
+	    border-radius: 6px;
+	    background: transparent;
+	    color: white;
+	    outline: none;
+	    height: 40px;
+	    box-sizing: border-box;
+	}
 
-.diary-list::-webkit-scrollbar {
-	width: 8px; /* 스크롤 너비 */
-}
 
-.diary-list::-webkit-scrollbar-track {
-	background: transparent;
-}
 
-.diary-list::-webkit-scrollbar-thumb {
-	background-color: #663399; /* ✅ 보라색 */
-	border-radius: 4px;
-}
+	.title-input::placeholder {
+	  color: rgba(255, 255, 255, 0.7);
+	}
 
-.diary-list::-webkit-scrollbar-thumb:hover {
-	background-color: #8A2BE2; /* 마우스 오버 시 더 밝은 보라색 */
-}
 
-.content {
-	flex-grow: 1;
-	border: 3px solid rgba(255, 255, 255, 0.8);
-	background: rgba(47, 9, 84, 0.25);
-	padding: 20px;
-	border-radius: 12px; /* ✅ 전체 둥글게 */
-	display: flex;
-	flex-direction: column;
-}
+	.diary-icon-container {
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  flex-shrink: 0;
+	}
 
-.button {
-	width: 100%;
-	padding: 12px;
-	margin-bottom: 15px;
-	background: #230B3D;
-	border: 3px solid rgba(255, 255, 255, 0.8); /* ✅ 흰색 테두리 */
-	border-radius: 8px;
-	color: white;
-	font-weight: bold;
-	cursor: pointer;
-}
 
-.diary-list {
-	flex-grow: 1;
-	overflow-y: auto;
-	margin-top: 10px;
-}
+	.diary-icon {
+	  width: 30px;
+	  height: 30px;
+	  cursor: pointer;
+	  filter: brightness(0) invert(1);
+	}
 
-.placeholder {
-	text-align: center;
-	color: rgba(255, 255, 255, 0.6);
-	padding: 10px;
-	font-size: 14px;
-}
 
-.entry {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 10px;
-	background: rgba(255, 255, 255, 0.1);
-	border: 3px solid rgba(255, 255, 255, 0.3);
-	padding: 10px;
-	border-radius: 6px;
-	margin-bottom: 8px;
-	font-size: 14px;
-	cursor: pointer;
-}
-
-.entry input[type="checkbox"] {
-	accent-color: #8A2BE2; /* 체크박스 선택된 색 */
-	margin-right: 10px;
-}
-
-#select-all {
-	accent-color: #8A2BE2;
-}
-
-.entry .title {
-	color: white;
-	font-weight: bold;
-	flex-grow: 1;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.entry .date {
-	font-size: 12px;
-	color: rgba(255, 255, 255, 0.7);
-	margin-left: 8px;
-}
-
-.delete-button {
-	width: 100%;
-	padding: 12px;
-	margin-bottom: 15px;
-	background: #230B3D;
-	border: 3px solid rgba(255, 255, 255, 0.8); /* ✅ 흰색 테두리 */
-	border-radius: 8px;
-	color: white;
-	font-weight: bold;
-	cursor: pointer;
-}
-
-.header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-	padding-right: 10px;
-	gap: 10px;
-	position: relative;
-}
-
-.title-input {
-	flex: 1; /* 전체 너비 대신 남는 공간만 차지하게 */
-	padding: 10px 5px;
-	font-size: 16px;
-	border: none;
-	border-bottom: 1px solid white;
-	border-radius: 0;
-	background: transparent;
-	color: white;
-	outline: none;
-	min-width: 0;
-	width: calc(100% - 100px);
-}
-
-.title-input::placeholder {
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.diary-icon-container {
-	position: static;
-	top: 5px;
-	right: 100px;
-	display: flex;
-	align-items: center;
-	gap: 10px;
-}
-
-.diary-icon {
-	width: 30px;
-	height: 30px;
-	cursor: pointer;
-	filter: brightness(0) invert(1); /* 밝게 */
-	position: relative; /* 꼭 붙이자 */
-}
-
-.input-field {
-	flex-grow: 1;
-	width: 95%;
-	height: 300px; /* ✅ 원하는 고정 높이 설정 */
-	padding: 16px;
-	font-size: 15px;
-	border: none;
-	border-radius: 0;
-	background: transparent;
-	color: white;
-	outline: none;
-	margin-top: 10px;
-	resize: none; /* ✅ 크기 조절 막기 */
+  .input-field {
+  flex-grow: 1;
+  width: 95%;
+  height: 300px; /* ✅ 원하는 고정 높이 설정 */
+  padding: 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: white;
+  outline: none;
+  margin-top: 10px;
+  resize: none; /* ✅ 크기 조절 막기 */
 }
 
 .input-field::placeholder {
-	color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.edit-btn {
-	position: absolute;
-	bottom: 30px;
-	right: 40px;
-	padding: 10px 20px;
-	background: #230B3D;
-	color: white;
-	border: 2px solid white;
-	border-radius: 6px;
-	cursor: pointer;
-	z-index: 9999;
-}
+ .edit-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    padding: 10px 20px;
+    background: #230B3D;
+    color: white;
+    border: 2px solid white;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 9999;
+  }
 
-/*콘텐츠 안에서 위치 */
-.content {
-	position: relative;
-}
+  /*콘텐츠 안에서 위치 */
+  .content {
+    position: relative;
+  }
 
-/* 모달 스타일 */
-#deleteModal {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.6);
-	justify-content: center;
-	align-items: center;
-	z-index: 1000;
-}
 
-#deleteModal .modal-box {
-	background: white;
-	padding: 30px;
-	border-radius: 10px;
-	width: 350px;
-	text-align: center;
-	color: black;
-}
+    /* 모달 스타일 */
+    #deleteModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
 
-#deleteModal img {
-	width: 40px;
-	height: 40px;
-	margin-bottom: 15px;
-}
+    #deleteModal .modal-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 350px;
+      text-align: center;
+      color: black;
+    }
 
-#deleteModal button {
-	padding: 10px 20px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-}
+    #deleteModal img {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 15px;
+    }
 
-#deleteModal .cancel {
-	background: #ccc;
-}
+    #deleteModal button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-#deleteModal .confirm {
-	background: #d33;
-	color: white;
-}
+    #deleteModal .cancel {
+      background: #ccc;
+    }
+
+    #deleteModal .confirm {
+      background: #d33;
+      color: white;
+    }

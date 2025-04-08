@@ -1,8 +1,9 @@
-<!-- ancDetail.jsp -->
+<!-- userAncDetail.jsp -->
+<%@page import="java.util.Vector"%>
 <%@page import="jspproject.AncBean"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<%	
+<%
 	int anc_id = Integer.parseInt(request.getParameter("anc_id"));
 	AncMgr amgr = new AncMgr();
 	AncBean bean = amgr.getAnc(anc_id);
@@ -82,6 +83,8 @@ header h3, header h4 {
 .ntitle{
 	margin-left: 20px;
 	color: white;
+	/* margin-bottom: 0px;*/
+	margin-top: 5px; 
 }
 .container {
   display: flex;
@@ -120,7 +123,7 @@ header h3, header h4 {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 선택: 그림자 효과 */
   	margin-left: auto;
 	margin-right: 45px;
-	margin-top: 60px;
+	margin-top: 70px;
 	color: white;
 }
 .rtext{
@@ -150,22 +153,34 @@ header h3, header h4 {
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 45px;
-  margin-top: 90px;
+  margin-top: 70px;
   pointer-events: none;
 }
-.sbtn{
-	margin-left: 200px;
-	margin-top: 10px;
-	background: none;
-
+.newtext{
+  	margin-left: 125px;
+  	color: white;
+  	font-size: 10px;
+  	 line-height: 2;
 }
-button.text-button{
-	background: none;
-    border: none;
-	font: inherit;  
-    cursor: pointer; 
-    text-decoration: underline;
-    color: white;
+.new{
+	margin-left: auto;
+	margin-right: 110px;
+	margin-top: 70px;
+	color: white;
+	font-weight: bold;
+	 line-height: 2;
+}
+.newtext h4 {
+	margin: 0;
+  	padding: 0;
+}
+ a {
+  color: white;           
+  text-decoration: none;   
+} 
+a:hover {
+  color: #32225B;        
+  text-decoration: underline; /* 또는 none 유지 가능 */
 }
 </style>
 <script>
@@ -174,8 +189,6 @@ button.text-button{
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<a href="anc.jsp"><h4>공지사항</h4></a>
-	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
 <div class="image-wrapper">
   <img src="http://localhost/2025_JspProject/jspproject/images/loginimg.jpg" class="main-image" />
@@ -198,22 +211,16 @@ button.text-button{
 			<div class="divider"></div>	
 			
 			<div class="right-section">
-			<!-- 수정 | 삭제 -->
-			<div class="sbtn">
-			<a href="ancUpdate.jsp?anc_id=<%=bean.getAnc_id()%>"><button  class="text-button">수정</button></a>
-			<a href="ancDeleteProc.jsp?ancIds=<%=bean.getAnc_id()%>" onclick="return confirm('정말 삭제하시겠습니까?')">
-			<button  class="text-button">삭제</button>
-			</a>
-			</div>
 			<!-- 이전공지 업데이트-->
 			<div class="box1">
 			
-			<% if (pbean.getAnc_id()!= 0) { %>
+			<% if (pbean.getAnc_img() != null) { %>
 		
 			<div class="image-overlay-text">
+			
       			<%=pbean.getAnc_title()%>
     		</div>
-			<a href="ancDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
+			<a href="userAncDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
 			<img src="<%= request.getContextPath() %>/jspproject/upload/<%= pbean.getAnc_img() %>" width="130" height="130"></img>
 			</a>
 			
@@ -227,6 +234,23 @@ button.text-button{
 			</div>
 			<div class="rtext">작성자</div>
 			<div class="rdtext"><%=bean.getUser_id()%></div>
+			
+			<div style="display: flex; flex-direction: column; align-items: flex-start;">
+					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
+				<%
+    				Vector<AncBean> hlist = amgr.getHighlightAncList();
+    				if (hlist != null && hlist.size() > 0) {
+        				for (int i = 0; i < hlist.size(); i++) {
+            					AncBean hbean = hlist.get(i);
+				%>
+            		<div class="newtext">
+                		<h4><a href="ancDetail.jsp?anc_id=<%=hbean.getAnc_id()%>"><%=hbean.getAnc_title()%></a></h4>
+            		</div>
+				<% }
+        		} else {%>
+					<div class="newtext">하이라이트 공지가 없습니다.</div>
+				<%}%>
+				</div>
 			</div>
 		</div>
 	</div>

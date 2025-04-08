@@ -5,10 +5,9 @@
         .card-container {
             position: absolute;
             padding: 5px;
-            background-color: rgba(147, 102, 192, 0.2); 
-            border: 2px solid white;
-            border-radius: 22px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            background-color: rgba(29, 16, 45, 0.35);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
             cursor: grab;
         }
 
@@ -17,12 +16,10 @@
             height: 500px;
             padding: 20px;
             border-radius: 16px;
-            background-color: rgba(147, 102, 192, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background-color: rgba(29, 16, 45, 0.3);
             position: relative;
             color: white;
             text-align: center;
-            border: 2px solid white;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -101,12 +98,14 @@
             top: 400px;
             width: 350px;
             border: 2px solid white;
+            font-family: 'PFStarDust', sans-serif !important;
         }
 
         .view-btn {
             top: 460px;
             width: 350px;
             border: 2px solid white;
+            font-family: 'PFStarDust', sans-serif !important;
         }
 
         .custom-button:hover {
@@ -165,7 +164,7 @@
             input.value = `예제 ${count}`;
             input.style.border = 'none';
             input.style.background = 'transparent';
-            input.style.color = 'black';
+            input.style.color = 'white';
             input.style.fontSize = '18px';
             input.style.textAlign = 'center';
             input.style.width = '90%';
@@ -218,7 +217,7 @@
                 input.value = name;
                 input.style.border = 'none';
                 input.style.background = 'transparent';
-                input.style.color = 'black';
+                input.style.color = 'white';
                 input.style.fontSize = '18px';
                 input.style.textAlign = 'center';
                 input.style.width = '90%';

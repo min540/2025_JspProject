@@ -664,9 +664,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	</div>
 </div>
 
-<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
-<jsp:include page="musicPlayListDetail.jsp" />
-
 <script>
 
 	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)

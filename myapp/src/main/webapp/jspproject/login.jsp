@@ -1,7 +1,7 @@
 <!-- login.jsp -->
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
-		
+		String path = request.getContextPath();
 %>
 <html>
 <head>
@@ -110,35 +110,39 @@ body, html {
 
 	  return JSON.parse(jsonPayload);
 	}
-	function handleCredential(response) {
-	  const userInfo = parseJwt(response.credential);
+  
+  const contextPath = "<%= path %>";  // JSP에서 받아온 context path
 
-	  fetch("googleLoginServlet", {
-	    method: "POST",
-	    headers: { "Content-Type": "application/json" },
-	    body: JSON.stringify({
-	      user_id: "google_" + userInfo.sub,
-	      user_pwd: "google_login",
-	      user_name: userInfo.name,
-	      user_email: userInfo.email,
-	      user_icon: userInfo.picture
-	    })
-	  })
-	  .then(res => res.json())
-	  .then(data => {
-	    if (data.status === "ok") {
-	      // 로그인 성공 → 메인 페이지로 이동
-	      window.location.href = "mainScreen.jsp";
-	    } else {
-	      alert("구글 로그인에 실패했습니다.");
-	    }
-	  })
-	  .catch(err => {
-	    console.error("Google login error:", err);
-	    alert("서버 오류가 발생했습니다.");
-	  });
-	}
+  function handleCredential(response) {
+    const userInfo = parseJwt(response.credential);
+
+    fetch("googleLoginServlet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: "google_" + userInfo.sub,
+        user_pwd: "google_login",
+        user_name: userInfo.name,
+        user_email: userInfo.email,
+        user_icon: userInfo.picture
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "ok") {
+        // ✅ 절대 경로로 이동
+        window.location.href = contextPath + "/mainScreen.jsp";
+      } else {
+        alert("구글 로그인에 실패했습니다.");
+      }
+    })
+    .catch(err => {
+      console.error("Google login error:", err);
+      alert("서버 오류가 발생했습니다.");
+    });
+  }
 </script>
+
 <body>
 <div class="container">
 	<div class="left-half"></div>

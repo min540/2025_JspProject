@@ -1,11 +1,16 @@
-<!-- anc.jsp -->
+<!-- ancUpdate.jsp -->
 <%@page import="jspproject.AncBean"%>
 <%@page import="java.util.Vector"%>
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
+	String ancIdParam = request.getParameter("anc_id");
+	int anc_id = 0;
+	if (ancIdParam != null && !ancIdParam.isEmpty()) {
+		anc_id = Integer.parseInt(ancIdParam);
+	}
 	AncMgr amgr = new AncMgr();
-	Vector<AncBean> vlist = amgr.listAnc();
+	AncBean bean = amgr.getAnc(anc_id); 
 %>
 <html>
 <head>
@@ -17,7 +22,6 @@ body, html {
     height: 100%;
     background-color:#372358;
 }
- 
 header{
 	display: flex;
 	justify-content: center;
@@ -25,26 +29,22 @@ header{
   	margin-bottom: 20px;
   	padding-right: 370px; 
 }
-
 header h3, header h4 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
 }
-
 .image-wrapper {
   position: relative;
   width: auto;
   margin: 0 auto;
 }
-
 .main-image {
   width: 100%;
   height: 400px;
   object-fit: cover;
   display: block;
 }
-
 .blur-left, .blur-right {
   position: absolute;
   top: 0;
@@ -53,17 +53,14 @@ header h3, header h4 {
   z-index: 2;
   pointer-events: none;
 }
-
 .blur-left {
   left: 0;
   background: linear-gradient(to right, rgba(55, 35, 88, 1), transparent);
 }
-
 .blur-right {
   right: 0;
   background: linear-gradient(to left, rgba(55, 35, 88, 1), transparent);
 }
-
 .inner-effect {
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
   position: absolute;
@@ -73,24 +70,21 @@ header h3, header h4 {
   z-index: 2;
   pointer-events: none;
 }
-
 .box{
 	width: 600px;
-	height: 950px;
+	height: 1000px;
 	background-color: #4A3C6E;
 	margin: 0 auto;
-	top: -200px;
+	top: -140px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 	position: relative;
 	z-index: 10;
 	/* padding: 20px; */
 }
-
 .ntitle{
 	margin-left: 20px;
 	color: white;
 }
-
 .container {
   display: flex;
   width: 100%;
@@ -98,7 +92,6 @@ header h3, header h4 {
   margin: 0 auto;
   align-items: stretch;
 }
-
 .divider {
   position: absolute;
   top:70px;
@@ -109,7 +102,6 @@ header h3, header h4 {
   background-color: #888;
   margin: 0 16px;
 } 
-
 .box2{
  width:415px;
  height:30px;
@@ -117,7 +109,6 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
-
 .box3{
  width:415px;
  height:400px;
@@ -125,7 +116,6 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
-
 .box4{
  width:415px;
  min-height: 100px;
@@ -134,24 +124,22 @@ header h3, header h4 {
  margin-left: 90px;
  border-radius: 10px; 
 }
-
 .container-box {
   	display: flex;
   	position: relative;
+  	
 }
 .Ititle1{
-color: white;
+	 color: white;
 	 margin-left: 90px;
 	 padding-top: 30px;
-}
-
+	 }
 .Ititle{
 	 color: white;
 	 margin-left: 90px;
 	 padding-top: 30px;
-	 margin-top:0px;
+	 	 margin-top:0px;
 }
-
 .custom-upload-button {
   display: inline-block;
   padding: 10px 18px;
@@ -163,13 +151,11 @@ color: white;
   margin-top: 40px;
   margin-right: 100px;
 }
-
 .upload-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .complete-btn {
   background-color: #19092D;        
   color: white;
@@ -182,7 +168,7 @@ color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-left: 100px;
-   margin-top: 30px;
+  margin-top:30px;
   width: 400px;
 }
 
@@ -215,12 +201,13 @@ function showFileName(input) {
 
 	<div class="box">
 		<div>
-	<form action="ancUploadProc.jsp" method="post" enctype="multipart/form-data">
+	<form action="ancUpdateProc.jsp" method="post" enctype="multipart/form-data">
+	 <input type="hidden" name="anc_id" value="<%=bean.getAnc_id()%>">
 		<h2 class="Ititle1" >제목</h2>
-			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2">
+			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2" value="<%=bean.getAnc_title()%>">
 		<div>
 		<h2 class="Ititle" >내용</h2>
-  			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"></textarea>
+  			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"><%=bean.getAnc_cnt()%></textarea>
 		</div>
   				<input type="file" id="uploadFile" name="uploadFile" style="display: none;" onchange="showFileName(this)">
  				<div class= "upload-header">
@@ -228,9 +215,11 @@ function showFileName(input) {
  				<label for="uploadFile" class="custom-upload-button">파일 선택</label>
  				</div>
   				<div class="box4">
-    			<p id="selected-file-name" style="color:black;">선택된 파일 없음</p>
+    			<p id="selected-file-name" style="color:black;">
+    				<%= (bean.getAnc_img() != null && !bean.getAnc_img().isEmpty())? bean.getAnc_img()  : "선택된 파일 없음" %>
+    			</p>
   				</div>
-			<input type="submit" class="complete-btn" value="작성 완료">
+			<input type="submit" class="complete-btn" value="수정">
 		</form>
 	</div>
 </div>

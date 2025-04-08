@@ -4,9 +4,13 @@
 <%@page import="jspproject.AncMgr"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
+/* 	int anc_id = Integer.parseInt(request.getParameter("anc_id")); */
 	AncMgr amgr = new AncMgr();
 	Vector<AncBean> vlist = amgr.listAnc();
 	AncBean recent = amgr.viewAnc();
+
+	
+/* 	AncBean pbean = amgr.beforeImg(anc_id); */
 %>
 <html>
 <head>
@@ -80,7 +84,9 @@ header h3, header h4 {
 .ntitle{
 	margin-left: 20px;
 	color: white;
-}
+	margin-top:20px;
+	
+	}
 .container {
   display: flex;
   width: 100%;
@@ -100,15 +106,20 @@ header h3, header h4 {
 } 
 .box2{
  width:415px;
- height:400px;
+ height:auto;
  background-color: #5C4B85;
  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+ margin-bottom: 20px;
 }
-.box3{
- width:415px;
- height:200px;
- background-color: #5C4B85;
- box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+.box3 {
+  width: 415px;
+  height: auto; /* 고정 높이 대신 자동 조정 */
+  min-height: 200px; /* 최소 높이 설정 */
+  background-color: #5C4B85;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  position: relative; /* 내부 요소 배치를 위한 기준점 */
+  padding-bottom: 50px; /* 하단 여백 추가 */
 }
 input[type="checkbox"] {
   appearance: none;      
@@ -149,6 +160,7 @@ input[type="checkbox"]:checked::after {
 	margin-top: 70px;
 	color: white;
 	font-weight: bold;
+	 line-height: 2;
 }
 .container-box {
   	display: flex;
@@ -161,9 +173,67 @@ input[type="checkbox"]:checked::after {
 }
 .newtext{
   	margin-left: 125px;
-  	margin-top: 5px;
   	color: white;
   	font-size: 10px;
+  	 line-height: 2;
+}
+.newtext h4 {
+	margin: 0;
+  	padding: 0;
+}
+ ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--back_02);
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 8px;
+  cursor: pointer;
+}
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: absolute; /* 절대 위치 설정 */
+  bottom: 15px; /* 박스 하단에서 위치 */
+  left: 0;
+}
+.pagination-wrapper ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pagination-wrapper li {
+  background-color: #5c4b85;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 8px;
+  cursor: pointer;
+}
+ a {
+  color: white;           
+  text-decoration: none;   
+} 
+a:hover {
+  color: #32225B;        
+  text-decoration: underline; /* 또는 none 유지 가능 */
 }
 </style>
 <script>
@@ -185,7 +255,7 @@ function confirmDelete() {
 <body>
 	<header>
 	<h3>오늘, 내일</h3>
-	<h4>공지사항</h4>
+	<a href="anc.jsp"><h4>공지사항</h4></a>
 	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
 <div class="image-wrapper">
@@ -226,8 +296,15 @@ function confirmDelete() {
 					<td width="100">작성자</td>
 					<td width="150">작성날짜</td>
 				</tr>
-				<%for(int i=0; i<vlist.size();i++){
-					AncBean bean = vlist.get(i);
+				
+				<%
+				String pageStr = request.getParameter("page");
+                int currentPage = (pageStr != null && !pageStr.isEmpty()) ? Integer.parseInt(pageStr) : 1;
+                int perPage= 5;
+				Vector<AncBean> slist = amgr.listPageAnc(currentPage, perPage);
+				
+				for(int i=0; i<slist.size();i++){
+					AncBean bean = slist.get(i);
 				%>
 				<!-- db에서 받아올 내용 -->
 				<tr align="center" style="font-size: 10px;">
@@ -240,8 +317,50 @@ function confirmDelete() {
 					<td><%=bean.getAnc_regdate() %></td>
 				</tr>
 				<%} %>
-				
 			</table>
+			<!-- 동적 페이징 처리 시작-->
+                       <%
+
+                        int pageBlock = 5;
+						int totalRecord = amgr.getTotalCount();
+                        int totalPage = (int)Math.ceil((double)totalRecord / perPage);
+                        int nowBlock = (int)Math.ceil((double)currentPage / pageBlock);
+                        int pageStart = (nowBlock - 1) * pageBlock + 1;
+                        int pageEnd = pageStart + pageBlock - 1;
+                        if(pageEnd > totalPage) {
+                            pageEnd = totalPage;
+                        }
+                    %>
+                      <div class="pagination-wrapper" style="text-align:center; margin-top: 10px;">
+                    <ul>
+                        <% if(currentPage > 1) { %>
+                        <li>
+                            <a href="anc.jsp?page=<%= currentPage - 1 %>">◀</a>
+                        </li>
+                        <% } else { %>
+                        <li >◀</li>
+                        <% } %>
+                        <% for(int j = pageStart; j <= pageEnd; j++) {
+                               if(j == currentPage) { %>
+                        <li >
+                            <span><%= j %></span>
+                        </li>
+                        <% } else { %>
+                        <li >
+                            <a href="anc.jsp?page=<%= j %>"><%= j %></a>
+                        </li>
+                        <%     }
+                           } %>
+                        <% if(currentPage < totalPage) { %>
+                        <li >
+                            <a href="anc.jsp?page=<%= currentPage + 1 %>">▶</a>
+                        </li>
+                        <% } else { %>
+                        <li>▶</li>
+                        <% } %>
+						</ul>
+						</div>
+			<!-- 동적 페이징 처리 끝-->
 			</div>
 			<div>
 				<button type="submit" class="dbtn" style="z-index:9999; position:relative; pointer-events:auto;" onclick="return confirmDelete();">삭제</button>
@@ -254,7 +373,19 @@ function confirmDelete() {
 			 <div class="right-section">
 				<div style="display: flex; flex-direction: column; align-items: flex-start;">
 					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
-					<div class=" newtext ">주요 공지 제목</div>
+				<%
+    				Vector<AncBean> hlist = amgr.getHighlightAncList();
+    				if (hlist != null && hlist.size() > 0) {
+        				for (int i = 0; i < hlist.size(); i++) {
+            					AncBean hbean = hlist.get(i);
+				%>
+            		<div class="newtext">
+                		<h4><a href="ancDetail.jsp?anc_id=<%=hbean.getAnc_id()%>"><%=hbean.getAnc_title()%></a></h4>
+            		</div>
+				<% }
+        		} else {%>
+					<div class="newtext">하이라이트 공지가 없습니다.</div>
+				<%}%>
 				</div>
 			 </div>
 			 </div>

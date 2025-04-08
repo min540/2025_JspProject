@@ -16,7 +16,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 public class BgmMgr {
 	private DBConnectionMgr pool;
 	// 세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
-	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
 	public static final String ENCTYPE = "UTF-8";
 	public static int MAXSIZE = 10 * 1024 * 1024;
 
@@ -124,6 +124,31 @@ public class BgmMgr {
 		return vlist;
 	}
 
+	//musicList에 음악만 추가
+	public boolean insertSimpleBgm(BgmBean bean) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = "INSERT INTO bgm (user_id, bgm_name, bgm_music, bgm_cnt, bgm_onoff, bgm_image, mplist_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    try {
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, bean.getUser_id());
+	        pstmt.setString(2, bean.getBgm_name());
+	        pstmt.setString(3, bean.getBgm_music());
+	        pstmt.setString(4, bean.getBgm_cnt());
+	        pstmt.setInt(5, bean.getBgm_onoff());
+	        pstmt.setString(6, bean.getBgm_image());
+	        pstmt.setInt(7, bean.getMplist_id());
+	        pstmt.executeUpdate();
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+	}
+	
 	// 배경음악 추가
 	public boolean insertBgm(HttpServletRequest req) {
 		Connection con = null;
@@ -192,7 +217,6 @@ public class BgmMgr {
 	    MultipartRequest multi = null;
 
 	    String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-	    String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
 	    int maxSize = 100 * 1024 * 1024;
 
 	    try {
@@ -201,20 +225,7 @@ public class BgmMgr {
 	        int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
 	        String bgm_name = multi.getParameter("bgm_name");
 	        String bgm_cnt = multi.getParameter("bgm_cnt");
-	        int mplist_id = Integer.parseInt(multi.getParameter("mplist_id")); // ✅ 추가
-
-	        String original_music = multi.getParameter("original_music");
 	        String original_image = multi.getParameter("original_image");
-
-	        String bgm_music = multi.getFilesystemName("bgm_music");
-	        if (bgm_music == null) {
-	            bgm_music = original_music;
-	        } else {
-	            File musicFile = multi.getFile("bgm_music");
-	            File dest = new File(musicPath + "/" + bgm_music);
-	            Files.copy(musicFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	        }
-
 	        String bgm_image = multi.getFilesystemName("bgm_image");
 	        if (bgm_image == null) {
 	            bgm_image = original_image;
@@ -222,14 +233,12 @@ public class BgmMgr {
 
 	        //DB 업데이트
 	        con = pool.getConnection();
-	        sql = "UPDATE bgm SET bgm_name = ?, bgm_cnt = ?, bgm_music = ?, bgm_image = ?, mplist_id = ? WHERE bgm_id = ?";
+	        sql = "UPDATE bgm SET bgm_name = ?, bgm_cnt = ?, bgm_image = ? WHERE bgm_id = ?";
 	        pstmt = con.prepareStatement(sql);
 	        pstmt.setString(1, bgm_name);
 	        pstmt.setString(2, bgm_cnt);
-	        pstmt.setString(3, bgm_music);
-	        pstmt.setString(4, bgm_image);
-	        pstmt.setInt(5, mplist_id);
-	        pstmt.setInt(6, bgm_id);
+	        pstmt.setString(3, bgm_image);
+	        pstmt.setInt(4, bgm_id);
 	        pstmt.executeUpdate();
 	        return true;
 	    } catch (Exception e) {
@@ -578,7 +587,7 @@ public class BgmMgr {
 	}
 	
 	// 배경음악 재생 여부 토글
-	public void updateBgmOnoff(int bgm_id, int onoff) {
+	public void updateBgmOnoff(int bgm_id, int bgm_onoff) {
 	    Connection con = null;
 	    PreparedStatement pstmt = null;
 	    String sql = null;
@@ -586,7 +595,7 @@ public class BgmMgr {
 	        con = pool.getConnection();
 	        sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
 	        pstmt = con.prepareStatement(sql);
-	        pstmt.setInt(1, onoff);
+	        pstmt.setInt(1, bgm_onoff);
 	        pstmt.setInt(2, bgm_id);
 	        pstmt.executeUpdate();
 	    } catch (Exception e) {
