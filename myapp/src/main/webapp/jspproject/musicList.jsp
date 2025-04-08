@@ -778,11 +778,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	  });
 	}
 	
-	document.addEventListener('DOMContentLoaded', function() {
-		setupCheckboxListeners();      // (체크박스 자체 기능: 전체선택, 삭제용)
-		setupItemBoxClickListeners();  // (음악 박스 클릭 시 상세 정보 표시)
-	});
-	
 	// 오른쪽 정보를 리셋하는 함수
 	function resetDetailInfo() {
 	  document.getElementById('bgmName').innerText = '선택된 음악 없음';
@@ -790,14 +785,46 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	  document.getElementById('bgmImg').src = 'img/default.png';
 	}
 
-	// 문서 전체 클릭 이벤트에 오른쪽 영역(.music-right)을 제외한 경우에만 리셋
+	// 전역 플래그 변수: plus 아이콘 클릭 시 리셋 방지용
+	let preventReset = false;
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		setupCheckboxListeners();      // (체크박스 자체 기능: 전체선택, 삭제용)
+		setupItemBoxClickListeners();  // (음악 박스 클릭 시 상세 정보 표시)
+		// 아이콘 요소들 가져오기
+		const plusIcons = document.querySelectorAll('.iconPlusPlay');
+		  
+		plusIcons.forEach(icon => {
+		icon.addEventListener('click', function(e) {
+		     // 이벤트가 문서 레벨로 전파되는 것을 막음
+		      e.stopPropagation();
+
+		      // plus 아이콘 관련 동작 수행 (예를 들어, 플레이리스트 추가 UI 표시 등)
+		      // 예시: plus 아이콘 클릭 시 콘솔 로그 출력
+		      console.log("Plus 아이콘 클릭됨");
+		      // 필요한 추가 로직을 여기에 작성
+		    });
+		  });
+		});
+
 	document.addEventListener('click', function(e) {
-	  // 만약 클릭 대상이 .music-list-item 내부도 아니고, 오른쪽 상세 정보 영역(.music-right) 내부도 아니라면
-	  if (!e.target.closest('.music-list-item') && !e.target.closest('.music-right')) {
-	    resetDetailInfo();
-	  }
+		// 만약 클릭 대상이 음악 아이템, 오른쪽 영역, add-playlist-container, 또는 plus 아이콘 내부에 있으면 아무 작업도 하지 않음
+		if (e.target.closest('.music-list-item') || 
+		    e.target.closest('.music-right') || 
+		    e.target.closest('.add-playlist-container') ||
+		    e.target.closest('.iconPlusPlay')
+		) {
+		  return;
+		}
+		// 위 조건에 해당하지 않으면, 오른쪽 정보를 기본값으로 리셋
+		resetDetailInfo();
 	});
 
+	//add-playlist-container 내부의 클릭 이벤트가 document로 전파되어 리셋 조건에 걸리지 않는다
+	document.querySelector('.add-playlist-container').addEventListener('click', function(e) {
+		e.stopPropagation();
+	});
+	
 	// 박스 클릭 시 상세 정보를 표시하는 리스너
 	function setupItemBoxClickListeners() {
 	  const items = document.querySelectorAll('.music-list-item');

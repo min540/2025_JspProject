@@ -605,4 +605,23 @@ public class BgmMgr {
 	    }
 	}
 	
+	//배경음악 재생목록에 추가하기
+	public void updateBgmMplist(int bgm_id, int mplist_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		try {
+			con = pool.getConnection();
+			sql = "UPDATE bgm SET mplist_id=? WHERE bgm_id=?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, mplist_id);
+			pstmt.setInt(2, bgm_id);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
+	
 }
