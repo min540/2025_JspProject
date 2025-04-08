@@ -159,6 +159,39 @@ public class AncMgr {
 		return bean;
 	}
 	
+	//하이라이트
+	public Vector<AncBean> getHighlightAncList() {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    Vector<AncBean> vlist = new Vector<AncBean>();
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "SELECT * FROM anc WHERE anc_title LIKE '%공지%' OR anc_title LIKE '%중요%' OR anc_title LIKE '%필독%' ORDER BY anc_id DESC LIMIT 5";  // 원하는 수만큼 LIMIT 가능
+	        pstmt = con.prepareStatement(sql);
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            AncBean bean = new AncBean();
+	            bean.setAnc_id(rs.getInt("anc_id"));
+	            bean.setUser_id(rs.getString("user_id"));
+	            bean.setAnc_title(rs.getString("anc_title"));
+	            bean.setAnc_cnt(rs.getString("anc_cnt"));
+	            bean.setAnc_regdate(rs.getString("anc_regdate"));
+	            bean.setAnc_img(rs.getString("anc_img"));
+	            vlist.add(bean);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return vlist;
+	}
+
+
 	//이전 업데이트 공지사항 이미지
 	public AncBean beforeImg(int anc_id) {
 		Connection con = null;
