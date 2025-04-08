@@ -5,6 +5,7 @@
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
+		String path = request.getContextPath();
 %>
 <!-- 프로필 아이콘 -->
 
@@ -18,7 +19,7 @@
     <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
     <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
-    <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃"> 
+    <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃" onclick="logout()">
 </div>
 
 <!-- 음악 설정 쪽 아이콘-->
@@ -141,6 +142,10 @@
 	        uioffButton.src = "icon/아이콘_UI끄기_1.png";
 	        uiVisible = true; // UI가 보인다는 상태로 설정
 	    }
+	}
+	
+	function logout() {
+		window.location.href = "<%= path %>/jspproject/logout.jsp";
 	}
 	
 	// 프로필 on/off
