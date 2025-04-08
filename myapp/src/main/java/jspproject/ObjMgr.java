@@ -83,23 +83,36 @@ public class ObjMgr {
 	
 	//작업 목록 수정
 	public void updateObj(ObjBean bean) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "UPDATE obj SET obj_title = ?, obj_edate = ? WHERE obj_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, bean.getObj_title());
-			pstmt.setString(2, bean.getObj_edate());
-			pstmt.setInt(3, bean.getObj_id());
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = "UPDATE obj SET obj_title = ?, obj_edate = ? WHERE obj_id = ?";
+	    
+	    try {
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+
+	        // null-safe title
+	        String title = bean.getObj_title();
+	        if (title == null) title = "";
+	        pstmt.setString(1, title);
+
+	        // null-safe edate
+	        String edate = bean.getObj_edate();
+	        if (edate == null || edate.trim().isEmpty()) {
+	            pstmt.setNull(2, java.sql.Types.DATE);
+	        } else {
+	            pstmt.setString(2, edate);
+	        }
+	        // ID 체크
+	        pstmt.setInt(3, bean.getObj_id());
+	        pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
 	}
+
 	
 	//작업 목록 삭제
 	public void deleteObj(int obj_id) {

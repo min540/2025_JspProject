@@ -377,29 +377,37 @@
             `;
 
             taskList.appendChild(taskItem);
-            renderTasksForCurrentList();
+            /* renderTasksForCurrentList(); */
             
             //user_id 값 가져오기
-          <%--   <%
+          	<%
             String userId = (String) session.getAttribute("user_id");
     		if (userId == null) userId = "";
-			%> --%>
-		<%-- 	
+    		 %>
+    	
 			const user_id = "<%= userId %>";
 		    sessionStorage.setItem("user_id", user_id); 
-		    
+		  
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
             
-         // 🔁 서버에 insert 요청 보내기
+         	//서버에 insert 요청 보내기
             const taskObj = {
                 user_id: sessionStorage.getItem("user_id") || "user01", // 로그인한 사용자 ID
-                obj_title: "",
+                obj_title: titleInput.value.trim(),
                 obj_check: 0,
                 obj_edate: "", // 날짜 선택 전이므로 비워두기
                 objgroup_id: parseInt(localStorage.getItem("currentList"))
             };
+         	//과제 추가, 업데이트 실시간 타이머
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
 
             fetch("objInsertServlet", {
                 method: "POST",
@@ -410,13 +418,37 @@
             })
             .then(res => res.json())
             .then(data => {
-                // 응답받은 obj_id 저장
-                taskObj.obj_id = data.obj_id;
-                console.log("서버에 저장된 과제 ID:", taskObj.obj_id);
+                const objId = data.obj_id;
+                taskItem.dataset.objId = objId;
 
-                // 이후 수정 시 이 ID를 사용
-                taskItem.dataset.objId = taskObj.obj_id; // DOM에 저장해두기
-            });  --%>
+                const titleInput = taskItem.querySelector('input[type="text"]');
+                titleInput.focus();
+
+                // 실시간 업데이트 (입력마다 서버에 전송)
+                titleInput.addEventListener("input", debounce(() => {
+                    const updatedTitle = titleInput.value.trim();
+                    if (!updatedTitle) return;
+
+                    fetch("objUpdateServlet", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            obj_id: objId,
+                            obj_title: updatedTitle
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("📝 제목 실시간 업데이트 성공:", data);
+                    })
+                    .catch(err => {
+                        console.error("❌ 제목 업데이트 실패:", err);
+                    });
+                }, 500)); // 👈 0.5초 디바운싱
+                
+                taskList.appendChild(taskItem);
+                updateCompleteCount();
+            });
 
             const checkbox = taskItem.querySelector('.task-check');
             checkbox.addEventListener('change', updateCompleteCount);
