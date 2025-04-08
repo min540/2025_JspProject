@@ -24,8 +24,8 @@ public class TemaMgr {
 		pool = DBConnectionMgr.getInstance();
 	}
 	
-	// 테마 업로드
-	public Map<String, String> uploadFile(HttpServletRequest req) {
+	//테마업로드
+	public Map<String, String> uploadFile(HttpServletRequest req, String user_id) {
 	    Map<String, String> resultMap = new HashMap<>();
 	    Connection con = null;
 	    PreparedStatement pstmt = null;
@@ -44,14 +44,13 @@ public class TemaMgr {
 	        String tema_cnt = multi.getParameter("tema_cnt");
 	        String tema_img = multi.getFilesystemName("tema_img");
 
-	        String user_id = "test_user";
 	        int tema_dark = 0;
 	        int tema_onoff = 1;
 
 	        con = pool.getConnection();
 	        sql = "INSERT INTO tema(user_id, tema_title, tema_cnt, tema_img, tema_dark, tema_onoff) VALUES (?, ?, ?, ?, ?, ?)";
 	        pstmt = con.prepareStatement(sql);
-	        pstmt.setString(1, user_id);
+	        pstmt.setString(1, user_id);  // ← 여기!
 	        pstmt.setString(2, tema_title);
 	        pstmt.setString(3, tema_cnt);
 	        pstmt.setString(4, tema_img);
@@ -59,7 +58,6 @@ public class TemaMgr {
 	        pstmt.setInt(6, tema_onoff);
 	        pstmt.executeUpdate();
 
-	        // 업로드된 값들 저장
 	        resultMap.put("tema_title", tema_title);
 	        resultMap.put("tema_cnt", tema_cnt);
 	        resultMap.put("tema_img", tema_img);
@@ -72,6 +70,7 @@ public class TemaMgr {
 
 	    return resultMap;
 	}
+
 
 	//테마리스트
 	public Vector<TemaBean> listTema(){
@@ -104,6 +103,8 @@ public class TemaMgr {
 		}
 		return vlist;
 	}
+	
+	
 	
 	//테마 선택
 	public TemaBean selectTema(int tema_id) {

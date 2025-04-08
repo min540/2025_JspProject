@@ -433,21 +433,22 @@
         String fileName = bean.getTema_img();
         String title = bean.getTema_title();
 %>
-    <div class="background-list-item">
-        <button class="background-image-button" onclick="selectBackground('<%= fileName %>')">
-            <img src="<%= request.getContextPath() %>/jspproject/img/<%= fileName %>" alt="<%= title %>" />
-        </button>
-        <img class="delete-icon" 
-             src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png" 
-             alt="삭제" 
-             onclick="deleteImage(this)" />
-    </div>
+<div class="background-list-item" data-tema-id="<%=bean.getTema_id()%>">
+    <button class="background-image-button"
+        onclick="selectBackground('<%=fileName%>', '<%=title%>', '<%=bean.getTema_cnt()%>')">
+        <img src="<%= request.getContextPath() %>/jspproject/img/<%= fileName %>" alt="<%= title %>" />
+    </button>
+    <img class="delete-icon"
+        src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png"
+        alt="삭제"
+        onclick="deleteImage(this)" />
+</div>
 <%
     }
 %>
 </div>
 
-        <div class="background-footer">
+        <div class="background-footer"> 
             <button class="btn-purple" onclick="addbackgroundItem()" >업로드</button>
         </div>
     </div>
@@ -572,14 +573,27 @@ function saveDescription() {
 
 function deleteImage(el) {
     const item = el.closest('.background-list-item');
+    const temaId = item.getAttribute("data-tema-id");
+
     if (confirm("정말 삭제하시겠습니까?")) {
-        item.remove();
+        // 서버로 삭제 요청 보내기
+        fetch(`deleteTema.jsp?tema_id=${temaId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("삭제 완료되었습니다.");
+                    item.remove(); // 화면에서도 삭제
+                } else {
+                    alert("삭제에 실패했습니다.");
+                }
+            })
+            .catch(err => {
+                console.error("삭제 요청 중 오류 발생:", err);
+                alert("삭제 중 오류가 발생했습니다.");
+            });
     }
 }
 
-function addbackgroundItem() {
-    document.getElementById("backgroundFileInput").click();
-}
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".background-search");
@@ -606,22 +620,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function selectBackground(fileName) {
+function selectBackground(fileName, title, description) {
     const previewImg = document.querySelector(".backgroundImg");
     const titleInput = document.getElementById("backgroundTitleInput");
     const textarea = document.querySelector(".background-description textarea");
     const contextPath = "<%= request.getContextPath() %>";
-    const fullPath = contextPath + "/jspproject/img/" + fileName; 
 
-    previewImg.src = fullPath;
+    // 이미지 미리보기
+    previewImg.src = contextPath + "/jspproject/img/" + fileName;
 
-    if (backgroundDescriptions[fileName]) {
-        titleInput.value = backgroundDescriptions[fileName].title || fileName;
-        textarea.value = backgroundDescriptions[fileName].description || "";
-    } else {
-        titleInput.value = fileName;
-        textarea.value = "";
-    }
+    // 제목 & 설명 반영
+    titleInput.value = title || fileName;
+    textarea.value = description || "";
+
+    // 저장용 객체에도 갱신
+    backgroundDescriptions[fileName] = {
+        title: title,
+        description: description
+    };
 }
 
 function addbackgroundItem() {
