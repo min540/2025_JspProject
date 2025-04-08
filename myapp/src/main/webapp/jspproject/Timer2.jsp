@@ -3,128 +3,130 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>타이머</title>
+  <title>드래그 가능한 네모 타이머</title>
   <style>
     body {
-      overflow: hidden;
       margin: 0;
+      background: #f1f4fa;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    .timer1-timer-container {
+    .timer2-card {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: #11111c;
-      border: 3px solid #1C1C1C;
-      user-select: none;
-      cursor: default;
-    }
-
-    .timer1-svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: rotate(90deg) scaleX(-1);
-    }
-
-    .timer1-drag-handle {
-      position: absolute;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 28px;
-      color: white;
-      user-select: none;
-      cursor: grab;
-      z-index: 10;
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-
-    .timer1-center {
-      position: absolute;
-      top: 47%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      width: 320px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 16px 16px 20px;
+      box-sizing: border-box;
       text-align: center;
+      cursor: default;
+      border: 10px solid #a259ff;
     }
 
-    .timer1-time {
+    .timer2-drag-handle {
       font-size: 24px;
+      cursor: grab;
+      color: #bbb;
+      user-select: none;
+      margin-bottom: 10px;
+    }
+
+    .timer2-progress-container {
+      width: 100%;
+      height: 12px;
+      background: #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .timer2-progress-bar {
+      height: 100%;
+      background-color: #3f8efc;
+      width: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .timer2-time-display {
+      font-size: 36px;
       font-weight: bold;
-      margin-bottom: 6px;
-      color: white;
+      color: #222;
+      margin-bottom: 10px;
     }
 
-    .timer1-info {
+    .timer2-session-info {
       font-size: 14px;
-      line-height: 1.3;
-      color: white;
+      color: #555;
     }
 
-    .timer1-info strong {
+    .timer2-session-info strong {
+      color: #3f8efc;
       cursor: pointer;
     }
 
-    input.timer1-input {
+    .timer2-session-info .break-time {
+      color: #4caf50;
+    }
+
+    input.timer2-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
-      background: transparent;
-      border: none;
-      color: white;
-      outline: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 2px;
     }
 
-    .timer1-bottom-controls {
-      position: absolute;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
+    .timer2-btn-area {
+      margin-top: 20px;
       display: flex;
-      gap: 24px;
+      justify-content: center;
+      gap: 12px;
     }
 
-    .timer1-btn {
-      font-size: 20px;
-      background: none;
+    .timer2-play-btn {
+      width: 40px;
+      height: 40px;
+      background: white;
       border: none;
-      color: white;
+      border-radius: 8px;
+      font-size: 20px;
+      color: #3f8efc;
       cursor: pointer;
-      transition: 0.2s;
+      transition: all 0.2s;
     }
 
-    .timer1-btn:hover {
-      color: #3f8efc;
+    .timer2-play-btn:hover {
+      background: #f0f4ff;
+      color: #1a5ef0;
     }
   </style>
 </head>
 <body>
 
-<div class="timer1-timer-container" id="timerContainer">
-  <div class="timer1-drag-handle">:::</div>
+<div class="timer2-card" id="timerCard">
+  <div class="timer2-drag-handle" id="dragHandle">:::</div>
 
-  <svg class="timer1-svg" width="240" height="240">
-    <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12"
-            fill="none" stroke-linecap="butt" stroke-dasharray="628" />
-  </svg>
-
-  <div class="timer1-center">
-    <div class="timer1-time" id="timeDisplay">10:00</div>
-    <div class="timer1-info" id="timerInfo">
-      <strong id="sessionTime">10:00</strong> 세션<br>
-      과 <strong id="breakTime">05:00</strong> 휴식
-    </div>
+  <div class="timer2-progress-container">
+    <div class="timer2-progress-bar" id="progressBar"></div>
   </div>
 
-  <div class="timer1-bottom-controls">
-    <button class="timer1-btn" id="btnReset">⟲</button>
-    <button class="timer1-btn" id="toggleBtn">▶️</button>
+  <div class="timer2-time-display" id="timeDisplay">10:00</div>
+
+  <div class="timer2-session-info" id="timerInfo">
+    <strong id="sessionTime">10:00</strong> 세션,
+    <strong id="breakTime" class="break-time">05:00</strong> 휴식
+  </div>
+
+  <div class="timer2-btn-area">
+    <button class="timer2-play-btn" id="toggleBtn">▶️</button>
+    <button class="timer2-play-btn" id="btnReset">⟲</button>
   </div>
 </div>
 
@@ -137,20 +139,15 @@ document.addEventListener("DOMContentLoaded", function () {
   let isRunning = false;
   let interval = null;
 
-  const RADIUS = 100;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
+  const timerCard = document.getElementById("timerCard");
+  const dragHandle = document.getElementById("dragHandle");
+  const progressBar = document.getElementById("progressBar");
   const timeDisplay = document.getElementById("timeDisplay");
-  const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
   const breakTimeEl = document.getElementById("breakTime");
   const toggleBtn = document.getElementById("toggleBtn");
   const btnReset = document.getElementById("btnReset");
-  const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer1-drag-handle");
   const timerInfo = document.getElementById("timerInfo");
-
-  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -161,9 +158,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const updateProgress = () => {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
-    const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#3f8efc" : "#4caf50";
-    progressCircle.style.strokeDashoffset = offset;
+    progressBar.style.width = (percent * 100) + "%";
+    progressBar.style.backgroundColor = isSession ? "#3f8efc" : "#4caf50";
     timeDisplay.textContent = formatTime(timeLeft);
   };
 
@@ -213,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer1-input";
+    input.className = "timer2-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {
@@ -256,24 +252,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   dragHandle.addEventListener("mousedown", (e) => {
     e.preventDefault();
-    const rect = timer.getBoundingClientRect();
+    const rect = timerCard.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
     isDragging = true;
     document.body.style.cursor = "grabbing";
 
-    // transform 제거 (드래그 시작 시 위치 고정)
-    timer.style.transform = "none";
-    timer.style.left = rect.left + "px";
-    timer.style.top = rect.top + "px";
+    timerCard.style.transform = "none";
+    timerCard.style.left = rect.left + "px";
+    timerCard.style.top = rect.top + "px";
   });
 
   document.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
     const x = e.clientX - offsetX;
     const y = e.clientY - offsetY;
-    timer.style.left = x + "px";
-    timer.style.top = y + "px";
+    timerCard.style.left = x + "px";
+    timerCard.style.top = y + "px";
   });
 
   document.addEventListener("mouseup", () => {
