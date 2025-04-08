@@ -40,9 +40,51 @@ if (ubean == null) {
                 const profileImg = document.getElementById('profileImg');
                 profileImg.src = e.target.result;
                 profileImg.style.display = 'block'; // 이미지를 반드시 보이게 설정
+                console.log('새 이미지 미리보기 로드 완료');
             }
             reader.readAsDataURL(event.target.files[0]);
         }
+    }
+ // 기존 previewImage 함수는 그대로 두고 이미지 업로드 함수 추가
+    function uploadProfileImage(event) {
+        // 파일이 선택되었는지 확인
+        const fileInput = document.getElementById('profileImage');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            return;
+        }
+        
+        // 폼 데이터 생성 및 파일 추가
+        const formData = new FormData();
+        formData.append('profile', fileInput.files[0]);
+        
+        // fetch API로 이미지 업로드
+        fetch('profileIconUpdate', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('서버 응답 오류');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+               
+                // 이미지 경로 업데이트 (필요한 경우)
+                const profileImg = document.getElementById('profileImg');
+                if (profileImg) {
+                    profileImg.src = "img/" + data.filename;
+                    profileImg.style.display = 'block';
+                }
+            } else {
+              
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("이미지 업로드 중 오류가 발생했습니다");
+        });
     }
     
          function enableEdit() {
@@ -51,6 +93,7 @@ if (ubean == null) {
 		document.getElementById('phone').disabled = false;			
 		document.getElementById('email').disabled = false;		
 		document.getElementById('success').disabled = false;	
+		
 		  const profileImage = document.getElementById('profileImage');
 		    profileImage.disabled = false;
 		
@@ -141,6 +184,7 @@ if (ubean == null) {
         border-radius: 50%;
         font-size: 14px;
         z-index: 5;
+        display: none;
     }
 	
 	#profileImg {
@@ -205,15 +249,15 @@ if (ubean == null) {
         
         <!-- 같은 페이지로 폼 제출 -->
         <form action="profileUpdate"  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
-        <input type="file" name="profile" id="profileImage" onchange="previewImage(event)" style="display: none;">
+        <input type="file" name="profile" id="profileImage" onchange="previewImage(event);  uploadProfileImage(event);" style="display: none;">
         	
         	
+		<div class="profile-circle" id="profile-circle">
 			<label for="profileImage"  class="profile-label" >
-			<div class="profile-circle">
-    	<img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>"
-     	alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
-     	</div>
-		</label>
+		    	<img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "" %>"
+		     	alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+			</label>
+	     </div>
 		
        
             <div class="form-group">
