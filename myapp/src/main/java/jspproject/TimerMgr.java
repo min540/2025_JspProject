@@ -24,7 +24,7 @@ public class TimerMgr {
 			con = pool.getConnection();
 			sql = "select * from timer order by timer_id desc";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, timer_id);
+			/* pstmt.setInt(1, timer_id); */
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				TimerBean bean = new TimerBean();

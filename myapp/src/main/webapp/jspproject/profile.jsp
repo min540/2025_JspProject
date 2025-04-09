@@ -22,100 +22,98 @@ if (ubean == null) {
 }
 
 
-    %>
-    <!-- 파일 업로드를 위한 enctype 추가 -->
-    <script>
-  
-    function previewImage(event) {
-        // 파일 입력 요소의 disabled 상태 확인
-        const fileInput = event.target;
-        if (fileInput.disabled) {
-            // disabled 상태라면 함수 실행 중단
-            return;
-        }
+ %>
+<!-- 파일 업로드를 위한 enctype 추가 -->
+<script>
+function previewImage(event) {
+    const fileInput = event.target;
+    if (fileInput.disabled) return;
 
-        if (event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const profileImg = document.getElementById('profileImg');
-                profileImg.src = e.target.result;
-                profileImg.style.display = 'block'; // 이미지를 반드시 보이게 설정
-                console.log('새 이미지 미리보기 로드 완료');
-            }
-            reader.readAsDataURL(event.target.files[0]);
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const profileImg = document.getElementById('profileImg');
+            profileImg.src = e.target.result;
+            profileImg.style.display = 'block';
         }
+        reader.readAsDataURL(event.target.files[0]);
     }
- // 기존 previewImage 함수는 그대로 두고 이미지 업로드 함수 추가
-    function uploadProfileImage(event) {
-        // 파일이 선택되었는지 확인
-        const fileInput = document.getElementById('profileImage');
-        if (!fileInput.files || fileInput.files.length === 0) {
-            return;
+}
+
+function uploadProfileImage(event) {
+    const fileInput = document.getElementById('profileImage');
+    if (!fileInput.files || fileInput.files.length === 0) return;
+
+    const formData = new FormData();
+    formData.append('profile', fileInput.files[0]);
+
+    fetch('profileIconUpdate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const profileImg = document.getElementById('profileImg');
+            if (profileImg) {
+                profileImg.src = "img/" + data.filename;
+                profileImg.style.display = 'block';
+            }
         }
-        
-        // 폼 데이터 생성 및 파일 추가
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("이미지 업로드 중 오류가 발생했습니다");
+    });
+}
+
+function enableEdit() {
+    document.getElementById('password').disabled = false;
+    document.getElementById('name').disabled = false;
+    document.getElementById('phone').disabled = false;
+    document.getElementById('email').disabled = false;
+    document.getElementById('success').disabled = false;
+
+    const fileInput = document.getElementById('profileImage');
+    fileInput.removeAttribute('disabled');
+
+    const profileCircle = document.getElementById('profile-circle');
+    profileCircle.onclick = () => {
+        if (!fileInput.disabled) fileInput.click();
+    };
+}
+
+function update() {
+    const form = document.forms['frm'];
+    const fileInput = document.getElementById('profileImage');
+
+    if (fileInput.files && fileInput.files.length > 0) {
         const formData = new FormData();
         formData.append('profile', fileInput.files[0]);
-        
-        // fetch API로 이미지 업로드
+
         fetch('profileIconUpdate', {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('서버 응답 오류');
-            }
-            return response.json();
-        })
+        .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-               
-                // 이미지 경로 업데이트 (필요한 경우)
-                const profileImg = document.getElementById('profileImg');
-                if (profileImg) {
-                    profileImg.src = "img/" + data.filename;
-                    profileImg.style.display = 'block';
-                }
+                alert("수정이 완료되었습니다.");
+                form.submit();
             } else {
-              
+                alert("이미지 업로드 실패");
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("이미지 업로드 중 오류가 발생했습니다");
+        .catch(err => {
+            console.error(err);
+            alert("이미지 업로드 중 오류가 발생했습니다.");
         });
+    } else {
+        alert("수정이 완료되었습니다.");
+        form.submit();
     }
-    
-         function enableEdit() {
-		document.getElementById('password').disabled = false;			
-		document.getElementById('name').disabled = false;			
-		document.getElementById('phone').disabled = false;			
-		document.getElementById('email').disabled = false;		
-		document.getElementById('success').disabled = false;	
-		
-		  const profileImage = document.getElementById('profileImage');
-		    profileImage.disabled = false;
-		
-		}
-         function update() {
-         	alert("수정이 완료 되었습니다");
-     		document.frm.submit();
-         }
-         window.onload = function() {
-             // 모든 입력 필드 비활성화
-             document.getElementById('password').disabled = true;
-             document.getElementById('name').disabled = true;
-             document.getElementById('phone').disabled = true;
-             document.getElementById('email').disabled = true;
-             document.getElementById('success').disabled = true;    
-          // 프로필 이미지 입력 필드도 비활성화
-             const profileImage = document.getElementById('profileImage');
-             profileImage.disabled = true;
-         }
-
-         
-    </script>
+}
+</script>
 <style>        
 	.form-container {
 	    width: 420px; /* ✅ 너비 늘림 */
@@ -199,7 +197,8 @@ if (ubean == null) {
 	}
 	
 	.form-group {
-	    margin-bottom: 14px;
+		margin-top:25px;
+	    margin-bottom: 20px;
 	}
 	
 	label {
@@ -238,58 +237,52 @@ if (ubean == null) {
 	}
 </style>
 
-
-    <div class="form-container">
-        <div class="profile-icons">
-		    <img src="icon/아이콘_수정_1.png" alt="수정 아이콘" class="icon-edit" onclick = "enableEdit()">
-		    <img src="icon/아이콘_프로필_1.png" alt="프로필 아이콘" class="icon-profile" onclick="toggleProfile()">
-		</div>
-		
-      
-        
-        <!-- 같은 페이지로 폼 제출 -->
-        <form action="profileUpdate"  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
-        <input type="file" name="profile" id="profileImage" onchange="previewImage(event);  uploadProfileImage(event);" style="display: none;">
-        	
-        	
-		<div class="profile-circle" id="profile-circle">
-			<label for="profileImage"  class="profile-label" >
-		    	<img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "" %>"
-		     	alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
-			</label>
-	     </div>
-		
-       
-            <div class="form-group">
-                <label for="username">아이디
-                <input type="text" id="username" name="user_id" value = "<%=ubean.getUser_id() %>" readonly >
-                </label>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">비밀번호
-                <input type="text" id="password" name="user_pwd" value="<%=ubean.getUser_pwd() %>" disabled>
-                </label>
-            </div>
-            
-            <div class="form-group">
-                <label for="name">이름
-                <input type="text" id="name" name="user_name" value = "<%=ubean.getUser_name()%>" disabled>
-                </label>
-            </div>
-            
-            <div class="form-group">
-                <label for="phone">전화번호
-                <input type="text" id="phone" name="user_phone" value = "<%=ubean.getUser_phone()%>" disabled>
-                </label>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">이메일
-                <input type="text" id="email" name="user_email" value = "<%=ubean.getUser_email()%>" disabled>
-                </label>
-            </div>
-              <input type="button"  value="완료" id = "success"class="submit-btn" onclick="update()" disabled>
-            
-        </form>
+<div class="form-container">
+    <div class="profile-icons">
+        <img src="icon/아이콘_수정_1.png" alt="수정 아이콘" class="icon-edit" onclick="enableEdit()">
+        <img src="icon/아이콘_프로필_1.png" alt="프로필 아이콘" class="icon-profile" onclick="toggleProfile()">
     </div>
+
+    <form action="profileUpdate" name="frm" method="post" enctype="multipart/form-data" class="post_form">
+        <input type="file" name="profile" id="profileImage" onchange="previewImage(event); uploadProfileImage(event);" style="display: none;" disabled>
+
+        <div class="profile-circle" id="profile-circle">
+            <label for="profileImage" class="profile-label">
+                <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "" %>"
+                    alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="username">아이디
+                <input type="text" id="username" name="user_id" value="<%=ubean.getUser_id() %>" readonly>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="password">비밀번호
+                <input type="text" id="password" name="user_pwd" value="<%=ubean.getUser_pwd() %>" disabled>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="name">이름
+                <input type="text" id="name" name="user_name" value="<%=ubean.getUser_name()%>" disabled>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">전화번호
+                <input type="text" id="phone" name="user_phone" value="<%=ubean.getUser_phone()%>" disabled>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="email">이메일
+                <input type="text" id="email" name="user_email" value="<%=ubean.getUser_email()%>" disabled>
+            </label>
+        </div>
+
+        <input type="button" value="완료" id="success" class="submit-btn" onclick="update()" disabled>
+    </form>
+</div>
