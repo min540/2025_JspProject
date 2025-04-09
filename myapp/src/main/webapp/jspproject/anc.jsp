@@ -5,11 +5,12 @@
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <%
 /* 	int anc_id = Integer.parseInt(request.getParameter("anc_id")); */
+		
+
 	AncMgr amgr = new AncMgr();
 	Vector<AncBean> vlist = amgr.listAnc();
 	AncBean recent = amgr.viewAnc();
 
-	
 /* 	AncBean pbean = amgr.beforeImg(anc_id); */
 %>
 <html>
@@ -72,19 +73,18 @@ header h3, header h4 {
 }
 .box{
 	width: 600px;
-	height: 1000px;
-	background-color: #4A3C6E;
-	margin: 0 auto;
-	top: -140px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-	position: relative;
-	z-index: 10;
-	/* padding: 20px; */
+    height: auto;
+    margin: 0 auto;
+    top: -140px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 10;
 }
 .ntitle{
 	margin-left: 20px;
 	color: white;
 	margin-top:20px;
+	
 	
 	}
 .container {
@@ -94,29 +94,19 @@ header h3, header h4 {
   margin: 0 auto;
   align-items: stretch;
 }
-.divider {
-  position: absolute;
-  top:70px;
-  bottom:0px;
-  left:400px;
-  width: 1px;
-  height: calc(100% - 70px);
-  background-color: #888;
-  margin: 0 16px;
-} 
+
 .box2{
  width:415px;
  height:auto;
  background-color: #5C4B85;
- box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
  margin-bottom: 20px;
+ padding: 0 0 40px 0;
 }
 .box3 {
   width: 415px;
   height: auto; /* 고정 높이 대신 자동 조정 */
   min-height: 200px; /* 최소 높이 설정 */
   background-color: #5C4B85;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
   position: relative; /* 내부 요소 배치를 위한 기준점 */
   padding-bottom: 50px; /* 하단 여백 추가 */
@@ -145,42 +135,59 @@ input[type="checkbox"]:checked::after {
 }
 .dbtn{
 	width: 70px;
-	height: 30px;
-	border-radius: 10px;
-	margin-left: 345px;
-	margin-top: 10px;
-	font-size: 16px;
-	border: 0.8px solid #ffffff;
-	background-color: #32225B;
-	color : white;
+    height: 30px;
+    border-radius: 10px;
+    margin-top: 10;
+    margin-left: 140px;
+    font-size: 16px;
+    border: 0.8px solid #ffffff;
+    background-color: #32225B;
+    color: white;
 }
 .new{
 	margin-left: auto;
-	margin-right: 110px;
-	margin-top: 70px;
-	color: white;
-	font-weight: bold;
-	 line-height: 2;
+    margin-right: 80px;
+    margin-top: 70px;
+    color: white;
+    font-weight: bold;
+    line-height: 2;
+    font-size: 18px;
 }
 .container-box {
   	display: flex;
   	position: relative;
   	
 }
-.left-section, .right-section {
- 	width: 50%;
+.left-section {
+ 	width: 75%;
  	box-sizing: border-box;
+ 	background-color: #5C4B85;
+ 	padding: 10px;
+}
+
+.right-section {
+	width: 200px;
+	background-color: #3f235a;
 }
 .newtext{
-  	margin-left: 125px;
+  	margin-left: 0px;
   	color: white;
   	font-size: 10px;
   	 line-height: 2;
+  	
 }
 .newtext h4 {
 	margin: 0;
-  	padding: 0;
+    padding: 0;
+    margin-left: 10px;
+    font-size: 14px;
 }
+
+.newtext h4 a:hover {
+  color: white;              /* 마우스를 올린 상태에서도 계속 흰색 유지 */
+  text-decoration: underline;    /* 마우스를 올렸을 때 밑줄 제거 */
+}
+
  ul {
   list-style: none;
   padding: 0;
@@ -203,33 +210,32 @@ input[type="checkbox"]:checked::after {
   justify-content: center;
   width: 100%;
   position: absolute; /* 절대 위치 설정 */
-  bottom: 15px; /* 박스 하단에서 위치 */
   left: 0;
 }
 .pagination-wrapper ul {
-  display: flex;
   justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 180px;
 }
 .pagination-wrapper li {
-  background-color: #5c4b85;
   width: 30px;
-  height: 30px;
-  text-align: center;
-  border-radius: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  font-weight: bold;
-  margin-right: 8px;
-  cursor: pointer;
+    height: 30px;
+    text-align: center;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-right: 7px;
+    cursor: pointer;
 }
  a {
   color: white;           
-  text-decoration: none;   
+  text-decoration: none; 
 } 
 a:hover {
   color: #32225B;        
@@ -359,11 +365,11 @@ function confirmDelete() {
                         <li>▶</li>
                         <% } %>
 						</ul>
+						<div>
+							<button type="submit" class="dbtn" style="z-index:9999; position:relative; pointer-events:auto;" onclick="return confirmDelete();">삭제</button>
+						</div>
 						</div>
 			<!-- 동적 페이징 처리 끝-->
-			</div>
-			<div>
-				<button type="submit" class="dbtn" style="z-index:9999; position:relative; pointer-events:auto;" onclick="return confirmDelete();">삭제</button>
 			</div>
 			</form>
 		</div>

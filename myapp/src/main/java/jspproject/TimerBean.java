@@ -67,7 +67,7 @@ public class TimerBean {
 	public String getTimer_cnt() {
 		return timer_cnt;
 	}
-	public void setTimer_cnt(String cnt) {
+	public void setTimer_cnt(String timer_cnt) {
 		this.timer_cnt = timer_cnt;
 	}
 	public int getTimer_loc() {

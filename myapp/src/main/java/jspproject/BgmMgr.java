@@ -1,3 +1,4 @@
+
 package jspproject;
 
 import java.io.File;
@@ -6,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,614 +16,259 @@ import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 public class BgmMgr {
-	private DBConnectionMgr pool;
-	// 세이브 폴더 pull 받을 시 자기 폴더에 맞게 주소 변경할 것
-	public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
-	public static final String ENCTYPE = "UTF-8";
-	public static int MAXSIZE = 10 * 1024 * 1024;
+    private DBConnectionMgr pool;
+    public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
+    public static final String ENCTYPE = "UTF-8";
+    public static int MAXSIZE = 10 * 1024 * 1024;
 
-	public BgmMgr() {
-		pool = DBConnectionMgr.getInstance();
-	}
+    public BgmMgr() {
+        pool = DBConnectionMgr.getInstance();
+    }
 
-	// 배경음악 리스트
-	public Vector<BgmBean> getBgmList(String user_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<BgmBean> vlist = new Vector<BgmBean>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT * FROM bgm WHERE user_id = ? ORDER BY bgm_id DESC";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user_id);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				BgmBean bean = new BgmBean();
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setBgm_name(rs.getString("bgm_name"));
-				bean.setBgm_cnt(rs.getString("bgm_cnt"));
-				bean.setBgm_music(rs.getString("bgm_music"));
-				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
-				bean.setBgm_image(rs.getString("bgm_image"));
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
+    public Vector<BgmBean> getBgmList(String user_id) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = null;
+        Vector<BgmBean> vlist = new Vector<BgmBean>();
+        try {
+            con = pool.getConnection();
+            sql = "SELECT * FROM bgm WHERE user_id = ? ORDER BY bgm_id DESC";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                BgmBean bean = new BgmBean();
+                bean.setBgm_id(rs.getInt("bgm_id"));
+                bean.setUser_id(rs.getString("user_id"));
+                bean.setBgm_name(rs.getString("bgm_name"));
+                bean.setBgm_cnt(rs.getString("bgm_cnt"));
+                bean.setBgm_music(rs.getString("bgm_music"));
+                bean.setBgm_onoff(rs.getInt("bgm_onoff"));
+                bean.setBgm_image(rs.getString("bgm_image"));
+                vlist.add(bean);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+        return vlist;
+    }
 
-	// bgm 이름 검색
-	public Vector<BgmBean> searchBgm(int bgm_id, String bgm_name) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<BgmBean> vlist = new Vector<BgmBean>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT * FROM bgm where bgm_id = ? and bgm_name like ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, bgm_id);
-			pstmt.setString(2, "%" + bgm_name + "%");
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				BgmBean bean = new BgmBean();
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setBgm_name(rs.getString("bgm_name"));
-				bean.setBgm_cnt(rs.getString("bgm_cnt"));
-				bean.setBgm_music(rs.getString("bgm_music"));
-				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
-				bean.setBgm_image(rs.getString("bgm_image"));
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
+    public Vector<BgmBean> searchBgm(int bgm_id, String bgm_name) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = null;
+        Vector<BgmBean> vlist = new Vector<BgmBean>();
+        try {
+            con = pool.getConnection();
+            sql = "SELECT * FROM bgm WHERE bgm_id = ? AND bgm_name LIKE ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, bgm_id);
+            pstmt.setString(2, "%" + bgm_name + "%");
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                BgmBean bean = new BgmBean();
+                bean.setBgm_id(rs.getInt("bgm_id"));
+                bean.setUser_id(rs.getString("user_id"));
+                bean.setBgm_name(rs.getString("bgm_name"));
+                bean.setBgm_cnt(rs.getString("bgm_cnt"));
+                bean.setBgm_music(rs.getString("bgm_music"));
+                bean.setBgm_onoff(rs.getInt("bgm_onoff"));
+                bean.setBgm_image(rs.getString("bgm_image"));
+                vlist.add(bean);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+        return vlist;
+    }
 
-	// bgm 이름순으로 나열
-	public Vector<BgmBean> sortBgm(int bgm_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<BgmBean> vlist = new Vector<BgmBean>();
-		try {
-			con = pool.getConnection();
-			sql = "select * from bgm order by bgm_name";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, bgm_id);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				BgmBean bean = new BgmBean();
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setBgm_name(rs.getString("bgm_name"));
-				bean.setBgm_cnt(rs.getString("bgm_cnt"));
-				bean.setBgm_music(rs.getString("bgm_music"));
-				bean.setBgm_onoff(rs.getInt("bgm_onoff"));
-				bean.setBgm_image(rs.getString("bgm_image"));
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
+    public Vector<BgmBean> sortBgm() {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = null;
+        Vector<BgmBean> vlist = new Vector<BgmBean>();
+        try {
+            con = pool.getConnection();
+            sql = "SELECT * FROM bgm ORDER BY bgm_name";
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                BgmBean bean = new BgmBean();
+                bean.setBgm_id(rs.getInt("bgm_id"));
+                bean.setUser_id(rs.getString("user_id"));
+                bean.setBgm_name(rs.getString("bgm_name"));
+                bean.setBgm_cnt(rs.getString("bgm_cnt"));
+                bean.setBgm_music(rs.getString("bgm_music"));
+                bean.setBgm_onoff(rs.getInt("bgm_onoff"));
+                bean.setBgm_image(rs.getString("bgm_image"));
+                vlist.add(bean);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+        return vlist;
+    }
 
-	//musicList에 음악만 추가
-	public boolean insertSimpleBgm(BgmBean bean) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    String sql = "INSERT INTO bgm (user_id, bgm_name, bgm_music, bgm_cnt, bgm_onoff, bgm_image, mplist_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	    try {
-	        con = pool.getConnection();
-	        pstmt = con.prepareStatement(sql);
-	        pstmt.setString(1, bean.getUser_id());
-	        pstmt.setString(2, bean.getBgm_name());
-	        pstmt.setString(3, bean.getBgm_music());
-	        pstmt.setString(4, bean.getBgm_cnt());
-	        pstmt.setInt(5, bean.getBgm_onoff());
-	        pstmt.setString(6, bean.getBgm_image());
-	        pstmt.setInt(7, bean.getMplist_id());
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        pool.freeConnection(con, pstmt);
-	    }
-	}
-	
-	// 배경음악 추가
-	public boolean insertBgm(HttpServletRequest req) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		MultipartRequest multi = null;
+    public int insertSimpleBgm(BgmBean bean) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int insertedId = -1;
+        String sql = "INSERT INTO bgm (user_id, bgm_name, bgm_music, bgm_cnt, bgm_onoff, bgm_image) VALUES (?, ?, ?, ?, ?, ?)";
 
-		// 파일 저장 경로 설정
-		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-		String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
-		int maxSize = 10 * 1024 * 1024; // 10MB
+        try {
+            con = pool.getConnection();
+            pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, bean.getUser_id());
+            pstmt.setString(2, bean.getBgm_name());
+            pstmt.setString(3, bean.getBgm_music());
+            pstmt.setString(4, bean.getBgm_cnt());
+            pstmt.setInt(5, bean.getBgm_onoff());
+            pstmt.setString(6, bean.getBgm_image());
+            pstmt.executeUpdate();
 
-		try {
-			// 모든 파일은 일단 imagePath에 저장됨
-			multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                insertedId = rs.getInt(1);
+                bean.setBgm_id(insertedId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+        return insertedId;
+    }
 
-			// 파라미터 받기
-			String user_id = multi.getParameter("user_id");
-			String bgm_name = multi.getParameter("bgm_name");
-			String bgm_cnt = multi.getParameter("bgm_cnt");
-			int bgm_onoff = 0; // 항상 OFF로 고정
-			int mplist_id = Integer.parseInt(multi.getParameter("mplist_id"));
-			// 이미지 파일
-			String bgm_image = multi.getFilesystemName("image");
-			// 음악 파일 이동 처리
-			String bgm_music = null;
-			File musicFile = multi.getFile("music");
-			if (musicFile != null) {
-				bgm_music = musicFile.getName();
-				// 원래 img 폴더에 저장된 음악 파일 경로
-				File origin = new File(imagePath + "/" + bgm_music);
-				// music 폴더로 이동
-				File dest = new File(musicPath + "/" + bgm_music);
-				Files.copy(origin.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				// img 폴더의 음악 파일 삭제
-				if (origin.exists()) {
-					origin.delete();
-				}
-			}
-			// DB 연결 및 INSERT
-			con = pool.getConnection();
-			sql = "INSERT INTO bgm VALUES (null, ?, ?, ?, ?, ?, ?, ?)";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user_id);
-			pstmt.setString(2, bgm_name);
-			pstmt.setString(3, bgm_music);
-			pstmt.setString(4, bgm_cnt);
-			pstmt.setInt(5, bgm_onoff);
-			pstmt.setString(6, bgm_image);
-			pstmt.setInt(7, mplist_id);
-			pstmt.executeUpdate();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
 
-	// 배경음악 수정(음악, 사진, 설명만 변경)
-	public boolean updateBgm(HttpServletRequest req) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    String sql = null;
-	    MultipartRequest multi = null;
+    public boolean insertBgm(HttpServletRequest req) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        MultipartRequest multi = null;
 
-	    String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-	    int maxSize = 100 * 1024 * 1024;
+        String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
+        String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
+        int maxSize = 10 * 1024 * 1024;
 
-	    try {
-	        multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
+        try {
+            multi = new MultipartRequest(req, imagePath, maxSize, "UTF-8", new DefaultFileRenamePolicy());
 
-	        int bgm_id = Integer.parseInt(multi.getParameter("bgm_id"));
-	        String bgm_name = multi.getParameter("bgm_name");
-	        String bgm_cnt = multi.getParameter("bgm_cnt");
-	        String original_image = multi.getParameter("original_image");
-	        String bgm_image = multi.getFilesystemName("bgm_image");
-	        if (bgm_image == null) {
-	            bgm_image = original_image;
-	        }
+            String user_id = multi.getParameter("user_id");
+            String bgm_name = multi.getParameter("bgm_name");
+            String bgm_cnt = multi.getParameter("bgm_cnt");
+            int bgm_onoff = 0;
+            String bgm_image = multi.getFilesystemName("image");
 
-	        //DB 업데이트
-	        con = pool.getConnection();
-	        sql = "UPDATE bgm SET bgm_name = ?, bgm_cnt = ?, bgm_image = ? WHERE bgm_id = ?";
-	        pstmt = con.prepareStatement(sql);
-	        pstmt.setString(1, bgm_name);
-	        pstmt.setString(2, bgm_cnt);
-	        pstmt.setString(3, bgm_image);
-	        pstmt.setInt(4, bgm_id);
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        pool.freeConnection(con, pstmt);
-	    }
-	}
+            String bgm_music = null;
+            File musicFile = multi.getFile("music");
+            if (musicFile != null) {
+                bgm_music = musicFile.getName();
+                File origin = new File(imagePath + "/" + bgm_music);
+                File dest = new File(musicPath + "/" + bgm_music);
+                Files.copy(origin.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                if (origin.exists()) origin.delete();
+            }
 
-	// 배경음악 삭제
-	public void deleteBgm(int bgm_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "DELETE FROM bgm WHERE bgm_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, bgm_id);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
-	
-	//bgm을 mplist에 넣기
-	public boolean assignBgmToMplist(int bgm_id, int mplist_id) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    String sql = null;
-	    try {
-	        con = pool.getConnection();
-	        sql = "UPDATE bgm SET mplist_id = ? WHERE bgm_id = ?";
-	        pstmt = con.prepareStatement(sql);
-	        pstmt.setInt(1, mplist_id);
-	        pstmt.setInt(2, bgm_id);
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        pool.freeConnection(con, pstmt);
-	    }
-	}
-	
-	// mplist 리스트 불러오기
-	public Vector<MplistBean> getMplist(String user_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<MplistBean> vlist = new Vector<MplistBean>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT * FROM mplist WHERE user_id = ? ORDER BY mplist_id DESC";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user_id);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				MplistBean bean = new MplistBean();
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				bean.setMplist_name(rs.getString("mplist_name"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setMplist_cnt(rs.getString("mplist_cnt"));
-				bean.setMplist_img(rs.getString("mplist_img"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
+            con = pool.getConnection();
+            String sql = "INSERT INTO bgm VALUES (null, ?, ?, ?, ?, ?, ?)";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, bgm_name);
+            pstmt.setString(3, bgm_music);
+            pstmt.setString(4, bgm_cnt);
+            pstmt.setInt(5, bgm_onoff);
+            pstmt.setString(6, bgm_image);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
 
-	//mplist 검색
-	public Vector<MplistBean> searchMplist(int mplist_id, String mplist_name) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<MplistBean> vlist = new Vector<MplistBean>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT * FROM mplist where mplist_id = ? and mplist_name like ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplist_id);
-			pstmt.setString(2, mplist_name);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				MplistBean bean = new MplistBean();
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				bean.setMplist_name(rs.getString("mplist_name"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setMplist_cnt(rs.getString("mplist_cnt"));
-				bean.setMplist_img(rs.getString("mplist_img"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
-	
-	//mplist 이름 순 정렬
-	public Vector<MplistBean> sortMplist(int mplist_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<MplistBean> vlist = new Vector<MplistBean>();
-		try {
-			con = pool.getConnection();
-			sql = "select * from mplist order by mplist_name";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplist_id);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				MplistBean bean = new MplistBean();
-				bean.setMplist_id(rs.getInt("mplist_id"));
-				bean.setMplist_name(rs.getString("mplist_name"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setMplist_cnt(rs.getString("mplist_cnt"));
-				bean.setMplist_img(rs.getString("mplist_img"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
-	
-	// mplist 추가
-	public boolean insertMplist(HttpServletRequest req) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		MultipartRequest multi = null;
-		String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-		int maxSize = 10 * 1024 * 1024;
+    public boolean updateBgmInfo(int bgm_id, String bgm_name, String bgm_cnt) {
+        boolean result = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        String sql = "UPDATE bgm SET bgm_name = ?, bgm_cnt = ? WHERE bgm_id = ?";
 
-		try {
-			System.out.println("insertMplist() 호출됨");
+        try {
+            conn = DBConnectionMgr.getInstance().getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, bgm_name);
+            pstmt.setString(2, bgm_cnt);
+            pstmt.setInt(3, bgm_id);
+            int rows = pstmt.executeUpdate();
+            result = rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBConnectionMgr.getInstance().freeConnection(conn, pstmt);
+        }
+        return result;
+    }
 
-			multi = new MultipartRequest(req, imagePath, maxSize, ENCTYPE, new DefaultFileRenamePolicy());
+    public void deleteBgm(int bgm_id) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try {
+            con = pool.getConnection();
+            String sql = "DELETE FROM bgm WHERE bgm_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, bgm_id);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
 
-			String mplist_name = multi.getParameter("mplist_name");
-			String user_id = multi.getParameter("user_id");
-			String mplist_cnt = multi.getParameter("mplist_cnt");
-			String mplist_img = multi.getFilesystemName("mplist_img");
+    public void updateBgmOnoff(int bgm_id, int bgm_onoff) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try {
+            con = pool.getConnection();
+            String sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, bgm_onoff);
+            pstmt.setInt(2, bgm_id);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
+    
+    public boolean updateBgmImage(int bgm_id, String imageName) {
+    	Connection con = null;
+        PreparedStatement pstmt = null;
+        boolean result = false;
+        try {
+        	con = pool.getConnection();
+            String sql = "UPDATE bgm SET bgm_image = ? WHERE bgm_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, imageName);
+            pstmt.setInt(2, bgm_id);
+            result = pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+        	pool.freeConnection(con, pstmt);
+        }
+        return result;
+    }
 
-			System.out.println("mplist_name: " + mplist_name);
-			System.out.println("user_id: " + user_id);
-			System.out.println("mplist_cnt: " + mplist_cnt);
-			System.out.println("mplist_img: " + mplist_img);
-
-			con = pool.getConnection();
-			sql = "INSERT INTO mplist (mplist_name, user_id, mplist_cnt, mplist_img) VALUES (?, ?, ?, ?)";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, mplist_name);
-			pstmt.setString(2, user_id);
-			pstmt.setString(3, mplist_cnt);
-			pstmt.setString(4, mplist_img);
-			pstmt.executeUpdate();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
-
-	// mplist 수정
-	public void updateMplist(HttpServletRequest req) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    String sql = null;
-	    MultipartRequest multi = null;
-	    String mplist_img = null;
-	    try {
-	        multi = new MultipartRequest(req, SAVEFOLDER, MAXSIZE, ENCTYPE, new DefaultFileRenamePolicy());
-	        // 업로드된 파일 이름
-	        mplist_img = multi.getFilesystemName("mplist_img");
-	        // 파일 객체 (필요 시 파일 삭제, 이름 변경 등 처리 가능)
-	        File file = multi.getFile("mplist_img");
-	        con = pool.getConnection();
-	        if (file != null && mplist_img != null && !mplist_img.equals("")) {
-	            // 👉 파일이 새로 업로드된 경우
-	            sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ?, mplist_img = ? WHERE mplist_id = ?";
-	            pstmt = con.prepareStatement(sql);
-	            pstmt.setString(1, multi.getParameter("mplist_name"));
-	            pstmt.setString(2, multi.getParameter("mplist_cnt"));
-	            pstmt.setString(3, mplist_img);
-	            pstmt.setInt(4, Integer.parseInt(multi.getParameter("mplist_id")));
-	        } else {
-	            // 👉 파일이 업로드되지 않은 경우 (이미지 수정 없이 텍스트만 수정)
-	            sql = "UPDATE mplist SET mplist_name = ?, mplist_cnt = ? WHERE mplist_id = ?";
-	            pstmt = con.prepareStatement(sql);
-	            pstmt.setString(1, multi.getParameter("mplist_name"));
-	            pstmt.setString(2, multi.getParameter("mplist_cnt"));
-	            pstmt.setInt(3, Integer.parseInt(multi.getParameter("mplist_id")));
-	        }
-	        pstmt.executeUpdate();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
-	        pool.freeConnection(con, pstmt);
-	    }
-	}
-
-	// mplist 삭제
-	public void deleteMplist(int mplist_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "DELETE FROM mplist WHERE mplist_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplist_id);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
-
-	// mplistmgr 리스트
-	public Vector<BgmBean> MplistMgrList(int mplist_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<BgmBean> vlist = new Vector<>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT b.* FROM mplistmgr m " + "JOIN bgm b ON m.bgm_id = b.bgm_id " + "WHERE m.mplist_id = ? "
-					+ "ORDER BY m.mplistmgr_id ASC";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplist_id);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				BgmBean bean = new BgmBean();
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setBgm_name(rs.getString("bgm_name"));
-				bean.setBgm_music(rs.getString("bgm_music"));
-				bean.setBgm_image(rs.getString("bgm_image"));
-				bean.setBgm_cnt(rs.getString("bgm_cnt"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
-
-	// mplistmgr 삭제
-	public void deletemplistmgr(int mplistmgr_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "DELETE FROM mplistmgr WHERE mplistmgr_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplistmgr_id);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
-	
-	//mplistmgr 검색
-	public Vector<MplistMgrBean> searchMplistMgr(int mplistmgr_id, String mplistmgr_name) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<MplistMgrBean> vlist = new Vector<MplistMgrBean>();
-		try {
-			con = pool.getConnection();
-			sql = "select * from mplistmgr where mplistmgr_id = ? and mplistmgr_name like ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplistmgr_id);
-			pstmt.setString(2, "%" + mplistmgr_name + "%");
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				MplistMgrBean bean = new MplistMgrBean();
-				bean.setMplistmgr_id(rs.getInt("mplistmgr_id"));
-				bean.setMplist_id(rs.getInt("mplistmgr_id"));
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setMplistmgr_name(rs.getString("mplistmgr_name"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
-	
-	//mplistmgr 이름 순 정렬
-	public Vector<MplistMgrBean> sortMplistmgr(int mplistmgr_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<MplistMgrBean> vlist = new Vector<MplistMgrBean>();
-		try {
-			con = pool.getConnection();
-			sql = "select * from mplistmgr order by mplistmgr_name";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplistmgr_id);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				MplistMgrBean bean = new MplistMgrBean();
-				bean.setMplistmgr_id(rs.getInt("mplistmgr_id"));
-				bean.setMplist_id(rs.getInt("mplistmgr_id"));
-				bean.setBgm_id(rs.getInt("bgm_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setMplistmgr_name(rs.getString("mplistmgr_name"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
-	}
-	
-	// 배경음악 재생 여부 토글
-	public void updateBgmOnoff(int bgm_id, int bgm_onoff) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    String sql = null;
-	    try {
-	        con = pool.getConnection();
-	        sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
-	        pstmt = con.prepareStatement(sql);
-	        pstmt.setInt(1, bgm_onoff);
-	        pstmt.setInt(2, bgm_id);
-	        pstmt.executeUpdate();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
-	        pool.freeConnection(con, pstmt);
-	    }
-	}
-	
-	//배경음악 재생목록에 추가하기
-	public void updateBgmMplist(int bgm_id, int mplist_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "UPDATE bgm SET mplist_id=? WHERE bgm_id=?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, mplist_id);
-			pstmt.setInt(2, bgm_id);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
-	}
-	
 }
