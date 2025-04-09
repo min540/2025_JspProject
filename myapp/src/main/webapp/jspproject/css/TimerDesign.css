@@ -53,7 +53,7 @@
   box-sizing: border-box;
 }
 
-.timer-header {
+	.timer-header {
 	  display: flex;
 	  justify-content: space-between;
 	  align-items: center;
@@ -62,13 +62,21 @@
 	  font-weight: bold;
 	  font-size: 1vw;
 	  margin-bottom: 10px;
-}
+	}
 
-.header-left {
-  margin-left: 20px;
-}
+	.header-left {
+	  flex-shrink: 0;
+	  margin-left: 10px;
+	}
 
-.header-right {
+
+	.header-right {
+	  flex-grow: 1; /* 💡 오른쪽에 넉넉한 공간 확보 */
+	  display: flex;
+	  justify-content: flex-end;
+	}
+	
+	.filter-controls {
   display: flex;
   align-items: center;
   gap: 10px;

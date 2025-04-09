@@ -98,7 +98,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer.jsp" />
+    <jsp:include page="Timer1.jsp" />
 </div>
 
 <!-- 음악 리스트 -->

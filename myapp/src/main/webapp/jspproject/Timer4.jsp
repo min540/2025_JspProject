@@ -1,3 +1,4 @@
+<!-- 빨간색 원형 타이머 -->
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -10,7 +11,7 @@
       margin: 0;
     }
 
-    .timer1-timer-container {
+    .timer3-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -24,14 +25,14 @@
       cursor: default;
     }
 
-    .timer1-svg {
+    .timer3-svg {
       position: absolute;
       top: 0;
       left: 0;
       transform: rotate(90deg) scaleX(-1);
     }
 
-    .timer1-drag-handle {
+    .timer3-drag-handle {
       position: absolute;
       top: 30px;
       left: 50%;
@@ -45,7 +46,7 @@
       line-height: 1;
     }
 
-    .timer1-center {
+    .timer3-center {
       position: absolute;
       top: 47%;
       left: 50%;
@@ -53,24 +54,24 @@
       text-align: center;
     }
 
-    .timer1-time {
+    .timer3-time {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 6px;
       color: white;
     }
 
-    .timer1-info {
+    .timer3-info {
       font-size: 14px;
       line-height: 1.3;
       color: white;
     }
 
-    .timer1-info strong {
+    .timer3-info strong {
       cursor: pointer;
     }
 
-    input.timer1-input {
+    input.timer3-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
@@ -80,7 +81,7 @@
       outline: none;
     }
 
-    .timer1-bottom-controls {
+    .timer3-bottom-controls {
       position: absolute;
       bottom: 50px;
       left: 50%;
@@ -89,7 +90,7 @@
       gap: 24px;
     }
 
-    .timer1-btn {
+    .timer3-btn {
       font-size: 20px;
       background: none;
       border: none;
@@ -98,40 +99,40 @@
       transition: 0.2s;
     }
 
-    .timer1-btn:hover {
-      color: #3f8efc;
+    .timer3-btn:hover {
+      color: #E53935;
     }
   </style>
 </head>
 <body>
 
-<div class="timer1-timer-container" id="timerContainer">
-  <div class="timer1-drag-handle">:::</div>
+<div class="timer3-timer-container" id="timerContainer">
+  <div class="timer3-drag-handle">:::</div>
 
-  <svg class="timer1-svg" width="240" height="240">
+  <svg class="timer3-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12"
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#E53935" stroke-width="12"
             fill="none" stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
-  <div class="timer1-center">
-    <div class="timer1-time" id="timeDisplay">10:00</div>
-    <div class="timer1-info" id="timerInfo">
+  <div class="timer3-center">
+    <div class="timer3-time" id="timeDisplay">10:00</div>
+    <div class="timer3-info" id="timerInfo">
       <strong id="sessionTime">10:00</strong> 세션<br>
       과 <strong id="breakTime">05:00</strong> 휴식
     </div>
   </div>
 
-  <div class="timer1-bottom-controls">
-    <button class="timer1-btn" id="btnReset">⟲</button>
-    <button class="timer1-btn" id="toggleBtn">▶️</button>
+  <div class="timer3-bottom-controls">
+    <button class="timer3-btn" id="btnReset">⟲</button>
+    <button class="timer3-btn" id="toggleBtn">▶️</button>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  let sessionDuration = 600;
-  let breakDuration = 300;
+  let sessionDuration = parseInt(new URLSearchParams(window.location.search).get("session")) || 600;
+  let breakDuration = parseInt(new URLSearchParams(window.location.search).get("break")) || 300;
   let timeLeft = sessionDuration;
   let isSession = true;
   let isRunning = false;
@@ -147,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("toggleBtn");
   const btnReset = document.getElementById("btnReset");
   const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer1-drag-handle");
+  const dragHandle = document.querySelector(".timer3-drag-handle");
   const timerInfo = document.getElementById("timerInfo");
 
   progressCircle.style.strokeDasharray = CIRCUMFERENCE;
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
     const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#3f8efc" : "#4caf50";
+    progressCircle.style.stroke = isSession ? "#E53935" : "#3f8efc";  // ✅ 빨강 / 파랑
     progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };
@@ -213,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer1-input";
+    input.className = "timer3-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {
@@ -261,8 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
     offsetY = e.clientY - rect.top;
     isDragging = true;
     document.body.style.cursor = "grabbing";
-
-    // transform 제거 (드래그 시작 시 위치 고정)
     timer.style.transform = "none";
     timer.style.left = rect.left + "px";
     timer.style.top = rect.top + "px";
