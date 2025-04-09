@@ -148,6 +148,7 @@ body, html {
 </script>
 
 <body>
+
 <div class="container">
 	<div class="left-half"></div>
 	<div class="right-half">

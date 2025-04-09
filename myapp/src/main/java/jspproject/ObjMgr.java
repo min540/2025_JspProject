@@ -238,38 +238,34 @@ public class ObjMgr {
 		}
 	}
 	
-	//작업 목록 리스트 받아오기
-	public Vector<ObjBean> getObjList(String user_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<ObjBean> vlist = new Vector<ObjBean>();
-		try {
-			con = pool.getConnection();
-			sql = "SELECT * FROM obj WHERE user_id = ? ORDER BY obj_id DESC";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user_id);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				ObjBean bean = new ObjBean();
-				bean.setObj_id(rs.getInt("obj_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setObj_title(rs.getString("obj_title"));
-				bean.setObj_check(rs.getInt("obj_check"));
-				bean.setObj_regdate(SDF_DATE.format(rs.getDate("obj_regdate")));
-				bean.setObj_sdate(SDF_DATE.format(rs.getDate("obj_sdate")));
-				bean.setObj_edate(rs.getString("obj_edate"));
-				bean.setObjgroup_id(rs.getInt("objgroup_id"));
-				vlist.add(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
+	//작업 목록 리스트 받아오기(objgroup_id로 구분하도록 만듦)
+	public Vector<ObjBean> getObjList(int objgroup_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    Vector<ObjBean> vlist = new Vector<>();
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT obj_id, obj_title, obj_check, obj_edate FROM obj WHERE objgroup_id = ?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, objgroup_id);
+	        rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            ObjBean bean = new ObjBean();
+	            bean.setObj_id(rs.getInt("obj_id"));
+	            bean.setObj_title(rs.getString("obj_title"));
+	            bean.setObj_check(rs.getInt("obj_check"));
+	            bean.setObj_edate(rs.getString("obj_edate"));  // 형식 변환 필요 시 여기도 SDF_DATE 가능
+	            vlist.add(bean);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return vlist;
 	}
+
 	
 	//작업 목록 카테고리 리스트 받아오기
 	public Vector<ObjGroupBean> getObjGroupList(String user_id) {
