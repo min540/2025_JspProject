@@ -44,7 +44,7 @@
     ObjMgr objMgr = new ObjMgr();
     JourMgr jourMgr = new JourMgr();
 
-    Vector<ObjBean> objList = objMgr.getObjList(user_id);
+    Vector<ObjBean> objList = objMgr.getTotalObjList(user_id);
     Vector<JourBean> jourList = jourMgr.listJour(user_id);
 
     // 목표 분석
