@@ -7,6 +7,7 @@
 <%@ page import="jspproject.MplistMgrBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<jsp:useBean id="pmgr" class="jspproject.MplistMgr"/>
 <%
 String user_id = (String) session.getAttribute("user_id");
 if (user_id == null) {
@@ -16,7 +17,7 @@ if (user_id == null) {
 
 
 Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
-Vector<MplistBean> mplist = bmgr.getMplist(user_id);
+Vector<MplistBean> mplist = pmgr.getMplist(user_id);
 %>
 <style>
 @font-face {
@@ -139,7 +140,7 @@ Vector<MplistBean> mplist = bmgr.getMplist(user_id);
 
 <form id="playlistAssignForm" method="POST" action="<%= request.getContextPath() %>/jspproject/bgmAssignPlaylist">
   <!-- bgm_id: 오른쪽 화면 곡 선택 시 세팅 -->
-  <input type="hidden" name="bgm_id" id="hiddenBgmId" value="">
+  <input type="hidden" name="bgm_id" id="addPlaylistBgmId" value="">
   
   
   <div class="add-playlist-container">
@@ -158,41 +159,37 @@ Vector<MplistBean> mplist = bmgr.getMplist(user_id);
 </form>
 
 <script>
-document.querySelector('.add-playlist-btn').addEventListener('click', function(e){
-	  e.preventDefault(); // 폼 제출 방지
+	document.querySelector('.add-playlist-btn').addEventListener('click', function(e){
+		  e.preventDefault();
+	
+		  const bgmId = document.getElementById('addPlaylistBgmId').value;
+		  const checkedMplistElems = document.querySelectorAll('input[name="mplist_id"]:checked');
+		  const mplistIds = Array.from(checkedMplistElems).map(e => parseInt(e.value));
+	
+		  if (!bgmId || bgmId.trim() === "" || mplistIds.length === 0) {
+		    alert("음악과 재생목록을 선택해주세요.");
+		    return;
+		  }
+	
+		  fetch("<%= request.getContextPath() %>/jspproject/bgmAssignPlaylist", {
+		    method: "POST",
+		    headers: {
+		      "Content-Type": "application/json"
+		    },
+		    body: JSON.stringify({
+		      bgm_id: Number(bgmId),
+		      mplist_ids: mplistIds
+		    })
+		  })
+		  .then(res => res.json())
+		  .then(data => {
+		    if(data.success) {
+		      alert("재생 목록 업데이트 성공!");
+		    } else {
+		      alert("업데이트 실패");
+		    }
+		  })
+		  .catch(err => console.error(err));
+		});
 
-	  const bgmId = document.getElementById('hiddenBgmId').value;
-	  const selectedMplistElem = document.querySelector('input[name="mplist_id"]:checked');
-	  const selectedMplistId = selectedMplistElem ? selectedMplistElem.value : null;
-
-	  if (!bgmId || bgmId === "null" || bgmId.trim() === "") {
-	    alert("노래가 선택되지 않았습니다.");
-	    return;
-	  }
-	  
-	  if (!selectedMplistId) {
-	    alert("재생목록을 선택해주세요.");
-	    return;
-	  }
-
-	  fetch("<%= request.getContextPath() %>/jspproject/bgmAssignPlaylist", {
-	    method: "POST",
-	    headers: {
-	      "Content-Type": "application/json"
-	    },
-	    body: JSON.stringify({
-	      bgm_id: Number(bgmId),
-	      mplist_id: Number(selectedMplistId)
-	    })
-	  })
-	  .then(res => res.json())
-	  .then(data => {
-	    if(data.success) {
-	      alert("재생 목록 업데이트 성공!");
-	    } else {
-	      alert("업데이트 실패: " + data.message);
-	    }
-	  })
-	  .catch(err => console.error(err));
-	});
 </script>
