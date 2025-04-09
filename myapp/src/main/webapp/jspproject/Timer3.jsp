@@ -1,154 +1,157 @@
-<!-- 대충만든 타이머 -->
+<!-- 보라색 원형 타이머 -->
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>드래그 가능한 네모 타이머</title>
+  <title>타이머</title>
   <style>
     body {
-      margin: 0;
-      background: #f1f4fa;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
       overflow: hidden;
+      margin: 0;
     }
 
-    .timer2-card {
+    .timer3-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 320px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      padding: 16px 16px 20px;
-      box-sizing: border-box;
-      text-align: center;
-      cursor: default;
-      border: 10px solid #a259ff;
-    }
-
-    .timer2-drag-handle {
-      font-size: 24px;
-      cursor: grab;
-      color: #bbb;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: #11111c;
+      border: 3px solid #1C1C1C;
       user-select: none;
-      margin-bottom: 10px;
+      cursor: default;
     }
 
-    .timer2-progress-container {
-      width: 100%;
-      height: 12px;
-      background: #e0e0e0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 20px;
+    .timer3-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(90deg) scaleX(-1);
     }
 
-    .timer2-progress-bar {
-      height: 100%;
-      background-color: #3f8efc;
-      width: 100%;
-      transition: width 0.3s ease;
+    .timer3-drag-handle {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: white;
+      user-select: none;
+      cursor: grab;
+      z-index: 10;
+      letter-spacing: 1px;
+      line-height: 1;
     }
 
-    .timer2-time-display {
-      font-size: 36px;
+    .timer3-center {
+      position: absolute;
+      top: 47%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .timer3-time {
+      font-size: 24px;
       font-weight: bold;
-      color: #222;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
+      color: white;
     }
 
-    .timer2-session-info {
+    .timer3-info {
       font-size: 14px;
-      color: #555;
+      line-height: 1.3;
+      color: white;
     }
 
-    .timer2-session-info strong {
-      color: #3f8efc;
+    .timer3-info strong {
       cursor: pointer;
     }
 
-    .timer2-session-info .break-time {
-      color: #4caf50;
-    }
-
-    input.timer2-input {
+    input.timer3-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 2px;
-    }
-
-    .timer2-btn-area {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .timer2-play-btn {
-      width: 40px;
-      height: 40px;
-      background: white;
+      background: transparent;
       border: none;
-      border-radius: 8px;
-      font-size: 20px;
-      color: #3f8efc;
-      cursor: pointer;
-      transition: all 0.2s;
+      color: white;
+      outline: none;
     }
 
-    .timer2-play-btn:hover {
-      background: #f0f4ff;
-      color: #1a5ef0;
+    .timer3-bottom-controls {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+    }
+
+    .timer3-btn {
+      font-size: 20px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .timer3-btn:hover {
+      color: #BA68C8;
     }
   </style>
 </head>
 <body>
 
-<div class="timer2-card" id="timerCard">
-  <div class="timer2-drag-handle" id="dragHandle">:::</div>
+<div class="timer3-timer-container" id="timerContainer">
+  <div class="timer3-drag-handle">:::</div>
 
-  <div class="timer2-progress-container">
-    <div class="timer2-progress-bar" id="progressBar"></div>
+  <svg class="timer3-svg" width="240" height="240">
+    <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#8E24AA" stroke-width="12"
+            fill="none" stroke-linecap="butt" stroke-dasharray="628" />
+  </svg>
+
+  <div class="timer3-center">
+    <div class="timer3-time" id="timeDisplay">10:00</div>
+    <div class="timer3-info" id="timerInfo">
+      <strong id="sessionTime">10:00</strong> 세션<br>
+      과 <strong id="breakTime">05:00</strong> 휴식
+    </div>
   </div>
 
-  <div class="timer2-time-display" id="timeDisplay">10:00</div>
-
-  <div class="timer2-session-info" id="timerInfo">
-    <strong id="sessionTime">10:00</strong> 세션,
-    <strong id="breakTime" class="break-time">05:00</strong> 휴식
-  </div>
-
-  <div class="timer2-btn-area">
-    <button class="timer2-play-btn" id="toggleBtn">▶️</button>
-    <button class="timer2-play-btn" id="btnReset">⟲</button>
+  <div class="timer3-bottom-controls">
+    <button class="timer3-btn" id="btnReset">⟲</button>
+    <button class="timer3-btn" id="toggleBtn">▶️</button>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  let sessionDuration = 600;
-  let breakDuration = 300;
+  let sessionDuration = parseInt(new URLSearchParams(window.location.search).get("session")) || 600;
+  let breakDuration = parseInt(new URLSearchParams(window.location.search).get("break")) || 300;
   let timeLeft = sessionDuration;
   let isSession = true;
   let isRunning = false;
   let interval = null;
 
-  const timerCard = document.getElementById("timerCard");
-  const dragHandle = document.getElementById("dragHandle");
-  const progressBar = document.getElementById("progressBar");
+  const RADIUS = 100;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
   const timeDisplay = document.getElementById("timeDisplay");
+  const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
   const breakTimeEl = document.getElementById("breakTime");
   const toggleBtn = document.getElementById("toggleBtn");
   const btnReset = document.getElementById("btnReset");
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer3-drag-handle");
   const timerInfo = document.getElementById("timerInfo");
+
+  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -159,8 +162,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const updateProgress = () => {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
-    progressBar.style.width = (percent * 100) + "%";
-    progressBar.style.backgroundColor = isSession ? "#3f8efc" : "#4caf50";
+    const offset = CIRCUMFERENCE * (1 - percent);
+    progressCircle.style.stroke = isSession ? "#8E24AA" : "#BA68C8";
+    progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };
 
@@ -210,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer2-input";
+    input.className = "timer3-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {
@@ -246,30 +250,29 @@ document.addEventListener("DOMContentLoaded", function () {
   breakTimeEl.textContent = formatTime(breakDuration);
   updateProgress();
 
-  // 드래그 기능
+  // 드래그
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
 
   dragHandle.addEventListener("mousedown", (e) => {
     e.preventDefault();
-    const rect = timerCard.getBoundingClientRect();
+    const rect = timer.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
     isDragging = true;
     document.body.style.cursor = "grabbing";
-
-    timerCard.style.transform = "none";
-    timerCard.style.left = rect.left + "px";
-    timerCard.style.top = rect.top + "px";
+    timer.style.transform = "none";
+    timer.style.left = rect.left + "px";
+    timer.style.top = rect.top + "px";
   });
 
   document.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
     const x = e.clientX - offsetX;
     const y = e.clientY - offsetY;
-    timerCard.style.left = x + "px";
-    timerCard.style.top = y + "px";
+    timer.style.left = x + "px";
+    timer.style.top = y + "px";
   });
 
   document.addEventListener("mouseup", () => {
