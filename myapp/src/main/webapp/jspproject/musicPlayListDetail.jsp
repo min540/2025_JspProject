@@ -7,6 +7,7 @@
 <%@ page import="jspproject.MplistMgrBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<jsp:useBean id="pmgr" class="jspproject.MplistMgr"/>
 <%
 String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
 if (user_id == null) {
@@ -16,13 +17,13 @@ if (user_id == null) {
 boolean isMultipart = request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/");
 if (isMultipart) {
     out.clear(); // 👉 출력 버퍼 비우기 (중요!)
-    bmgr.updateMplist(request);
+    pmgr.updateMplist(request);
     response.sendRedirect("musicPlayListDetail.jsp");
     return;
 }
 
 UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
-Vector<MplistBean> mplist = bmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
 Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 %>
  <style>
@@ -342,6 +343,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
     	font-weight: bold;
    	 	font-size: 1vw;
     }
+    
+    .header-left2 {
+	    display: flex;
+	    align-items: center; /* 세로 정렬 */
+	}	
 	
     .music-list-item2 {
         background-color: #3c1e5c;
@@ -568,14 +574,22 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		</div>
 		<div class="music-layout2">
 		    <div class="music-left2">
-		    	<% for (int i = 0; i < 10; i++) { %>
-			    <div class="playlist-box2">
-			    	<img src="mplistImg/tema1.gif" alt="">
-			        <div class="playlist-name2">예시<%= i + 1 %></div>
-			        <div class="playlist-count2">n곡</div>
-			        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
-			    </div>
-			<% } %>
+		    	<% if (mplist != null && !mplist.isEmpty()) {
+					     for (MplistBean m : mplist) { %>
+					    <div class="playlist-box2"
+					         data-mplist-id="<%= m.getMplist_id() %>"
+					         data-mplist-name="<%= m.getMplist_name() %>"
+					         data-mplist-img="<%= m.getMplist_img() %>"
+					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
+					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
+					        <div class="playlist-count2">곡 수</div>
+					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
+					    </div>
+					<% }
+					} else { %>
+					    <div style="color:white;">재생 목록이 없습니다.</div>
+				<% } %>
 		        <div class="add-playlist2" onclick = "addPlaylistBox_detail()">+</div>
 		    </div>
 		

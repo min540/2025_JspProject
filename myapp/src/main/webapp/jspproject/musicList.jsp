@@ -536,6 +536,10 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
     <jsp:include page="musicListAdd.jsp" />
 </div>
 
+<div id="musicPlayListDetailWrapper">
+    <jsp:include page="musicPlayListDetail.jsp" />
+</div>
+
 <%-- <!-- 재생목록 리스트 영역 (처음엔 숨김) -->
 <div id="musicPlayListWrapper">
     <jsp:include page="musicPlayList.jsp" />
@@ -905,4 +909,17 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	    document.getElementById('hiddenBgmName').value = '';
 	    document.getElementById('hiddenBgmCnt').value = '';
 	}
+	
+	function switchToPlayList() {
+	    const musicListContainer = document.querySelector('.music-container'); // 음악 목록 전체
+	    const detailWrapper = document.querySelector('#musicPlayListDetailWrapper'); // 감싸는 div
+	    const detailContainer = detailWrapper?.querySelector('.music-container3'); // 내부 진짜 컨테이너
+
+	    if (musicListContainer && detailWrapper && detailContainer) {
+	        musicListContainer.style.display = 'none';
+	        detailWrapper.style.display = 'block'; // wrapper는 block이어도 되고
+	        detailContainer.style.display = 'flex'; // 내부 컨테이너는 반드시 flex
+	    }
+	}
+
 </script>
