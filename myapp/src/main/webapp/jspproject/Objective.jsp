@@ -342,6 +342,26 @@
             document.getElementById('completedNum').textContent = completed;
             document.getElementById('totalNum').textContent = total;
         }
+        //기본 1개의 리스트를 제공
+        function createDefaultGroupOnce() {
+            fetch("insertObjGroup.jsp", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "objgroup_name=" + encodeURIComponent("기본 리스트")
+            })
+            .then(res => res.text())
+            .then(id => {
+                console.log("✅ 기본 리스트 DB에 생성됨:", id);
+                localStorage.setItem("currentList", id); // 바로 기본 리스트로 지정
+                reloadCategoryButtons(); // UI 리로드
+                renderTasksForCurrentList(); // 과제 표시
+            })
+            .catch(err => {
+                console.error("❌ 기본 리스트 생성 실패:", err);
+            });
+        }
+
+        
 
 
         addBtn.addEventListener('click', () => {
@@ -367,8 +387,8 @@
             taskItem.innerHTML = `
                 <div class="obj-task-left">
                     <input type="checkbox" class="task-check">
-                    <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="">
-                    <span class="obj-created-date">${today}</span>
+                   <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="${task.obj_title}">
+                   <span class="obj-created-date">${today}</span>
                 </div>
                 <div class="obj-task-buttons">
                     <button class="calendar-btn">📅</button>
@@ -377,29 +397,56 @@
             `;
 
             taskList.appendChild(taskItem);
-            renderTasksForCurrentList();
+           
             
             //user_id 값 가져오기
-          <%--   <%
+          	<%
             String userId = (String) session.getAttribute("user_id");
     		if (userId == null) userId = "";
-			%> --%>
-		<%-- 	
+    		 %>
+    	
 			const user_id = "<%= userId %>";
 		    sessionStorage.setItem("user_id", user_id); 
-		    
+		  
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
             
-         // 🔁 서버에 insert 요청 보내기
+         	//서버에 insert 요청 보내기
             const taskObj = {
                 user_id: sessionStorage.getItem("user_id") || "user01", // 로그인한 사용자 ID
-                obj_title: "",
+                obj_title: titleInput.value.trim(),
                 obj_check: 0,
                 obj_edate: "", // 날짜 선택 전이므로 비워두기
                 objgroup_id: parseInt(localStorage.getItem("currentList"))
             };
+         	//과제 추가, 업데이트 실시간 타이머
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+         	
+           /*  function createDefaultGroupOnce() { 기본제공 리스트 수정해야함
+                fetch("insertObjGroup.jsp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "objgroup_name=" + encodeURIComponent("기본 리스트")
+                })
+                .then(res => res.text())
+                .then(id => {
+                    console.log("✅ 기본 리스트 DB에 생성됨:", id);
+                    localStorage.setItem("currentList", id); // 바로 기본 리스트로 지정
+                    reloadCategoryButtons(); // UI 리로드
+                    renderTasksForCurrentList(); // 과제 표시
+                })
+                .catch(err => {
+                    console.error("❌ 기본 리스트 생성 실패:", err);
+                });
+            } */
+
 
             fetch("objInsertServlet", {
                 method: "POST",
@@ -410,33 +457,47 @@
             })
             .then(res => res.json())
             .then(data => {
-                // 응답받은 obj_id 저장
-                taskObj.obj_id = data.obj_id;
-                console.log("서버에 저장된 과제 ID:", taskObj.obj_id);
+                const objId = data.obj_id;
+                taskItem.dataset.objId = objId;
 
-                // 이후 수정 시 이 ID를 사용
-                taskItem.dataset.objId = taskObj.obj_id; // DOM에 저장해두기
-            });  --%>
+                titleInput.focus();
+
+                // 실시간 업데이트 (입력마다 서버에 전송)
+                titleInput.addEventListener("input", debounce(() => {
+                    const updatedTitle = titleInput.value.trim();
+                    if (!updatedTitle) return;
+
+                    fetch("objUpdateServlet", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            obj_id: objId,
+                            obj_title: updatedTitle
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("📝 제목 실시간 업데이트 성공:", data);
+                    })
+                    .catch(err => {
+                        console.error("❌ 제목 업데이트 실패:", err);
+                    });
+                }, 500)); // 👈 0.5초 디바운싱
+                
+                taskItem.querySelector(".delete-task").addEventListener("click", () => {
+                    const confirmed = confirm(`"${titleInput.value.trim()}"을(를) 삭제하시겠습니까?`);
+                    if (!confirmed) return;
+
+                    taskItem.remove();
+                    updateCompleteCount();
+
+                    deleteTaskDebounced(objId); // objId 확보됐기 때문에 이제 가능!
+                });
+                updateCompleteCount();
+            });
 
             const checkbox = taskItem.querySelector('.task-check');
             checkbox.addEventListener('change', updateCompleteCount);
-
-            taskItem.querySelector('.delete-task').addEventListener('click', () => {
-                const title = titleInput.value.trim();
-                if (title.length > 0) {
-                    const confirmed = confirm(`"${title}"을(를) 정말 삭제하시겠습니까?`);
-                    if (confirmed) {
-                        taskItem.remove();
-                        updateCompleteCount();
-                    }
-                } else {
-                    const confirmed = confirm(`이 항목을 정말 삭제하시겠습니까?`);
-                    if (confirmed) {
-                        taskItem.remove();
-                        updateCompleteCount();
-                    }
-                }
-            });
 
             taskItem.querySelector('.calendar-btn').addEventListener('click', () => {
                 currentTargetTask = taskItem;
@@ -498,12 +559,25 @@
 
                             btn.addEventListener('click', () => {
                                 localStorage.setItem("currentList", group.objgroup_id);
+                                localStorage.getItem("currentList");
                                 localStorage.setItem("currentListName", group.objgroup_name);
                                 renderTasksForCurrentList(); // 과제 렌더링
                             });
 
                             listContainer.appendChild(btn);
                         });
+                       /*  수정해야해 기본제공
+                        document.addEventListener("DOMContentLoaded", () => {
+                            fetch("getObjGroupList.jsp")
+                              .then(res => res.json())
+                              .then(data => {
+                                  if (data.length === 0) {
+                                      createDefaultGroupOnce(); // ✅ 리스트가 없을 때만 생성
+                                  } else {
+                                      renderListButtons(data); // ✅ 기존 리스트 렌더링
+                                  }
+                              });
+                        }); */
 
                         // ...버튼 및 드롭다운 처리
                         if (hidden.length > 0) {
@@ -572,74 +646,174 @@
             document.getElementById("cardWrapper").style.top = savedTop + "px";
             renderTasksForCurrentList(); // ✅ 초기 렌더링
         });
+        
+        
+        
+        function getFormattedDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}/${month}/${day}`;
+        }
 
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+        
+        function escapeHtml(str) {
+        	  if (!str) return "";
+        	  return str
+        	    .replace(/&/g, "&amp;")
+        	    .replace(/"/g, "&quot;")
+        	    .replace(/</g, "&lt;")
+        	    .replace(/'/g, "&#39;")
+        	    .replace(/>/g, "&gt;");
+        	}
+      	//여기가 리스트 표시인듯?
+      		const pendingDeletes = new Set();
+            const deleteTaskDebounced = debounce((objId) => {
+                console.log("🧪 삭제 요청 시도:", objId);
+                pendingDeletes.delete(objId);
 
-        function renderTasksForCurrentList() {
-            const currentList = localStorage.getItem("currentList");
-            const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
-            const tasks = taskData[currentList] || [];
-
-            taskList.innerHTML = ""; // 기존 목록 비우기
-
-            tasks.forEach((task, index) => {
-                const taskItem = document.createElement('div');
-                taskItem.className = 'obj-task-item';
-
-                taskItem.innerHTML = `
-                    <div class="obj-task-left">
-                        <input type="checkbox" class="task-check" ${task.checked ? 'checked' : ''}>
-                        <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="${task.title}">
-                        <span class="obj-created-date">${task.date}</span>
-                    </div>
-                    <div class="obj-task-buttons">
-                        <button class="calendar-btn">📅</button>
-                        <button class="delete-task">X</button>
-                    </div>
-                `;
-
-                taskList.appendChild(taskItem);
-
-                const checkbox = taskItem.querySelector('.task-check');
-                checkbox.checked = task.checked;
-                checkbox.addEventListener('change', () => {
-                    const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
-                    const currentList = localStorage.getItem("currentList");
-
-                    if (taskData[currentList] && taskData[currentList][index]) {
-                        taskData[currentList][index].checked = checkbox.checked;
-                        localStorage.setItem("taskData", JSON.stringify(taskData));
+                fetch("objDeleteServlet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ obj_id: objId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        console.log("🗑️ 삭제 성공:", objId);
+                    } else {
+                        console.error("❌ 삭제 실패: 서버 응답 실패");
+                    }
+                })
+                .catch(err => {
+                    console.error("❌ 삭제 요청 실패:", err);
+                });
+            }, 500);
+  	
+            function attachDeleteListener(taskItem, objId, titleInput) {
+                taskItem.querySelector(".delete-task").addEventListener("click", () => {
+                    if (!objId) {
+                        alert("❌ 아직 서버에 저장되지 않았습니다. 잠시 후 시도하세요.");
+                        return;
                     }
 
+                    const confirmed = confirm(`"${titleInput.value.trim()}"을(를) 삭제하시겠습니까?`);
+                    if (!confirmed) return;
+
+                    taskItem.remove(); // UI 반영
                     updateCompleteCount();
-                });
 
-                // 삭제 버튼 이벤트
-                taskItem.querySelector('.delete-task').addEventListener('click', () => {
-                    const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
-                    const currentList = localStorage.getItem("currentList");
-
-                    const confirmed = confirm(`"${task.title}"을(를) 정말 삭제하시겠습니까?`);
-                    if (confirmed) {
-                        taskData[currentList].splice(index, 1);
-                        localStorage.setItem("taskData", JSON.stringify(taskData));
-                        renderTasksForCurrentList(); // 다시 렌더링
-                    }
+                    pendingDeletes.add(objId);
+                    deleteTaskDebounced(objId); // 서버 요청
                 });
+            }
 
-                // 달력 버튼 이벤트
-                taskItem.querySelector('.calendar-btn').addEventListener('click', () => {
-                    currentTargetTask = taskItem;
-                    calendarTitle.textContent = `마감일 설정: ${task.title}`;
-                    calendarContent.style.left = cardWrapper.offsetLeft + 'px';
-                    calendarContent.style.top = cardWrapper.offsetTop + 'px';
-                    cardWrapper.style.display = 'none';
-                    calendarModal.style.display = 'block';
+      			
+     function renderTasksForCurrentList(objgroup_id) {
+    const taskList = document.getElementById("obj-taskList");
+    taskList.innerHTML = "";
+
+    const selectedId = localStorage.getItem("currentList"); // 또는 직접 값
+    console.log("✔️ 선택된 objgroup_id:", selectedId);  // ← 이게 null이면 문제 발생
+
+    fetch("objCurrentGroupSetServlet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ objgroup_id: parseInt(selectedId) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            // 2️⃣ 세션 저장 성공 후 과제 불러오기
+            return fetch("objListServlet");
+        } else {
+            throw new Error("그룹 설정 실패");
+        }
+    })
+    .then(res => res.json())
+    .then(tasks => {
+        // ✅ 목록 렌더링 그대로 유지
+        tasks.forEach(task => {
+            const taskItem = document.createElement("div");
+            taskItem.className = "obj-task-item";
+            taskItem.dataset.objId = task.obj_id;
+
+           	const rawDate = task.obj_edate ? task.obj_edate.trim() : "";
+            const displayDate = rawDate !== "" ? rawDate : getFormattedDate();
+            
+            taskItem.className = "obj-task-item";
+
+            const safeTitle = escapeHtml(task.obj_title || "");
+            
+            taskItem.innerHTML = `
+                <div class="obj-task-left">
+                    <input type="checkbox" class="task-check" ${task.obj_check ? "checked" : ""}>
+                    <input type="text" class="pf-font" placeholder="과제 제목 입력">
+                    <span class="obj-created-date">${displayDate}</span>
+                </div>
+                <div class="obj-task-buttons">
+                    <button class="calendar-btn">📅</button>
+                    <button class="delete-task">X</button>
+                </div>
+            `;
+            taskList.appendChild(taskItem); 
+			const titleInput = taskItem.querySelector("input[type='text']");
+				titleInput.value = task.obj_title || "";
+           const computed = window.getComputedStyle(titleInput);
+ 
+            const checkbox = taskItem.querySelector(".task-check");
+            checkbox.addEventListener("change", () => {
+                const checked = checkbox.checked ? 1 : 0;
+                fetch("objCheckUpdateServlet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        obj_id: task.obj_id,
+                        obj_check: checked
+                    })
                 });
+                updateCompleteCount();
+            });
+           
+            titleInput.addEventListener("input", debounce(() => {
+                const updatedTitle = titleInput.value.trim();
+                if (!updatedTitle) return;
+                fetch("objUpdateServlet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        obj_id: task.obj_id,
+                        obj_title: updatedTitle
+                    })
+                });
+            }, 500));
+			
+            attachDeleteListener(taskItem, task.obj_id, titleInput);
+            
+            taskItem.querySelector(".calendar-btn").addEventListener("click", () => {
+                currentTargetTask = taskItem;
+                calendarTitle.textContent = `마감일 설정: ${titleInput.value}`;
+                calendarModal.style.display = "block";
+                cardWrapper.style.display = "none";
             });
             
-            updateCompleteCount();
-        }      
-    </script>
+        });
 
+        updateCompleteCount();
+    })
+    .catch(err => {
+        console.error("❌ 과제 목록 불러오기 실패:", err);
+    });
+    
+}
+    </script>
 </body>
 </html>
