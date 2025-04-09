@@ -17,7 +17,7 @@ public class ProfileUpdateServlet extends HttpServlet {
 		LoginMgr lMgr = new LoginMgr();
 		lMgr.updateUser(request);
 		HttpSession session = request.getSession();
-		UserBean ubean = lMgr.getUser((String)session.getAttribute("id"));
+		UserBean ubean = lMgr.getUser((String)session.getAttribute("user_id"));
 		session.setAttribute("ubean", ubean);
 		response.sendRedirect("mainScreen.jsp");
 	}
