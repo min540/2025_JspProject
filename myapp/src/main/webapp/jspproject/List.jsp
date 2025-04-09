@@ -159,6 +159,27 @@
                 listContainer.appendChild(editBtn);
             });
     }
+		
+    function attachDeleteGroupListener(deleteBtn, itemElement, groupId, input) {
+        deleteBtn.addEventListener("click", () => {
+            const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);
+            if (!confirmed) return;
+
+            itemElement.remove(); // UI에서 제거
+
+            fetch("deleteObjGroup.jsp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "objgroup_id=" + groupId
+            })
+            .then(res => res.text())
+            .then(msg => console.log("🗑️ 삭제 완료:", msg))
+            .catch(err => console.error("❌ 삭제 실패:", err));
+        });
+    }
+
     
         // 드래그 기능
         const dragHandle = document.querySelector('.top-dots');
@@ -226,7 +247,9 @@
             .then(res => res.text())
             .then(id => {
             	id = id.trim();
-                console.log("🆔 새로 추가된 objgroup_id:", id);
+                /* console.log("🆔 새로 추가된 objgroup_id:", id); */
+                
+                attachDeleteGroupListener(deleteBtn, newItem, id, input);
 
                 // 🎯 여기에 디바운스 + 수정 업데이트 연결
                 const debounce = (func, delay) => {
@@ -235,6 +258,7 @@
                         clearTimeout(timer);
                         timer = setTimeout(() => func.apply(this, args), delay);
                     };
+                   
                 };
 
                 const updateCategoryName = debounce(() => {
@@ -248,7 +272,7 @@
                     .then(res => res.text())
                     .then(msg => console.log("📝 수정 응답:", msg))
                     .catch(err => console.error("❌ 수정 실패:", err));
-                }, 800);
+                }, 500);
 
                 input.addEventListener("input", updateCategoryName);
             })
@@ -296,7 +320,7 @@
                         timer = setTimeout(() => func.apply(this, args), delay);
                     };
                 }
-
+				
                 //  수정 내용을 서버에 반영
                 const updateCategoryName = debounce(() => {
                     fetch("updateObjGroup.jsp", {
@@ -384,7 +408,5 @@
         	reloadCategoryButtons();  // ✨ 최신 리스트 불러오기
             renderTasksForCurrentList(); // 선택된 리스트 기준으로 과제 보여주기
         });
-
-
-
+       
     </script>
