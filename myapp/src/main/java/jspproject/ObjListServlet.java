@@ -29,6 +29,7 @@ public class ObjListServlet extends HttpServlet {
 		}
 
 		Integer objgroup_id = (Integer) session.getAttribute("currentObjGroup");
+		String user_id = (String)session.getAttribute("user_id");
 
 		if (objgroup_id == null) {
 			System.err.println("⚠️ [objListServlet] 세션에서 objgroup_id를 찾을 수 없습니다.");
@@ -38,7 +39,7 @@ public class ObjListServlet extends HttpServlet {
 
 		try {
 			ObjMgr mgr = new ObjMgr();
-			Vector<ObjBean> list = mgr.getObjList(objgroup_id);
+			Vector<ObjBean> list = mgr.getObjList(objgroup_id, user_id);
 
 			JSONArray jsonArray = new JSONArray();
 			for (ObjBean bean : list) {
