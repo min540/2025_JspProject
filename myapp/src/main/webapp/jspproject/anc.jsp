@@ -30,10 +30,19 @@ header{
   	margin-bottom: 20px;
   	padding-right: 370px; 
 }
-header h3, header h4 {
+header h3 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 25px;
+}
+header h4 {
+	color: white;
+	margin: 0 12px; /* 좌우 여백만 */
+	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 18px;
 }
 .image-wrapper {
   position: relative;
@@ -118,6 +127,14 @@ header h3, header h4 {
   position: relative; /* 내부 요소 배치를 위한 기준점 */
   padding-bottom: 50px; /* 하단 여백 추가 */
 }
+
+@font-face {
+    font-family: 'PFStarDust';
+    src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 input[type="checkbox"] {
   appearance: none;      
   width: 15px;
@@ -144,17 +161,16 @@ input[type="checkbox"]:checked::after {
 	width: 70px;
     height: 30px;
     border-radius: 10px;
-    margin-top: 10;
     margin-left: 140px;
     font-size: 16px;
     border: 0.8px solid #ffffff;
     background-color: #32225B;
     color: white;
+    font-family: 'PFStarDust', sans-serif;
 }
 .new{
 	margin-left: auto;
     margin-right: 80px;
-    margin-top: 70px;
     color: white;
     font-weight: bold;
     line-height: 2;
