@@ -155,8 +155,8 @@ public class BgmMgr {
         PreparedStatement pstmt = null;
         MultipartRequest multi = null;
 
-        String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-        String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
+        String imagePath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/musicImg";
+        String musicPath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/music";
         int maxSize = 10 * 1024 * 1024;
 
         try {
