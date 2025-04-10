@@ -1,3 +1,4 @@
+<!-- Objective.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -259,35 +260,40 @@
 			<p class="obj-completed">
 				완료된 항목 : <span id="completedNum">0</span>/<span id="totalNum">0</span>
 			</p>
-			<div id="obj-taskList"></div>
-			<button class="obj-add-task-btn">과제 추가하기</button>
+			
+			<!-- ✅ 과제 리스트 영역을 form으로 감싸기 -->
+			<form id="taskForm" onsubmit="return false;">
+				<div id="obj-taskList"></div>
+				<button type="button" class="obj-add-task-btn">과제 추가하기</button>
+			</form>
 		</div>
 	</div>
 
+	<!-- ✅ 마감일 설정용 달력 폼 -->
 	<div id="calendarModal">
 		<div class="calendar-content" id="calendarContent">
-			<p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일
-				설정:</p>
-			<input type="date" id="calendarPicker"
-				style="padding: 10px; border-radius: 10px; border: none;"><br>
-			<br>
-			<button id="confirmDateBtn"
-				style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; cursor: pointer;">날짜
-				확인</button>
+			<form id="calendarForm" onsubmit="return false;" style="display: flex; flex-direction: column; align-items: center;">
+				<p id="calendarTitle" style="font-size: 20px; margin-bottom: 20px;">마감일 설정:</p>
+				<input type="date" id="calendarPicker"
+					style="padding: 10px; border-radius: 10px; border: none;"><br><br>
+				<button id="confirmDateBtn" type="submit"
+					style="padding: 10px 20px; font-size: 16px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; cursor: pointer;">날짜 확인</button>
+			</form>
 		</div>
 	</div>
 
+	<!-- 기존 목록 추가용 div -->
 	<div id="newListCard" style="display: none;">
 		<div class="calendar-content" style="text-align: center;">
-			<input type="text" class = "pf-font" placeholder="새로운 목록"
-				style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; font-family: 'PFStarDust', sans-serif;"><br>
-			<button
-				style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
-				리스트 추가하기</button>
-			<br>
-			<button
-				style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록
-				확인</button>
+			<form id="newListForm" onsubmit="return false;">
+				<input type="text" class="pf-font" placeholder="새로운 목록"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; font-family: 'PFStarDust', sans-serif;"><br>
+				<button type="submit"
+					style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
+					리스트 추가하기</button><br>
+				<button type="button"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록 확인</button>
+			</form>
 		</div>
 	</div>
 
@@ -330,7 +336,7 @@
         }
 
         function updateCompleteCount() {
-            const allTasks = document.querySelectorAll('#taskList .obj-task-item');
+            const allTasks = document.querySelectorAll('#obj-taskList .obj-task-item');
             const total = allTasks.length;
             let completed = 0;
 
@@ -396,6 +402,10 @@
                 </div>
             `;
 
+<<<<<<< HEAD
+            renderTasksForCurrentList();
+
+=======
             taskList.appendChild(taskItem);
            
             
@@ -408,6 +418,7 @@
 			const user_id = "<%= userId %>";
 		    sessionStorage.setItem("user_id", user_id); 
 		  
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
@@ -646,6 +657,70 @@
             document.getElementById("cardWrapper").style.top = savedTop + "px";
             renderTasksForCurrentList(); // ✅ 초기 렌더링
         });
+<<<<<<< HEAD
+
+        function renderTasksForCurrentList() {
+            const currentList = localStorage.getItem("currentList");
+            const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
+            const tasks = taskData[currentList] || [];
+
+            taskList.innerHTML = ""; // 기존 목록 비우기
+
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'obj-task-item';
+
+                taskItem.innerHTML = `
+                    <div class="obj-task-left">
+                        <input type="checkbox" class="task-check" ${task.checked ? 'checked' : ''}>
+                        <input type="text" class = "pf-font" placeholder="과제 제목 입력" value="${task.title}">
+                        <span class="obj-created-date">${task.date}</span>
+                    </div>
+                    <div class="obj-task-buttons">
+                        <button class="calendar-btn">📅</button>
+                        <button class="delete-task">X</button>
+                    </div>
+                `;
+
+                taskList.appendChild(taskItem);
+
+                const checkbox = taskItem.querySelector('.task-check');
+                checkbox.addEventListener('change', () => {
+
+                    if (taskData[currentList] && taskData[currentList][index]) {
+                        taskData[currentList][index].checked = checkbox.checked;
+                        localStorage.setItem("taskData", JSON.stringify(taskData));
+                    }
+
+                    updateCompleteCount();
+                });
+
+                // 삭제 버튼 이벤트
+                taskItem.querySelector('.delete-task').addEventListener('click', () => {
+                    const taskData = JSON.parse(localStorage.getItem("taskData") || "{}");
+                    const currentList = localStorage.getItem("currentList");
+
+                    const confirmed = confirm(`"${task.title}"을(를) 정말 삭제하시겠습니까?`);
+                    if (confirmed) {
+                        taskData[currentList].splice(index, 1);
+                        localStorage.setItem("taskData", JSON.stringify(taskData));
+                        renderTasksForCurrentList(); // 다시 렌더링
+                    }
+                });
+
+                // 달력 버튼 이벤트
+                taskItem.querySelector('.calendar-btn').addEventListener('click', () => {
+                    currentTargetTask = taskItem;
+                    calendarTitle.textContent = `마감일 설정: ${task.title}`;
+                    calendarContent.style.left = cardWrapper.offsetLeft + 'px';
+                    calendarContent.style.top = cardWrapper.offsetTop + 'px';
+                    cardWrapper.style.display = 'none';
+                    calendarModal.style.display = 'block';
+                });
+            });
+            
+            updateCompleteCount();
+=======
         
         
         
@@ -655,6 +730,7 @@
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             return `${year}/${month}/${day}`;
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
         }
 
         function debounce(func, delay) {

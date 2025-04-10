@@ -238,6 +238,38 @@ public class ObjMgr {
 		}
 	}
 	
+<<<<<<< HEAD
+	//작업 목록 리스트 받아오기
+	public Vector<ObjBean> getObjList(String user_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		Vector<ObjBean> vlist = new Vector<ObjBean>();
+		try {
+			con = pool.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, user_id);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				ObjBean bean = new ObjBean();
+				bean.setObj_id(rs.getInt("obj_id"));
+				bean.setUser_id(rs.getString("user_id"));
+				bean.setObj_title(rs.getString("obj_title"));
+				bean.setObj_check(rs.getInt("obj_check"));
+				bean.setObj_regdate(SDF_DATE.format(rs.getDate("obj_regdate")));
+				bean.setObj_sdate(SDF_DATE.format(rs.getDate("obj_sdate")));
+				bean.setObj_edate(rs.getString("obj_edate"));
+				bean.setObjgroup_id(rs.getInt("objgroup_id"));
+				vlist.add(bean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+		return vlist;
+=======
 	//작업 목록 리스트 받아오기(objgroup_id로 구분하도록 만듦), user_id
 	public Vector<ObjBean> getObjList(int objgroup_id, String user_id) {
 	    Connection con = null;
@@ -265,6 +297,7 @@ public class ObjMgr {
 	        pool.freeConnection(con, pstmt, rs);
 	    }
 	    return vlist;
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
 	}
 	//전체작업목표 받아오기
 	public Vector<ObjBean> getTotalObjList(String user_id) {
