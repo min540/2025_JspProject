@@ -107,6 +107,26 @@
       height: 24px;
       vertical-align: middle;
     }
+
+    /* 알림 스타일 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -161,6 +181,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
+  // 알림 표시 함수
+  const showNotification = (message) => {
+    // 이미 존재하는 알림 제거
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      document.body.removeChild(existingNotification);
+    }
+    
+    // 새 알림 생성
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // 알림 표시
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    // 3초 후 알림 사라짐
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  };
+
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -183,12 +233,32 @@ document.addEventListener("DOMContentLoaded", function () {
         updateProgress();
       } else {
         clearInterval(interval);
-        isRunning = false;
-        isSession = !isSession;
-        timeLeft = isSession ? sessionDuration : breakDuration;
-        updateProgress();
-        toggleIcon.src = "icon/아이콘_재생_1.png";
-        timerInfo.style.display = "block";
+        
+        if (isSession) {
+          // 작업 세션이 끝났음을 알림과 동시에 휴식 세션 시작
+          showNotification("작업 시간이 끝났습니다!");
+          
+          // 휴식 세션으로 전환 및 자동 시작
+          isSession = false;
+          timeLeft = breakDuration;
+          updateProgress();
+          startInterval();
+          isRunning = true;
+          toggleIcon.src = "icon/아이콘_일시정지_1.png";
+          timerInfo.style.display = "none";
+        } else {
+          // 휴식 세션이 끝났음을 알림
+          showNotification("휴식 시간이 끝났습니다! 작업을 시작해주세요.");
+          
+          // 작업 세션으로 전환 및 자동 시작
+          isSession = true;
+          timeLeft = sessionDuration;
+          updateProgress();
+          startInterval();
+          isRunning = true;
+          toggleIcon.src = "icon/아이콘_일시정지_1.png";
+          timerInfo.style.display = "none";
+        }
       }
     }, 1000);
   };
