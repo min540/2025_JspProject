@@ -46,7 +46,7 @@ public class LoginMgr {
 	        User_icon = multi.getFilesystemName("User_icon");
 
 	        con = pool.getConnection();
-	        sql = "insert user values(?, ?, ?, ?, ?, 1, ?, 1)";
+	        sql = "insert user values(?, ?, ?, ?, ?, 1, ?)";
 	        pstmt = con.prepareStatement(sql);
 	        pstmt.setString(1, multi.getParameter("user_id"));
 	        pstmt.setString(2, multi.getParameter("user_pwd"));
@@ -78,7 +78,7 @@ public class LoginMgr {
 		try {
 			con = pool.getConnection();
 			sql = "INSERT INTO user (user_id, user_pwd, user_name, user_email, user_phone, grade, user_icon, timer_id) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+					"VALUES (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, id);
 			pstmt.setString(2, pwd); // "google_login"

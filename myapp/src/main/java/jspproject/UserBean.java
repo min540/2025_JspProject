@@ -8,12 +8,11 @@ public class UserBean {
 	private String user_phone;
 	private int grade;
 	private String user_icon;
-	private int timer_id;
 	
 	public UserBean() {}
 
 	public UserBean(String user_id, String user_pwd, String user_name, String user_email, String user_phone, int grade,
-			String user_icon, int timer_id) {
+			String user_icon) {
 		super();
 		this.user_id = user_id;
 		this.user_pwd = user_pwd;
@@ -22,10 +21,7 @@ public class UserBean {
 		this.user_phone = user_phone;
 		this.grade = grade;
 		this.user_icon = user_icon;
-		this.timer_id = timer_id;
 	}
-
-
 
 	public String getUser_id() {
 		return user_id;
@@ -83,12 +79,5 @@ public class UserBean {
 		this.user_icon = user_icon;
 	}
 
-	public int getTimer_id() {
-		return timer_id;
-	}
-
-	public void setTimer_id(int timer_id) {
-		this.timer_id = timer_id;
-	}
-
+	
 }
