@@ -677,8 +677,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		    <input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="uploadMplistImage(event)">
 		  </form>
 		</div>
-
-	
 </div>
 
 <script>
@@ -745,8 +743,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	        if (previewIcons) previewIcons.style.display = 'flex';
 	        if (rightButtons) rightButtons.style.display = 'flex';
 	        
-	        loadMusicListByMplistId(id);  // ← 여기가 핵심!
-
+	        loadMusicListByMplistId(id);
 	    });
 	
 	    // ✅ 수정 아이콘
