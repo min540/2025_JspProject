@@ -1,17 +1,8 @@
 <!-- Background.jsp -->
-<%@page import="java.util.Vector"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.Vector" %>
-<%@ page import="jspproject.TemaBean" %>
 <%@ page import="jspproject.TemaMgr" %>
-
-
-<%
-    String paramFileName = request.getParameter("fileName");
-    String paramTitle = request.getParameter("title");
-    String paramCnt = request.getParameter("cnt");
-%>
-
+<%@ page import="jspproject.TemaBean" %>
+<%@ page import="java.util.Vector" %>
 
  <style>
     .background-container {
@@ -28,7 +19,7 @@
 	}
 
 	.background-tab {
-    display: flex;
+    display: flex;	
     gap: 10px;
     padding: 5px 10px;
     background-color: transparent;
@@ -97,6 +88,7 @@
     flex-direction: column;
     border-right: 2px solid #311e4f;
     overflow: hidden; /* ← 중요: 전체 스크롤 막기 */
+    position: relative;
 	}
 	
 	/* 오른쪽 요소 오른쪽 끝으로 밀기 */
@@ -118,9 +110,12 @@
 	
 	/* 하단 버튼 박스 */
 	.background-footer {
+	    position: absolute;  
+	    bottom: 10px;       
+	    left: 20px;          
+	    width: calc(100% - 40px); 
 	    display: flex;
-	    margin-top: 10px;
-	    justify-content: space-between; /* 양쪽 끝으로 배치 */
+	    justify-content: flex-start;
 	}
 	
 	@font-face {
@@ -418,37 +413,68 @@
 		
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
-		        <img class="iconbackgroundList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" >
+		        <img class="iconbackgroundList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬"  />
 		        <input class="background-search" type="text" placeholder="배경 제목 검색" />
 		        <img id="searchButton" class="iconbackgroundList" src="icon/아이콘_검색_1.png" alt="검색" >
 		    </div>
 		</div>
 
-		<div class="background-list" id="backgroundList">
-<%
-    TemaMgr tmgr = new TemaMgr();
-    Vector<TemaBean> list = tmgr.listTema();
-    for (int i = 0; i < list.size(); i++) {
-        TemaBean bean = list.get(i);
-        String fileName = bean.getTema_img();
-        String title = bean.getTema_title();
-%>
-<div class="background-list-item" data-tema-id="<%=bean.getTema_id()%>">
-    <button class="background-image-button"
-        onclick="selectBackground('<%=fileName%>', '<%=title%>', '<%=bean.getTema_cnt()%>')">
-        <img src="<%= request.getContextPath() %>/jspproject/img/<%= fileName %>" alt="<%= title %>" />
-    </button>
-    <img class="delete-icon"
-        src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png"
-        alt="삭제"
-        onclick="deleteImage(this)" />
-</div>
-<%
-    }
-%>
+	<div class="background-list" id="backgroundList">
+		<%
+			String user_id = (String) session.getAttribute("id");
+		    TemaMgr mgr = new TemaMgr();
+			Vector<TemaBean> vlist = mgr.listTema(user_id); // 테마 리스트 가져오기
+		
+		    for (int i = 0; i < vlist.size(); i++) {
+		        TemaBean bean = vlist.get(i);
+		        int tema_id = bean.getTema_id();
+		        String imgName = bean.getTema_img();
+		        String title = bean.getTema_title();
+		        String description = bean.getTema_cnt();
+		%>
+		    <div class="background-list-item" data-tema-id="<%= tema_id %>">
+		        <button class="background-image-button"
+		                onclick="selectBackground(this)"
+		                data-img="<%= imgName %>"
+		                data-title="<%= title %>"
+		                data-description="<%= description %>">
+		            <img src="<%= request.getContextPath() %>/jspproject/img/<%= imgName %>"
+		                 alt="<%= title %>" />
+		        </button>
+		
+		        <img class="delete-icon"
+		             src="<%= request.getContextPath() %>/jspproject/icon/아이콘_삭제_1.png"
+		             alt="삭제"
+		             onclick="deleteImage(this)" />
+		    </div>
+		<%}%>
+		
+		<form id="updateTemaForm" action="updateTema.jsp" method="post" enctype="multipart/form-data" style="display:none;">
+		    <input type="hidden" name="tema_id" id="updateTemaId">
+		    <input type="text" name="tema_cnt" id="updateTemaCnt">
+		</form>
+
+<input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
+		
 </div>
 
-        <div class="background-footer"> 
+		<!-- ✅ 업로드 폼 모달 or 인라인 -->
+		<div id="uploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+		    <form id="uploadForm" action="uploadTema.jsp" method="post" enctype="multipart/form-data"
+		          style="background:#1d102d; padding:20px; border-radius:12px; color:white; display:flex; flex-direction:column; gap:10px; width:300px;">
+		        <h3 style="text-align:center;">배경 업로드</h3>
+		        <input type="text" name="tema_title" placeholder="제목" required>
+		        <input type="text" name="tema_cnt" placeholder="설명" required>
+		        <input type="file" name="tema_img" accept="image/*" required>
+		        <div style="display:flex; justify-content:space-between;">
+		            <input type="submit" value="업로드" style="padding:8px 16px; background-color:#7b2cbf; color:white; border:none; border-radius:8px;">
+		            <button type="button" onclick="closeUploadModal()" style="padding:8px 16px; background-color:#444; color:white; border:none; border-radius:8px;">취소</button>
+		        </div>
+		    </form>
+		</div>
+
+
+        <div class="background-footer">
             <button class="btn-purple" onclick="addbackgroundItem()" >업로드</button>
         </div>
     </div>
@@ -456,18 +482,19 @@
     <!-- 오른쪽 영역 -->
     <div class="background-right">
     	<div class="preview-icons">
-    		<img class="iconbackgroundList" src="icon/아이콘_수정_1.png" alt="수정" >
+    		<img class="iconbackgroundList" src="icon/아이콘_수정_1.png" alt="수정" onclick="enableEditMode()">
     		<img class="iconbackgroundList" src="icon/아이콘_삭제_1.png" alt="삭제">
 		</div>
 		
         <div class="background-preview">
             <img class = "backgroundImg" src="backgroundImg/background1.gif" alt="배경 이미지">
-             <input id="backgroundTitleInput" type="text" value="배경 제목" style="text-align:center; 
+             <input id="backgroundTitleInput" type="text" value="배경 제목" disabled
+             style="text-align:center; 
              font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
         </div>
 
         <div class="background-description">
-            <textarea>배경 설명</textarea>
+            <textarea readonly>배경 설명</textarea>
         </div>
 
         <!-- 가운데 위 버튼 -->
@@ -485,115 +512,116 @@
 </div>
 
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
-
-<!-- 업로드 폼 모달 -->
-<div id="uploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-    background-color: rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
-    
-    <form id="uploadForm" action="uploadTema.jsp" method="post" enctype="multipart/form-data" 
-          style="background:#1d102d; padding:30px; border-radius:15px; box-shadow:0 0 20px white; color:white;">
-        
-        <h3 style="margin-bottom:15px;">배경 이미지 업로드</h3>
-        
-        제목: <input type="text" name="tema_title" style="width:100%; margin-bottom:10px;"><br>
-        설명: <input type="text" name="tema_cnt" style="width:100%; margin-bottom:10px;"><br>
-        이미지 선택: <input type="file" name="tema_img" accept="image/*" style="margin-bottom:15px;"><br>
-        
-        <div style="display:flex; justify-content:space-between;">
-            <input type="submit" value="업로드" style="padding:8px 16px; background-color:#7b2cbf; color:white; border:none; border-radius:8px;">
-            <button type="button" onclick="closeUploadModal()" style="padding:8px 16px; background-color:#444; color:white; border:none; border-radius:8px;">취소</button>
-        </div>
-    </form>
-    
-</div>
-
-
 <script>
-
-document.addEventListener("DOMContentLoaded", function () {
-    const paramFileName = "<%= paramFileName != null ? paramFileName : "" %>";
-    const paramTitle = "<%= paramTitle != null ? paramTitle.replace("\"", "\\\"") : "" %>";
-    const paramCnt = "<%= paramCnt != null ? paramCnt.replace("\"", "\\\"") : "" %>";
-
-    if (paramFileName !== "") {
-        const contextPath = "<%= request.getContextPath() %>";
-        const previewImg = document.querySelector(".backgroundImg");
-        const titleInput = document.getElementById("backgroundTitleInput");
-        const textarea = document.querySelector(".background-description textarea");
-
-        // 이미지 미리보기 적용
-        previewImg.src = contextPath + "/jspproject/img/" + paramFileName;
-
-        // 제목과 설명 미리보기 반영
-        titleInput.value = paramTitle;
-        textarea.value = paramCnt;
-
-        // 🔥 backgroundDescriptions 에 정보 저장해두기
-        backgroundDescriptions[paramFileName] = {
-            title: paramTitle,
-            description: paramCnt
-        };
-
-        // alt 속성도 갱신
-        const images = document.querySelectorAll(".background-list-item img");
-        images.forEach(img => {
-            if (img.src.includes(paramFileName)) {
-                img.setAttribute("alt", paramTitle);
-            }
-        });
-    }
-});
-
-
-let backgroundDescriptions = {};
-
+//배경 설명 수정
 function saveDescription() {
-    const titleInput = document.getElementById("backgroundTitleInput");
-    const newTitle = titleInput.value.trim();
-    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
     const description = document.querySelector(".background-description textarea").value;
+    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
 
-    if (!fileName) return;
+    const items = document.querySelectorAll(".background-list-item");
+    let temaId = null;
 
-    backgroundDescriptions[fileName] = {
-        title: newTitle,
-        description: description
-    };
-
-    const allImages = document.querySelectorAll(".background-list-item img");
-    allImages.forEach(img => {
-        const src = img.getAttribute("src");
-        if (src.includes(fileName)) {
-            img.setAttribute("alt", newTitle); 
+    items.forEach(item => {
+        const btn = item.querySelector(".background-image-button");
+        if (btn.getAttribute("data-img") === fileName) {
+            temaId = item.getAttribute("data-tema-id");
         }
     });
 
-    alert("제목과 설명이 저장되었습니다.");
+    if (!temaId) {
+        alert("선택된 항목의 ID를 찾을 수 없습니다.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("tema_id", temaId);
+    formData.append("tema_cnt", description);
+    formData.append("tema_title", document.getElementById("backgroundTitleInput").value); // 보내긴 하지만 안 써도 OK
+
+    fetch("updateTema.jsp", {
+        method: "POST",
+        body: formData, // 👉 multipart/form-data로 자동 설정됨
+        // ⚠️ Content-Type을 설정하지 마세요!
+    })
+    .then(res => res.text())
+    .then(result => {
+        if (result.trim() === "ok") {
+            alert("수정 완료!");
+            disableEditMode();
+            items.forEach(item => {
+                const btn = item.querySelector(".background-image-button");
+                if (btn.getAttribute("data-img") === fileName) {
+                    btn.setAttribute("data-description", description);
+                }
+            });
+        } else {
+            alert("수정 실패: " + result);
+        }
+    })
+    .catch(err => {
+        console.error("에러:", err);
+        alert("에러 발생: " + err);
+    });
 }
+
 
 function deleteImage(el) {
     const item = el.closest('.background-list-item');
-    const temaId = item.getAttribute("data-tema-id");
+    const temaId = item.getAttribute('data-tema-id');
+    const deletedImgName = item.querySelector("img").getAttribute("src").split("/").pop(); // 삭제될 이미지 파일명
 
     if (confirm("정말 삭제하시겠습니까?")) {
-        // 서버로 삭제 요청 보내기
-        fetch(`deleteTema.jsp?tema_id=${temaId}`)
+        fetch("<%=request.getContextPath()%>/jspproject/deleteTema.jsp?tema_id=" + temaId)
             .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    alert("삭제 완료되었습니다.");
-                    item.remove(); // 화면에서도 삭제
+                if (data.status === "ok") {
+                    item.remove();
+                    alert("삭제되었습니다.");
+
+                    // 현재 선택된 미리보기 이미지가 삭제된 이미지였다면 초기화
+                    const previewImg = document.querySelector(".backgroundImg").src;
+                    if (previewImg.includes(deletedImgName)) {
+                        document.querySelector(".backgroundImg").src = "backgroundImg/background1.gif";
+                        document.getElementById("backgroundTitleInput").value = "배경 제목";
+                        document.querySelector(".background-description textarea").value = "배경 설명";
+                    }
                 } else {
-                    alert("삭제에 실패했습니다.");
+                    alert("삭제 실패: " + data.message);
                 }
             })
             .catch(err => {
-                console.error("삭제 요청 중 오류 발생:", err);
-                alert("삭제 중 오류가 발생했습니다.");
+                console.error("에러 발생:", err);
+                alert("에러 발생: " + err);
             });
     }
 }
 
+
+function addbackgroundItem() {
+    document.getElementById("uploadModal").style.display = "flex";  
+}
+
+function closeUploadModal() {
+    document.getElementById("uploadModal").style.display = "none";
+}
+
+function selectBackground(button) {
+	
+    if (isEditMode) {
+        disableEditMode();
+    }
+	
+    const imgName = button.getAttribute("data-img");
+    const title = button.getAttribute("data-title");
+    const description = button.getAttribute("data-description");
+
+    const contextPath = "<%= request.getContextPath() %>";
+    const fullPath = contextPath + "/jspproject/img/" + imgName;
+
+    document.querySelector(".backgroundImg").src = fullPath;
+    document.getElementById("backgroundTitleInput").value = title;
+    document.querySelector(".background-description textarea").value = description;
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".background-search");
@@ -612,73 +640,103 @@ document.addEventListener("DOMContentLoaded", function () {
     searchButton.addEventListener("click", function () {
         const keyword = searchInput.value.trim().toLowerCase();
         const items = document.querySelectorAll(".background-list-item");
+
         items.forEach(item => {
             const img = item.querySelector("img");
             const title = img.getAttribute("alt").toLowerCase();
-            item.style.display = (title === keyword || title === `${keyword}.gif`) ? "block" : "none";
+
+            if (title === keyword || title === `${keyword}.gif`) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
         });
     });
-});
 
-function selectBackground(fileName, title, description) {
-    const previewImg = document.querySelector(".backgroundImg");
-    const titleInput = document.getElementById("backgroundTitleInput");
-    const textarea = document.querySelector(".background-description textarea");
-    const contextPath = "<%= request.getContextPath() %>";
+    const uploadForm = document.getElementById("uploadForm");
+    if (uploadForm) {
+        uploadForm.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-    // 이미지 미리보기
-    previewImg.src = contextPath + "/jspproject/img/" + fileName;
+            const formData = new FormData(uploadForm);
 
-    // 제목 & 설명 반영
-    titleInput.value = title || fileName;
-    textarea.value = description || "";
+            fetch("uploadTema.jsp", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "ok") {
+                    alert("업로드 완료!");
+                    closeUploadModal();
 
-    // 저장용 객체에도 갱신
-    backgroundDescriptions[fileName] = {
-        title: title,
-        description: description
-    };
-}
-
-function addbackgroundItem() {
-    document.getElementById("uploadModal").style.display = "flex";
-}
-
-function closeUploadModal() {
-    document.getElementById("uploadModal").style.display = "none";
-}
-
-//✅ 업로드 폼 Ajax 처리
-document.getElementById("uploadForm").addEventListener("submit", function(e) {
-    e.preventDefault(); // 기본 폼 제출 막기
-
-    const formData = new FormData(this);
-
-    fetch("uploadTema.jsp", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.text())
-    .then(result => {
-        console.log("업로드 완료");
-
-        // 모달 닫기
-        closeUploadModal();
-
-        // Background.jsp 다시 불러와서 backgroundWrapper 갱신
-        fetch("Background.jsp")
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById("backgroundWrapper").innerHTML = html;
+                    const button = appendNewBackgroundItem(data.tema_img, data.tema_title, data.tema_cnt);
+                    selectBackground(button); // 새로 추가된 버튼을 선택
+                } else {
+                    alert("업로드 실패: " + data.message);
+                }
+            })
+            .catch(err => {
+                alert("에러 발생: " + err);
             });
-
-    })
-    .catch(err => {
-        console.error("업로드 실패", err);
-        alert("업로드 중 오류가 발생했습니다.");
-    });
+        });
+    }
 });
 
+function appendNewBackgroundItem(imgName, title, description) {
+    const list = document.getElementById("backgroundList");
 
+    const item = document.createElement("div");
+    item.className = "background-list-item";
+    item.setAttribute("data-tema-id", ""); // 필요시 서버에서 새 tema_id 응답 시 여기에 설정
+
+    const button = document.createElement("button");
+    button.className = "background-image-button";
+    button.setAttribute("onclick", "selectBackground(this)");
+    button.setAttribute("data-img", imgName);
+    button.setAttribute("data-title", title);
+    button.setAttribute("data-description", description);
+
+    const img = document.createElement("img");
+    img.src = "jspproject/img/" + imgName;
+    img.alt = title;
+
+    const deleteIcon = document.createElement("img");
+    deleteIcon.className = "delete-icon";
+    deleteIcon.src = "jspproject/icon/아이콘_삭제_1.png";
+    deleteIcon.alt = "삭제";
+    deleteIcon.setAttribute("onclick", "deleteImage(this)");
+
+    button.appendChild(img);
+    item.appendChild(button);
+    item.appendChild(deleteIcon);
+    list.appendChild(item);
+
+    return button;
+}
+
+let isEditMode = false;
+
+function enableEditMode() {
+    const descriptionArea = document.querySelector(".background-description textarea");
+
+    // 설명 수정 가능하게
+    descriptionArea.removeAttribute("readonly");
+    descriptionArea.style.border = "1px solid white";
+    descriptionArea.style.backgroundColor = "#2e2e2e"; 
+    descriptionArea.style.color = "white"; 
+
+    descriptionArea.focus();
+    isEditMode = true;
+}
+
+function disableEditMode() {
+    const descriptionArea = document.querySelector(".background-description textarea");
+
+    descriptionArea.setAttribute("readonly", true);
+    descriptionArea.style.border = "none";
+    descriptionArea.style.backgroundColor = "#2e2e2e";
+
+    isEditMode = false;
+}
 </script>
-

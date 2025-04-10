@@ -1,121 +1,289 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>타이머 탭</title>
-  <link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/Timer.css" />
+  <title>타이머</title>
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .timer1-timer-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: #11111c;
+      border: 3px solid #1C1C1C;
+      user-select: none;
+      cursor: default;
+    }
+
+    .timer1-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(90deg) scaleX(-1);
+    }
+
+    .timer1-drag-handle {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: white;
+      user-select: none;
+      cursor: grab;
+      z-index: 10;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .timer1-center {
+      position: absolute;
+      top: 47%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .timer1-time {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: white;
+    }
+
+    .timer1-info {
+      font-size: 14px;
+      line-height: 1.3;
+      color: white;
+    }
+
+    .timer1-info strong {
+      cursor: pointer;
+    }
+
+    input.timer1-input {
+      width: 50px;
+      font-size: 14px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: white;
+      outline: none;
+    }
+
+    .timer1-bottom-controls {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+    }
+
+    .timer1-btn {
+      font-size: 20px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .timer1-btn:hover {
+      color: #3f8efc;
+    }
+  </style>
 </head>
 <body>
-  <div class="timer-container">
-    <!-- 왼쪽 타이머 목록 패널 -->
-    <div class="timer-left">
-      <div class="timer-tab">
-        <button class="tab-btn" onclick="location.href='Background.jsp'">배경화면</button>
-        <button class="tab-btn active">타이머</button>
-      </div>
 
-      <div class="timer-header">
-        <div class="header-left">
-          <label>타이머 목록</label>
-        </div>
-        <div class="header-right">
-           <img class="icontimerList" src="icon/아이콘_글자순_1.png" alt="글자순 정렬">
-		  <img class="icontimerList" src="icon/아이콘_오래된순_최신순_1.png" alt="최신순 정렬"> <!-- 🔥 추가된 아이콘 -->
-		  <input class="timer-search" type="text" placeholder="타이머 검색" />
-		  <img id="searchTimerBtn" class="icontimerList" src="icon/아이콘_검색_1.png" alt="검색">
-          
-        </div>
-      </div>
+<div class="timer1-timer-container" id="timerContainer">
+  <div class="timer1-drag-handle">:::</div>
 
-      <div class="timer-list" id="timerGrid"></div>
-    </div>
+  <svg class="timer1-svg" width="240" height="240">
+    <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12"
+            fill="none" stroke-linecap="butt" stroke-dasharray="628" />
+  </svg>
 
-    <!-- 오른쪽 미리보기/설정 -->
-    <div class="timer-right">
-      <div class="preview-icons">
-        <img class="icontimerList" src="icon/아이콘_수정_1.png" alt="수정" />
-        <img class="icontimerList" src="icon/아이콘_삭제_1.png" alt="삭제" />
-      </div>
-
-      <div class="timer-preview-wrapper">
-        <div id="timerPreviewBox" class="timer-preview-box"></div>
-      </div>
-
-      <div class="timer-description">
-        <textarea placeholder="타이머 설명을 입력하세요."></textarea>
-      </div>
-
-      <div class="timer-cancel-button">
-        <button class="btn-purple">타이머 취소</button>
-      </div>
-
-	<div class="timer-right-buttons">
-	  <button class="btn-purple" onclick="applyTimer()">적용</button>
-	</div>
+  <div class="timer1-center">
+    <div class="timer1-time" id="timeDisplay">10:00</div>
+    <div class="timer1-info" id="timerInfo">
+      <strong id="sessionTime">10:00</strong> 세션<br>
+      과 <strong id="breakTime">05:00</strong> 휴식
     </div>
   </div>
 
-  <script>
-    let selectedTimer = null;
+  <div class="timer1-bottom-controls">
+    <button class="timer1-btn" id="btnReset">⟲</button>
+    <button class="timer1-btn" id="toggleBtn">▶️</button>
+  </div>
+</div>
 
-    const timerData = [
-      "15:00", "10:00 ▶", "⏱ 25분", "🔋 진행률",
-      "00:30", "퍼센트 바", "03:00", "⭕ 5분",
-      "12:00", "⏳ 시작", "25", "▶ 00:45",
-      "🕒 01:15", "게이지바", "15분", "▶ 5분",
-      "00:10", "타임업", "휴식 10분", "⏱ 01:00"
-    ];
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  let sessionDuration = 600;
+  let breakDuration = 300;
+  let timeLeft = sessionDuration;
+  let isSession = true;
+  let isRunning = false;
+  let interval = null;
 
-    const styles = {
-      1: "<div style='width:100px;height:100px;border:6px solid #683FE2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;'>15:00</div>",
-      2: "<div style='width:140px;height:50px;background:#F0F0F0;border-radius:10px;display:flex;justify-content:space-around;align-items:center;font-size:16px;color:black;'><span>10:00</span> ▶</div>",
-      3: "<div style='font-size:22px;color:white;padding:10px;'>⏱ 25분 집중</div>",
-      4: "<div style='width:20px;height:100px;background:#ddd;position:relative;border-radius:10px;'><div style='width:100%;height:60%;background:#683FE2;position:absolute;bottom:0;border-radius:10px 10px 0 0;'></div></div>",
-      5: "<div style='font-size: 24px; color: white;'>00:30</div>",
-      6: "<div style='width: 120px; height: 12px; background-color: #eee;'><div style='width: 40%; height: 100%; background-color: #683FE2;'></div></div>",
-      7: "<div style='background: #f5f5f5; padding: 20px; border-radius: 8px;'>03:00</div>",
-      8: "<div style='width: 100px; height: 100px; border: 2px dashed #683FE2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white;'>5분</div>",
-      9: "<div style='background: white; padding: 12px 16px; border-radius: 8px; color: #000;'>12:00</div>",
-      10: "<div style='font-size: 20px; color: white;'>⏳ 집중 시작</div>",
-      11: "<div style='width: 60px; height: 60px; background: #683FE2; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px;'>25</div>",
-      12: "<div style='background: #ddd; padding: 16px 20px; border-radius: 8px;'>▶ 00:45</div>",
-      13: "<div style='display: flex; gap: 8px; color: white;'>🕒 <span>01:15</span></div>",
-      14: "<div style='width: 100px; height: 8px; background: #ccc;'><div style='width: 70%; height: 100%; background: #683FE2;'></div></div>",
-      15: "<div style='color: white;'>15분</div>",
-      16: "<div style='color: white;'>▶ 5분</div>",
-      17: "<div style='color: white;'>00:10</div>",
-      18: "<div style='color: #683FE2;'>타임업</div>",
-      19: "<div style='color: white;'>휴식 10분</div>",
-      20: "<div style='color: white;'>⏱ 01:00</div>"
+  const RADIUS = 100;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+  const timeDisplay = document.getElementById("timeDisplay");
+  const progressCircle = document.getElementById("progress");
+  const sessionTimeEl = document.getElementById("sessionTime");
+  const breakTimeEl = document.getElementById("breakTime");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const btnReset = document.getElementById("btnReset");
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer1-drag-handle");
+  const timerInfo = document.getElementById("timerInfo");
+
+  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ":" + String(s).padStart(2, '0');
+  };
+
+  const updateProgress = () => {
+    const duration = isSession ? sessionDuration : breakDuration;
+    const percent = timeLeft / duration;
+    const offset = CIRCUMFERENCE * (1 - percent);
+    progressCircle.style.stroke = isSession ? "#3f8efc" : "#4caf50";
+    progressCircle.style.strokeDashoffset = offset;
+    timeDisplay.textContent = formatTime(timeLeft);
+  };
+
+  const startInterval = () => {
+    interval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateProgress();
+      } else {
+        clearInterval(interval);
+        isRunning = false;
+        isSession = !isSession;
+        timeLeft = isSession ? sessionDuration : breakDuration;
+        updateProgress();
+        toggleBtn.textContent = "▶️";
+        timerInfo.style.display = "block";
+      }
+    }, 1000);
+  };
+
+  const resetTimer = () => {
+    clearInterval(interval);
+    isRunning = false;
+    isSession = true;
+    timeLeft = sessionDuration;
+    toggleBtn.textContent = "▶️";
+    updateProgress();
+    timerInfo.style.display = "block";
+  };
+
+  btnReset.addEventListener("click", resetTimer);
+
+  toggleBtn.addEventListener("click", () => {
+    if (isRunning) {
+      clearInterval(interval);
+      isRunning = false;
+      toggleBtn.textContent = "▶️";
+      timerInfo.style.display = "block";
+    } else {
+      startInterval();
+      isRunning = true;
+      toggleBtn.textContent = "⏸";
+      timerInfo.style.display = "none";
+    }
+  });
+
+  const makeEditable = (el, type) => {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.className = "timer1-input";
+    input.value = type === "session" ? sessionDuration : breakDuration;
+
+    const confirm = () => {
+      let val = parseInt(input.value);
+      if (isNaN(val) || val < 10) val = 10;
+      if (val > 3600) val = 3600;
+
+      if (type === "session") {
+        sessionDuration = val;
+        sessionTimeEl.textContent = formatTime(sessionDuration);
+      } else {
+        breakDuration = val;
+        breakTimeEl.textContent = formatTime(breakDuration);
+      }
+
+      input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
+      resetTimer();
     };
 
-    const grid = document.getElementById("timerGrid");
-    timerData.forEach((label, index) => {
-      const div = document.createElement("div");
-      div.textContent = label;
-      div.className = "timer-button";
-      div.onclick = () => selectTimer(index + 1);
-      grid.appendChild(div);
+    input.addEventListener("blur", confirm);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") confirm();
     });
 
-    function selectTimer(num) {
-      selectedTimer = num;
-      const previewBox = document.getElementById("timerPreviewBox");
-      previewBox.innerHTML = styles[num] || `<div style='color:white;'>${timerData[num - 1]}</div>`;
-    }
+    el.replaceWith(input);
+    input.focus();
+  };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      selectTimer(1);
-    });
+  sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
+  breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-    function applyTimer() {
-      if (selectedTimer === null) {
-        alert("먼저 타이머를 선택해주세요!");
-        return;
-      }
-      alert(`타이머 ${selectedTimer}번이 적용되었습니다!`);
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  updateProgress();
+
+  // 드래그 기능
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  dragHandle.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    const rect = timer.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    isDragging = true;
+    document.body.style.cursor = "grabbing";
+
+    // transform 제거 (드래그 시작 시 위치 고정)
+    timer.style.transform = "none";
+    timer.style.left = rect.left + "px";
+    timer.style.top = rect.top + "px";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    timer.style.left = x + "px";
+    timer.style.top = y + "px";
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (isDragging) {
+      isDragging = false;
+      document.body.style.cursor = "default";
     }
-  </script>
+  });
+});
+</script>
+
 </body>
 </html>

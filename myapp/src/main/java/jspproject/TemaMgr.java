@@ -73,35 +73,37 @@ public class TemaMgr {
 
 
 	//테마리스트
-	public Vector<TemaBean> listTema(){
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		Vector<TemaBean> vlist = new Vector<TemaBean>();
-		try {
-			con = pool.getConnection();
-			sql = "select * from tema order by tema_id desc";
-			pstmt = con.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				TemaBean bean = new TemaBean();
-				bean.setTema_id(rs.getInt("tema_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setTema_title(rs.getString("tema_title"));
-				bean.setTema_bimg(rs.getString("tema_bimg"));
-				bean.setTema_cnt(rs.getString("tema_cnt"));
-				bean.setTema_dark(rs.getInt("tema_dark"));
-				bean.setTema_onoff(rs.getInt("tema_onoff"));
-				bean.setTema_img(rs.getString("tema_img"));
-				vlist.addElement(bean);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt, rs);
-		}
-		return vlist;
+	public Vector<TemaBean> listTema(String userId) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    Vector<TemaBean> vlist = new Vector<TemaBean>();
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "SELECT * FROM tema WHERE user_id = ? ORDER BY tema_id DESC";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, userId);
+	        rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            TemaBean bean = new TemaBean();
+	            bean.setTema_id(rs.getInt("tema_id"));
+	            bean.setUser_id(rs.getString("user_id"));
+	            bean.setTema_title(rs.getString("tema_title"));
+	            bean.setTema_bimg(rs.getString("tema_bimg"));
+	            bean.setTema_cnt(rs.getString("tema_cnt"));
+	            bean.setTema_dark(rs.getInt("tema_dark"));
+	            bean.setTema_onoff(rs.getInt("tema_onoff"));
+	            bean.setTema_img(rs.getString("tema_img"));
+	            vlist.addElement(bean);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return vlist;
 	}
 	
 	

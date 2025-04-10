@@ -3,7 +3,8 @@
 <%@page import="java.beans.beancontext.BeanContext"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
-<jsp:useBean id="bean" class ="jspproject.UserBean"/>
+<jsp:useBean id="bean" class ="jspproject.UserBean" scope = "session"/>
+
 <jsp:setProperty property="*" name="bean"/>
 <%
 String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
@@ -19,41 +20,88 @@ UserBean ubean = lmgr.getUser(user_id);
 if (ubean == null) {
 	ubean = new UserBean();
 }
-//폼이 제출되었는지 확인
-if ("POST".equalsIgnoreCase(request.getMethod())) {
- // 기존 updateUser 메서드는 HttpServletRequest를 매개변수로 받음
- boolean updated = lmgr.updateUser(request);
- 
- if (updated) {
-     // 페이지 새로고침하여 업데이트된 정보 보여주기
-     response.sendRedirect(request.getRequestURI());
- } else {
 
- }
-}
+
     %>
     <!-- 파일 업로드를 위한 enctype 추가 -->
     <script>
-    function update() {
-		document.frm.submit();
-    }
-        function previewImage(event) {
+  
+    function previewImage(event) {
+        // 파일 입력 요소의 disabled 상태 확인
+        const fileInput = event.target;
+        if (fileInput.disabled) {
+            // disabled 상태라면 함수 실행 중단
+            return;
+        }
+
+        if (event.target.files && event.target.files[0]) {
             const reader = new FileReader();
-            reader.onload = function() {
+            reader.onload = function(e) {
                 const profileImg = document.getElementById('profileImg');
-                profileImg.src = reader.result;
-                profileImg.style.display = 'block';
+                profileImg.src = e.target.result;
+                profileImg.style.display = 'block'; // 이미지를 반드시 보이게 설정
+                console.log('새 이미지 미리보기 로드 완료');
             }
             reader.readAsDataURL(event.target.files[0]);
         }
+    }
+ // 기존 previewImage 함수는 그대로 두고 이미지 업로드 함수 추가
+    function uploadProfileImage(event) {
+        // 파일이 선택되었는지 확인
+        const fileInput = document.getElementById('profileImage');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            return;
+        }
+        
+        // 폼 데이터 생성 및 파일 추가
+        const formData = new FormData();
+        formData.append('profile', fileInput.files[0]);
+        
+        // fetch API로 이미지 업로드
+        fetch('profileIconUpdate', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('서버 응답 오류');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+               
+                // 이미지 경로 업데이트 (필요한 경우)
+                const profileImg = document.getElementById('profileImg');
+                if (profileImg) {
+                    profileImg.src = "img/" + data.filename;
+                    profileImg.style.display = 'block';
+                }
+            } else {
+              
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("이미지 업로드 중 오류가 발생했습니다");
+        });
+    }
+    
          function enableEdit() {
 		document.getElementById('password').disabled = false;			
 		document.getElementById('name').disabled = false;			
 		document.getElementById('phone').disabled = false;			
 		document.getElementById('email').disabled = false;		
 		document.getElementById('success').disabled = false;	
+		
+		  const profileImage = document.getElementById('profileImage');
+		    profileImage.disabled = false;
+		
 		}
-         
+         function update() {
+         	alert("수정이 완료 되었습니다");
+     		document.frm.submit();
+         }
          window.onload = function() {
              // 모든 입력 필드 비활성화
              document.getElementById('password').disabled = true;
@@ -61,8 +109,11 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
              document.getElementById('phone').disabled = true;
              document.getElementById('email').disabled = true;
              document.getElementById('success').disabled = true;    
+          // 프로필 이미지 입력 필드도 비활성화
+             const profileImage = document.getElementById('profileImage');
+             profileImage.disabled = true;
          }
-       
+
          
     </script>
 <style>        
@@ -102,40 +153,49 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 	    cursor: pointer;
 	}
 	
-	.profile-circle {
-	    width: 250px;
-	    height: 250px;
-	    background-color: #5a4c64;
-	    border-radius: 50%;
-	    margin: 0 auto;
-	    cursor: pointer;
-	    position: relative;
-	    overflow: hidden;
-	    transition: transform 0.2s ease;
-	}
+.profile-circle {
+        width: 250px;
+        height: 250px;
+        background-color: #5a4c64;
+        border-radius: 50%;
+        margin: 0 auto;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
 	.profile-circle:hover {
 	    transform: scale(1.05);
 	}
-	.profile-circle:hover::before {
-	    content: "사진 업로드";
-	    position: absolute;
-	    width: 100%;
-	    height: 100%;
-	    background-color: rgba(0, 0, 0, 0.5);
-	    color: white;
-	    display: flex;
-	    align-items: center;
-	    justify-content: center;
-	    border-radius: 50%;
-	    font-size: 14px;
-	}
+.profile-circle:hover::before {
+        content: "사진 업로드";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 14px;
+        z-index: 5;
+        display: none;
+    }
 	
 	#profileImg {
 	    width: 100%;
 	    height: 100%;
 	    border-radius: 50%;
-	    object-fit: cover;
-	    display: none;
+	    object-fit: cover; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+	    position: absolute; /* 절대 위치로 설정 */
+	    top: 0;
+	    left: 0;
+	 
 	}
 	
 	.form-group {
@@ -185,15 +245,20 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 		    <img src="icon/아이콘_프로필_1.png" alt="프로필 아이콘" class="icon-profile" onclick="toggleProfile()">
 		</div>
 		
-		<label for="profileImage" class="profile-circle">
-    <img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "#" %>" alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
-</label>
       
         
         <!-- 같은 페이지로 폼 제출 -->
-        <form action=""  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
-        <input type="file" name="profile" id="profileImage" onchange="previewImage(event)" style="display: none;">
-        
+        <form action="profileUpdate"  name = "frm" method="post" enctype="multipart/form-data" class="post_form">
+        <input type="file" name="profile" id="profileImage" onchange="previewImage(event);  uploadProfileImage(event);" style="display: none;">
+        	
+        	
+		<div class="profile-circle" id="profile-circle">
+			<label for="profileImage"  class="profile-label" >
+		    	<img id="profileImg" src="<%=ubean.getUser_icon() != null ? "img/" + ubean.getUser_icon() : "" %>"
+		     	alt="프로필 이미지" style="<%=ubean.getUser_icon() != null ? "display: block" : "display: none" %>">
+			</label>
+	     </div>
+		
        
             <div class="form-group">
                 <label for="username">아이디
