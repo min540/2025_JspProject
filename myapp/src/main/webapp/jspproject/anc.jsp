@@ -96,12 +96,19 @@ header h3, header h4 {
 }
 
 .box2{
- width:415px;
- height:auto;
- background-color: #5C4B85;
- margin-bottom: 20px;
- padding: 0 0 40px 0;
+ 	width: 415px;
+    height: auto;
+    background-color: #5C4B85;
+    margin-bottom: 20px;
+    padding: 0 0 10px 0;
+    white-space: pre-line;
+  	font-size: 14px;
 }
+
+.box2 * {
+  color: white !important;
+}
+
 .box3 {
   width: 415px;
   height: auto; /* 고정 높이 대신 자동 조정 */
@@ -233,6 +240,7 @@ input[type="checkbox"]:checked::after {
     margin-right: 7px;
     cursor: pointer;
 }
+
  a {
   color: white;           
   text-decoration: none; 
@@ -241,6 +249,21 @@ a:hover {
   color: #32225B;        
   text-decoration: underline; /* 또는 none 유지 가능 */
 }
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+ol {
+  /* list-style-position: inside; 로 하면 숫자 앞 공백이 줄어듭니다. */
+  list-style-position: inside; 
+  /* 혹은 필요에 따라 padding-left 값을 직접 0 또는 적게 조정하기 */
+  padding-left: 0;
+  margin-left: 0;
+}
+
 </style>
 <script>
 function allChk() {
@@ -256,6 +279,12 @@ function confirmDelete() {
 	}
 	return confirm("정말 삭제하시겠습니까?");
 }
+document.addEventListener('DOMContentLoaded', function(){
+	 const ancElements = document.querySelectorAll('.box2 *');
+	 ancElements.forEach(el => {
+	   el.removeAttribute('style');
+	 });
+});
 </script>
 </head> 
 <body>
@@ -285,8 +314,9 @@ function confirmDelete() {
 			<% if (recent.getAnc_img() != null) { %>
 				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= recent.getAnc_img() %>" width="415" height="200">
 			<% } %>
+			<br>
 			<% if (recent.getAnc_cnt() != null) { %>
-			<%=recent.getAnc_cnt()%>
+			<%= recent.getAnc_cnt().trim() %>
 			<% }else{ %>
 			<h3>최신 공지가 없습니다.</h3>
 			<% } %>

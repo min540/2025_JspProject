@@ -60,28 +60,23 @@ header h3, header h4 {
   background: linear-gradient(to left, rgba(55, 35, 88, 1), transparent);
 }
 .inner-effect {
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
+  	box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
+  	position: absolute;
+  	top: 0;
+  	left: 0;
+  	width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 .box{
-	width: 600px;
-	height: 1000px;
-	background-color: #4A3C6E;
-	margin: 0 auto;
-	top: -140px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-	position: relative;
-	z-index: 10;
-	/* padding: 20px; */
+	margin-left: auto;
+    margin-right: 30px;
 }
-.ntitle{
+.ncontent{
 	margin-left: 20px;
-	color: white;
+    color: white;
+    margin-top: 15px;
+    white-space: pre-wrap;
 }
 .container {
   display: flex;
@@ -92,49 +87,52 @@ header h3, header h4 {
 }
 .container-box {
   	display: flex;
-  	align-items: stretch;
-  	min-height: 500px;
+    align-items: stretch;
+    min-height: 500px;
+    margin-left: -870px;
+    margin-top: -140;
+    position: absolute;
 }
 .ntitle{
 	margin-left: 20px;
 	color: white;
 }
-.left-section, .right-section {
- 	width: 50%;
- 	box-sizing: border-box;
+.left-section {
+ 	width: 415px;
+    height: 1000px;
+    box-sizing: border-box;
+    background-color: #5C4B85;
+    padding: 15px;
 }
-.divider {
-  position: absolute;
-  top:70px;
-  bottom:0px;
-  left:400px;
-  width: 1px;
-  height: auto;
-  background-color: #888;
-  margin: 0 16px;
+
+.right-section {
+	height: 1000px;
+    width: 186px;
+    background-color: #3f235a;
 }
+
 .box1 {
   	width: 130px;
-  	height: 130px;
-  	background-color: #372358;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 선택: 그림자 효과 */
-  	margin-left: auto;
-	margin-right: 45px;
-	margin-top: 60px;
-	color: white;
+    height: 130px;
+    background-color: #372358;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: auto;
+    margin-right: 26px;
+    margin-top: 80px;
+    color: white;
 }
 .rtext{
 	color: white;
-	margin-top: 5px;
-	margin-left: 125;
-	font-size: 10px; 
-	font-weight: bold;
+    margin-top: 10px;
+    margin-left: 32px;
+    font-size: 15px;
+    font-weight: bold;
 }
 .rdtext{
 	color: white;
-	margin-top: 5px;
-	margin-left: 130px;
-	font-size: 12px;
+    margin-top: 5px;
+    margin-left: 34px;
+    font-size: 15px;
 }
 .image-overlay-text {
   position: absolute;
@@ -159,14 +157,30 @@ header h3, header h4 {
 	background: none;
 
 }
-button.text-button{
+.text-button1{
 	background: none;
     border: none;
-	font: inherit;  
-    cursor: pointer; 
+    font: inherit;
+    cursor: pointer;
     text-decoration: underline;
     color: white;
+    position: absolute;
+    width: 50px;
+    margin-left: -115;
 }
+
+.text-button2{
+	background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    color: white;
+    position: absolute;
+    width: 50px;
+    margin-left: -65;
+}
+
 </style>
 <script>
 </script>
@@ -190,9 +204,9 @@ button.text-button{
 				<h2 class="ntitle" style="font-size:30px;"><%=bean.getAnc_title() %></h2>
 			<!-- 공지사항 내용 -->
 			<% if (bean.getAnc_img() != null) { %>
-				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= bean.getAnc_img() %>" width="415" height="200">
+				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= bean.getAnc_img() %>" width="385" height="200">
 			<% } %>
-			<div class="ntitle"><%=bean.getAnc_cnt() %></div>
+			<div class="ncontent"><%=bean.getAnc_cnt() %></div>
 			</div>
 			
 			<div class="divider"></div>	
@@ -200,9 +214,9 @@ button.text-button{
 			<div class="right-section">
 			<!-- 수정 | 삭제 -->
 			<div class="sbtn">
-			<a href="ancUpdate.jsp?anc_id=<%=bean.getAnc_id()%>"><button  class="text-button">수정</button></a>
+			<a href="ancUpdate.jsp?anc_id=<%=bean.getAnc_id()%>"><button  class="text-button1">수정</button></a>
 			<a href="ancDeleteProc.jsp?ancIds=<%=bean.getAnc_id()%>" onclick="return confirm('정말 삭제하시겠습니까?')">
-			<button  class="text-button">삭제</button>
+			<button  class="text-button2">삭제</button>
 			</a>
 			</div>
 			<!-- 이전공지 업데이트-->
@@ -211,7 +225,6 @@ button.text-button{
 			<% if (pbean.getAnc_id()!= 0) { %>
 		
 			<div class="image-overlay-text">
-      			<%=pbean.getAnc_title()%>
     		</div>
 			<a href="ancDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
 			<img src="<%= request.getContextPath() %>/jspproject/upload/<%= pbean.getAnc_img() %>" width="130" height="130"></img>
