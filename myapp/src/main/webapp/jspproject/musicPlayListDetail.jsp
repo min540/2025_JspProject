@@ -7,8 +7,9 @@
 <%@ page import="jspproject.MplistMgrBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<jsp:useBean id="pmgr" class="jspproject.MplistMgr"/>
 <%
-String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
 if (user_id == null) {
     response.sendRedirect("login.jsp");
     return;
@@ -16,13 +17,13 @@ if (user_id == null) {
 boolean isMultipart = request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/");
 if (isMultipart) {
     out.clear(); // 👉 출력 버퍼 비우기 (중요!)
-    bmgr.updateMplist(request);
+    pmgr.updateMplist(request);
     response.sendRedirect("musicPlayListDetail.jsp");
     return;
 }
 
 UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
-Vector<MplistBean> mplist = bmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
 Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 %>
  <style>
@@ -342,6 +343,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
     	font-weight: bold;
    	 	font-size: 1vw;
     }
+    
+    .header-left2 {
+	    display: flex;
+	    align-items: center; /* 세로 정렬 */
+	}	
 	
     .music-list-item2 {
         background-color: #3c1e5c;
@@ -546,13 +552,20 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
 	.music-preview2 h2 {
     margin-top: 20px;     /* 줄이거나 0으로 설정 가능 */
-    margin-bottom: -3px;
+    margin-bottom: 20px;
     font-size: 1.1vw;    /* 사이즈도 적당히 */
 	}
+	
+	.music-description3 {
+	margin-top: 30px;
+	margin-bottom:30px;
+	font-size: 0.9vw;    /* 사이즈도 적당히 */
+	}	
 	
 	#musicPlayListWrapper {
 	    display: none;
 	}
+
 	
 </style>
         
@@ -568,14 +581,22 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		</div>
 		<div class="music-layout2">
 		    <div class="music-left2">
-		    	<% for (int i = 0; i < 10; i++) { %>
-			    <div class="playlist-box2">
-			    	<img src="mplistImg/tema1.gif" alt="">
-			        <div class="playlist-name2">예시<%= i + 1 %></div>
-			        <div class="playlist-count2">n곡</div>
-			        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
-			    </div>
-			<% } %>
+		    	<% if (mplist != null && !mplist.isEmpty()) {
+					     for (MplistBean m : mplist) { %>
+					    <div class="playlist-box2"
+					         data-mplist-id="<%= m.getMplist_id() %>"
+					         data-mplist-name="<%= m.getMplist_name() %>"
+					         data-mplist-img="<%= m.getMplist_img() %>"
+					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
+					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
+					        <div class="playlist-count2">곡 수</div>
+					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
+					    </div>
+					<% }
+					} else { %>
+					    <div style="color:white;">재생 목록이 없습니다.</div>
+				<% } %>
 		        <div class="add-playlist2" onclick = "addPlaylistBox_detail()">+</div>
 		    </div>
 		
@@ -626,32 +647,40 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	</div>
 	<!-- 오른쪽 영역 -->
 	<div class="music-right2">
-	    	<div class="preview-icons2">
-	    		<img class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="수정" >
-	    		<img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
-			</div>
+	    	<div class="music-preview2">  	
+	    	<div class="preview-icons2" style="display: none;">
+		        <img class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="수정">
+		        <img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
+		    </div>
+			<%
+			    boolean showDefault = true;
+			    if (mplist != null && !mplist.isEmpty()) {
+			        // 기본 출력만 보여주되, 나중에 선택 기능 들어가면 여기를 조건 분기해서 확장 가능
+			        showDefault = true;  // 현재는 기본만 보여줌 (선택된 목록 없다고 가정)
+			    }
+			%>
 			
-	        <div class="music-preview2">
-	        <% if (mplist != null && !mplist.isEmpty()) {
-	        	for (MplistBean m : mplist) {
-	        %>
-	        <img id="mplistImg" class="musicImg2" src="img/<%= m.getMplist_img() %>" alt="음악 이미지" onclick="document.getElementById('mplistImgInput').click()" />
-			<h2 id="mplistName_detail" contenteditable="true"><%= m.getMplist_name() %></h2>
-			<div class="music-description3">
-				 <div id="mplistCnt_detail" contenteditable="true"><%= m.getMplist_cnt() %></div>
-			</div>
-	        	
-			<div class="music-right-buttons2">
-			    <button class="btn-purple" onclick="submitEditForm()">수정</button>
-			</div>
-				<%} %>
-			<%} %>
+			<% if (showDefault) { %>
+			    <img id="mplistImg" class="musicImg2" src="img/default.png" alt="기본 이미지" />
+			        <h2 id="mplistName_detail">재생목록을 선택해주세요.</h2>
+			        <div class="music-description3">
+			            <div id="mplistCnt_detail">재생목록을 선택해주세요.</div>
+			        </div>
+			        <div class="music-right-buttons2" style="display: none;">
+			            <button class="btn-purple" onclick="submitEditForm()">수정</button>
+			        </div>
+			<% } else { %>
+			    <%-- 이쪽은 추후 선택된 목록이 있을 경우용 (현재는 안 씀) --%>
+			<% } %>
+			
+			<!-- 숨겨진 폼은 그대로 유지 (선택 시만 작동됨) -->
 			<form id="mplistEditForm_detail" method="post" enctype="multipart/form-data" style="display:none;">
-				<input type="hidden" name="mplist_id" value="">
-				<input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
-				<input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
-				<input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="previewImage(event)">
+			    <input type="hidden" name="mplist_id" value="">
+			    <input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
+			    <input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
+			    <input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="previewImage(event)">
 			</form>
+			</div>
 	</div>
 	
 </div>
@@ -689,6 +718,32 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            }
 	        });
 	        selectAll.checked = false;
+	    });
+	    
+	    const musicLeft = document.querySelector(".music-left2");
+
+	    musicLeft.addEventListener("click", function (e) {
+	        const box = e.target.closest(".playlist-box2");
+	        if (!box) return;
+
+	        // 삭제 아이콘 클릭은 무시
+	        if (e.target.classList.contains("iconDelete2")) return;
+
+	        // 데이터 가져오기
+	        const id = box.dataset.mplistId;
+	        const name = box.dataset.mplistName;
+	        const img = box.dataset.mplistImg || "default.png";
+	        const cnt = box.dataset.mplistCnt;
+
+	        // 오른쪽 패널 업데이트
+	        document.getElementById("mplistImg").src = "img/" + img;
+	        document.getElementById("mplistName_detail").innerText = name;
+	        document.getElementById("mplistCnt_detail").innerText = cnt + "곡";
+
+	        // 폼 데이터도 갱신
+	        document.querySelector("input[name='mplist_id']").value = id;
+	        document.getElementById("hiddenMplistName_detail").value = name;
+	        document.getElementById("hiddenMplistCnt_detail").value = cnt;
 	    });
 	});
 

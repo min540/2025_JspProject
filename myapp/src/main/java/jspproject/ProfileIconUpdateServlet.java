@@ -37,7 +37,7 @@ public class ProfileIconUpdateServlet extends HttpServlet {
         try {
             // 세션에서 사용자 ID 가져오기
             HttpSession session = request.getSession();
-            String userId = (String) session.getAttribute("id");
+            String userId = (String) session.getAttribute("user_id");
             
             if (userId == null) {
                 out.print("{\"status\":\"error\",\"message\":\"로그인이 필요합니다.\"}");

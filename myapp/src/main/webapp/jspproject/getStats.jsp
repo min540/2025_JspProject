@@ -5,7 +5,7 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-    String user_id = (String) session.getAttribute("id");
+    String user_id = (String) session.getAttribute("user_id");
 
     // 세션 없을 때 처리
     if (user_id == null) {
@@ -44,7 +44,7 @@
     ObjMgr objMgr = new ObjMgr();
     JourMgr jourMgr = new JourMgr();
 
-    Vector<ObjBean> objList = objMgr.getObjList(user_id);
+    Vector<ObjBean> objList = objMgr.getTotalObjList(user_id);
     Vector<JourBean> jourList = jourMgr.listJour(user_id);
 
     // 목표 분석

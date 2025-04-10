@@ -24,19 +24,13 @@ public class TimerMgr {
 			con = pool.getConnection();
 			sql = "select * from timer order by timer_id desc";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, timer_id);
+			/* pstmt.setInt(1, timer_id); */
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				TimerBean bean = new TimerBean();
 				bean.setTimer_id(rs.getInt("timer_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setTimer_session(rs.getInt("timer_session"));
-				bean.setTimer_break(rs.getInt("timer_break"));
-				bean.setTimer_design(rs.getInt("timer_design"));
 				bean.setTimer_title(rs.getString("timer_title"));
 				bean.setTimer_cnt(rs.getString("timer_cnt"));
-				bean.setTimer_loc(rs.getInt("timer_loc"));
-				bean.setTimer_onoff(rs.getInt("timer_onoff"));
 				bean.setTimer_img(rs.getString("timer_img"));
 				vlist.addElement(bean);
 				}
@@ -64,14 +58,8 @@ public class TimerMgr {
 			while(rs.next()) {
 				TimerBean bean = new TimerBean();
 				bean.setTimer_id(rs.getInt("timer_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setTimer_session(rs.getInt("timer_session"));
-				bean.setTimer_break(rs.getInt("timer_break"));
-				bean.setTimer_design(rs.getInt("timer_design"));
 				bean.setTimer_title(rs.getString("timer_title"));
 				bean.setTimer_cnt(rs.getString("timer_cnt"));
-				bean.setTimer_loc(rs.getInt("timer_loc"));
-				bean.setTimer_onoff(rs.getInt("timer_onoff"));
 				bean.setTimer_img(rs.getString("timer_img"));
 				vlist.addElement(bean);
 			}
@@ -98,14 +86,8 @@ public class TimerMgr {
 			while(rs.next()) {
 				TimerBean bean = new TimerBean();
 				bean.setTimer_id(rs.getInt("timer_id"));
-				bean.setUser_id(rs.getString("user_id"));
-				bean.setTimer_session(rs.getInt("timer_session"));
-				bean.setTimer_break(rs.getInt("timer_break"));
-				bean.setTimer_design(rs.getInt("timer_design"));
 				bean.setTimer_title(rs.getString("timer_title"));
 				bean.setTimer_cnt(rs.getString("timer_cnt"));
-				bean.setTimer_loc(rs.getInt("timer_loc"));
-				bean.setTimer_onoff(rs.getInt("timer_onoff"));
 				bean.setTimer_img(rs.getString("timer_img"));
 				vlist.addElement(bean);
 			}

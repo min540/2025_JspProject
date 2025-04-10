@@ -2,7 +2,7 @@
 <%@ page import="java.util.*, jspproject.JourMgr, jspproject.JourBean" %>
 
 <%
-	String userId = (String) session.getAttribute("id");
+	String userId = (String) session.getAttribute("user_id");
 	JourMgr jmgr = new JourMgr();
 	Vector<JourBean> list = jmgr.listJour(userId);
 	

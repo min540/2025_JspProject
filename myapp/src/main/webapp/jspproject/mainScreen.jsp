@@ -9,7 +9,6 @@
 %>
 <!-- 프로필 아이콘 -->
 
-<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
 
 <!-- 오른쪽 상단 아이콘들-->
@@ -53,7 +52,7 @@
 <div class = "icon-container2">
 	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
 	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
-	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" >
+	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
 </div>
@@ -96,6 +95,11 @@
 <!-- 공지사항 -->
 <div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
     <jsp:include page="ancList.jsp" />
+</div>
+
+<!-- 타이머 -->
+<div id="timerWrapper" style="display: none;">
+    <jsp:include page="Timer1.jsp" />
 </div>
 
 <!-- 음악 리스트 -->
@@ -183,6 +187,12 @@
 	function toggleMusicList() {
         var musicDiv = document.getElementById("musicListWrapper");
         musicDiv.style.display = (musicDiv.style.display === "none") ? "block" : "none";
+    }
+	
+	// 타이머 on/off
+	function toggleTimerList() {
+        var timerDiv = document.getElementById("timerWrapper");
+        timerDiv.style.display = (timerDiv.style.display === "none") ? "block" : "none";
     }
 	
 	// 일지 설정 on/off

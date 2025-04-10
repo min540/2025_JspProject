@@ -7,14 +7,15 @@
 <%@ page import="jspproject.MplistMgrBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
+<jsp:useBean id="pmgr" class="jspproject.MplistMgr"/>
 <%
-String user_id = (String) session.getAttribute("id");  // ✅ 이제 문자열로 바로 받아도 안전함
+String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
 if (user_id == null) {
     response.sendRedirect("login.jsp");
     return;
 }
 UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
-Vector<MplistBean> mplist = bmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
 Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 %>
  <style>

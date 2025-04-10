@@ -1,8 +1,9 @@
-package jspproject;
+ package jspproject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 
@@ -24,7 +25,7 @@ public class ObjMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?, ?)";
+			sql = "insert obj values (null, ?, ?, ?, now(), now(), ?, ?)";// 시작시간 추가시 now()가아니라 ?로 받을지 고려
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getUser_id());
 			pstmt.setString(2, bean.getObj_title());
@@ -39,25 +40,79 @@ public class ObjMgr {
 		}
 	}
 	
+	//insert+키(obj_id)값받아오는 매서드
+	public int insertObjAndReturnId(ObjBean bean) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    int obj_id = -1;
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "INSERT INTO obj (user_id, obj_title, obj_check, obj_regdate, obj_sdate, obj_edate, objgroup_id) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
+	        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        pstmt.setString(1, bean.getUser_id());
+	        pstmt.setString(2, bean.getObj_title());
+	        pstmt.setInt(3, bean.getObj_check());
+
+	        String edate = bean.getObj_edate();
+	        if (edate == null || edate.trim().isEmpty()) {
+	            pstmt.setNull(4, java.sql.Types.DATE);
+	        } else {
+	            pstmt.setString(4, edate);
+	        }
+
+	        pstmt.setInt(5, bean.getObjgroup_id());
+
+	        pstmt.executeUpdate();
+
+	        // 생성된 자동 키 받아오기
+	        rs = pstmt.getGeneratedKeys();
+	        if (rs.next()) {
+	            obj_id = rs.getInt(1); // 자동 생성된 obj_id
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return obj_id;
+	}
+
+	
 	//작업 목록 수정
 	public void updateObj(ObjBean bean) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = null;
-		try {
-			con = pool.getConnection();
-			sql = "UPDATE obj SET obj_title = ?, obj_edate = ? WHERE obj_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, bean.getObj_title());
-			pstmt.setString(2, bean.getObj_edate());
-			pstmt.setInt(3, bean.getObj_id());
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = "UPDATE obj SET obj_title = ?, obj_edate = ? WHERE obj_id = ?";
+	    
+	    try {
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+
+	        // null-safe title
+	        String title = bean.getObj_title();
+	        if (title == null) title = "";
+	        pstmt.setString(1, title);
+
+	        // null-safe edate
+	        String edate = bean.getObj_edate();
+	        if (edate == null || edate.trim().isEmpty()) {
+	            pstmt.setNull(2, java.sql.Types.DATE);
+	        } else {
+	            pstmt.setString(2, edate);
+	        }
+	        // ID 체크
+	        pstmt.setInt(3, bean.getObj_id());
+	        pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
 	}
+
 	
 	//작업 목록 삭제
 	public void deleteObj(int obj_id) {
@@ -95,6 +150,37 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	// insert + 자동 생성된 objgroup_id 반환
+	public int insertObjGroupAndReturnId(ObjGroupBean bean) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql = null;
+	    int objgroup_id = -1;
+
+	    try {
+	        con = pool.getConnection();
+	        sql = "INSERT INTO objgroup (objgroup_name, user_id) VALUES (?, ?)";
+	        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        pstmt.setString(1, bean.getObjgroup_name());
+	        pstmt.setString(2, bean.getUser_id());
+	        pstmt.executeUpdate();
+
+	        // 생성된 자동 키 받아오기
+	        rs = pstmt.getGeneratedKeys();
+	        if (rs.next()) {
+	            objgroup_id = rs.getInt(1); // 자동 생성된 objgroup_id
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+
+	    return objgroup_id;
+	}
+
 	
 	//작업 목록 카테고리 수정
 	public void updateObjGroup(ObjGroupBean bean) {
@@ -152,6 +238,7 @@ public class ObjMgr {
 		}
 	}
 	
+<<<<<<< HEAD
 	//작업 목록 리스트 받아오기
 	public Vector<ObjBean> getObjList(String user_id) {
 		Connection con = null;
@@ -182,7 +269,64 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt, rs);
 		}
 		return vlist;
+=======
+	//작업 목록 리스트 받아오기(objgroup_id로 구분하도록 만듦), user_id
+	public Vector<ObjBean> getObjList(int objgroup_id, String user_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    Vector<ObjBean> vlist = new Vector<>();
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT obj_id, obj_title, obj_check, obj_edate FROM obj WHERE objgroup_id = ? and user_id=? ";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, objgroup_id);
+	        pstmt.setString(2, user_id);
+	        rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            ObjBean bean = new ObjBean();
+	            bean.setObj_id(rs.getInt("obj_id"));
+	            bean.setObj_title(rs.getString("obj_title"));
+	            bean.setObj_check(rs.getInt("obj_check"));
+	            bean.setObj_edate(rs.getString("obj_edate"));  // 형식 변환 필요 시 여기도 SDF_DATE 가능
+	            vlist.add(bean);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return vlist;
+>>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
 	}
+	//전체작업목표 받아오기
+	public Vector<ObjBean> getTotalObjList(String user_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    Vector<ObjBean> vlist = new Vector<>();
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT obj_id, obj_title, obj_check, obj_edate FROM obj WHERE user_id=? ";
+	        pstmt = con.prepareStatement(sql);      
+	        pstmt.setString(1, user_id);
+	        rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            ObjBean bean = new ObjBean();
+	            bean.setObj_id(rs.getInt("obj_id"));
+	            bean.setObj_title(rs.getString("obj_title"));
+	            bean.setObj_check(rs.getInt("obj_check"));
+	            bean.setObj_edate(rs.getString("obj_edate"));  // 형식 변환 필요 시 여기도 SDF_DATE 가능
+	            vlist.add(bean);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return vlist;
+	}
+
 	
 	//작업 목록 카테고리 리스트 받아오기
 	public Vector<ObjGroupBean> getObjGroupList(String user_id) {
