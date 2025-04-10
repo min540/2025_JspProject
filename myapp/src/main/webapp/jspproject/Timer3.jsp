@@ -1,5 +1,6 @@
 <!-- 보라색 원형 타이머 -->
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="TimerInfo.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -106,7 +107,7 @@
 </head>
 <body>
 
-<div class="timer3-timer-container" id="timerContainer">
+<div class="timer3-timer-container" id="timerContainer" style="left:<%= left %>px; top:<%= top %>px;">
   <div class="timer3-drag-handle">:::</div>
 
   <svg class="timer3-svg" width="240" height="240">
@@ -276,11 +277,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
-    }
-  });
+	  if (isDragging) {
+	    isDragging = false;
+	    document.body.style.cursor = "default";
+
+	    const x = parseInt(timer.style.left);
+	    const y = parseInt(timer.style.top);
+
+	    fetch("UpdateTimerSessionProc.jsp", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	      body: "user_id=" + "<%= user_id %>" + "&timer_loc=" + x + "," + y
+	    })
+	    .then(res => res.text())
+	    .then(data => console.log("Timer3 위치 저장 결과 : ", data));
+	  }
+	});
 });
 </script>
 

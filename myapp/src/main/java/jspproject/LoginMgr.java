@@ -56,7 +56,11 @@ public class LoginMgr {
 	        pstmt.setString(6, User_icon);
 
 	        if (pstmt.executeUpdate() == 1) flag = true;
-
+    
+	        // ★ user_timer 테이블에도 기본 타이머 insert
+            UserTimerMgr utMgr = new UserTimerMgr();
+            utMgr.insertDefaultUserTimer(multi.getParameter("user_id"));
+        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {

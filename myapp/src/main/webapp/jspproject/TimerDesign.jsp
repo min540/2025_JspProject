@@ -62,20 +62,20 @@
 <script>
 const contextPath = "<%= request.getContextPath() %>";
 const timerData = [
-  <% for (int i = 0; i < timerList.size(); i++) {
-    TimerBean t = timerList.get(i);
-  %>
-    {
-      id: <%= t.getTimer_id() %>,
-      label: "<%= t.getTimer_title().replace("\"", "\\\"") %>",
-      description: "<%= t.getTimer_cnt() != null ? t.getTimer_cnt().replaceAll("\"", "\\\"").replaceAll("\r", "").replaceAll("\n", "\\n") : "" %>",
-      thumb: contextPath + "/jspproject/img/<%= t.getTimer_img() %>",
-      type: <%= t.getTimer_design() %>,
-      session: <%= t.getTimer_session() %>,
-      rest: <%= t.getTimer_break() %>
-    }<%= (i < timerList.size() - 1) ? "," : "" %>
-  <% } %>
-];
+	  <% for (int i = 0; i < timerList.size(); i++) {
+	    TimerBean t = timerList.get(i);
+	  %>
+	    {
+	      id: <%= t.getTimer_id() %>,
+	      label: "<%= t.getTimer_title().replace("\"", "\\\"") %>",
+	      description: "<%= t.getTimer_cnt() != null ? t.getTimer_cnt().replaceAll("\"", "\\\"").replaceAll("\r", "").replaceAll("\n", "\\n") : "" %>",
+	      thumb: contextPath + "/jspproject/img/<%= t.getTimer_img() %>",
+	      type: <%= t.getTimer_id() %>,  // timer_id로 구분
+	      session: 600,  // 고정값
+	      rest: 300      // 고정값
+	    }<%= (i < timerList.size() - 1) ? "," : "" %>
+	  <% } %>
+	];
 
 let selectedTimer = null;
 let currentSort = "latest";
