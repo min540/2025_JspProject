@@ -421,7 +421,7 @@
 
 	<div class="background-list" id="backgroundList">
 		<%
-			String user_id = (String) session.getAttribute("id");
+			String user_id = (String) session.getAttribute("user_id");
 		    TemaMgr mgr = new TemaMgr();
 			Vector<TemaBean> vlist = mgr.listTema(user_id); // 테마 리스트 가져오기
 		
@@ -451,7 +451,8 @@
 		
 		<form id="updateTemaForm" action="updateTema.jsp" method="post" enctype="multipart/form-data" style="display:none;">
 		    <input type="hidden" name="tema_id" id="updateTemaId">
-		    <input type="text" name="tema_cnt" id="updateTemaCnt">
+		    <input type="hidden" name="tema_cnt" id="updateTemaCnt">
+		    <input type="hidden" name="tema_title" id="updateTemaTitle">
 		</form>
 
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
@@ -482,20 +483,20 @@
     <!-- 오른쪽 영역 -->
     <div class="background-right">
     	<div class="preview-icons">
-    		<img class="iconbackgroundList" src="icon/아이콘_수정_1.png" alt="수정" onclick="enableEditMode()">
+    		<img class="iconbackgroundList" src="icon/아이콘_수정_1.png" alt="수정" onclick="enableBackgroundEditMode()">
     		<img class="iconbackgroundList" src="icon/아이콘_삭제_1.png" alt="삭제">
 		</div>
 		
-        <div class="background-preview">
-            <img class = "backgroundImg" src="backgroundImg/background1.gif" alt="배경 이미지">
-             <input id="backgroundTitleInput" type="text" value="배경 제목" disabled
-             style="text-align:center; 
-             font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
-        </div>
+			<div class="background-preview">
+			    <img class="backgroundImg" src="backgroundImg/background1.gif" alt="배경 이미지">
+			    <input id="backgroundTitleInput" type="text" value="배경 제목" disabled
+			        style="text-align:center; font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
+			</div>
 
-        <div class="background-description">
-            <textarea readonly>배경 설명</textarea>
-        </div>
+	 	 <div class="background-description">
+		    <textarea id="backgroundDescription" readonly>배경 설명</textarea>
+		</div>
+
 
         <!-- 가운데 위 버튼 -->
 		<div class="background-cancel-button">
@@ -504,7 +505,7 @@
 		
 		<!-- 아래 좌우 버튼 -->
 		<div class="background-right-buttons">
-		    <button class="btn-dark" onclick="saveDescription()">수정</button>
+			<button class="btn-dark" id="submitBackgroundEditBtn" onclick="saveBackgroundDescription()" disabled>수정</button>
 		    <button class="btn-purple">적용</button>
 		</div>
 
@@ -514,8 +515,9 @@
 <input type="file" id="backgroundFileInput" accept="image/*" style="display: none;" />
 <script>
 //배경 설명 수정
-function saveDescription() {
+function saveBackgroundDescription() {
     const description = document.querySelector(".background-description textarea").value;
+    const title = document.getElementById("backgroundTitleInput").value; // 제목 가져오기
     const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
 
     const items = document.querySelectorAll(".background-list-item");
@@ -533,27 +535,36 @@ function saveDescription() {
         return;
     }
 
-    const formData = new FormData();
-    formData.append("tema_id", temaId);
-    formData.append("tema_cnt", description);
-    formData.append("tema_title", document.getElementById("backgroundTitleInput").value); // 보내긴 하지만 안 써도 OK
+    // 📌 제목도 form에 반영
+    const form = document.getElementById("updateTemaForm");
+    document.getElementById("updateTemaId").value = temaId;
+    document.getElementById("updateTemaCnt").value = description;
+    document.getElementById("updateTemaTitle").value = title; // 제목 전달
+
+    const formData = new FormData(form);
 
     fetch("updateTema.jsp", {
         method: "POST",
-        body: formData, // 👉 multipart/form-data로 자동 설정됨
-        // ⚠️ Content-Type을 설정하지 마세요!
+        body: formData
     })
     .then(res => res.text())
     .then(result => {
         if (result.trim() === "ok") {
             alert("수정 완료!");
-            disableEditMode();
+            disableBackgroundEditMode();
+
+            // ✅ 리스트 항목의 description과 title 모두 갱신
             items.forEach(item => {
                 const btn = item.querySelector(".background-image-button");
                 if (btn.getAttribute("data-img") === fileName) {
                     btn.setAttribute("data-description", description);
+                    btn.setAttribute("data-title", title); // 제목도 업데이트
                 }
             });
+
+            // ✅ 오른쪽 제목 인풋에도 다시 반영 (혹시 disabled였으면 다시 보이게)
+            document.getElementById("backgroundTitleInput").value = title;
+
         } else {
             alert("수정 실패: " + result);
         }
@@ -563,7 +574,6 @@ function saveDescription() {
         alert("에러 발생: " + err);
     });
 }
-
 
 function deleteImage(el) {
     const item = el.closest('.background-list-item');
@@ -606,18 +616,21 @@ function closeUploadModal() {
 }
 
 function selectBackground(button) {
-	
+    // 수정 모드였으면 자동으로 해제
     if (isEditMode) {
-        disableEditMode();
+        disableBackgroundEditMode(); //수정모드해제
     }
-	
+
     const imgName = button.getAttribute("data-img");
     const title = button.getAttribute("data-title");
     const description = button.getAttribute("data-description");
 
+    selectedTemaId = button.closest('.background-list-item').getAttribute("data-tema-id");
+
     const contextPath = "<%= request.getContextPath() %>";
     const fullPath = contextPath + "/jspproject/img/" + imgName;
 
+    // 🔄 오른쪽 영역 업데이트
     document.querySelector(".backgroundImg").src = fullPath;
     document.getElementById("backgroundTitleInput").value = title;
     document.querySelector(".background-description textarea").value = description;
@@ -717,26 +730,32 @@ function appendNewBackgroundItem(imgName, title, description) {
 
 let isEditMode = false;
 
-function enableEditMode() {
+function enableBackgroundEditMode() {
     const descriptionArea = document.querySelector(".background-description textarea");
-
-    // 설명 수정 가능하게
+    //설명 수정가능하게
     descriptionArea.removeAttribute("readonly");
     descriptionArea.style.border = "1px solid white";
     descriptionArea.style.backgroundColor = "#2e2e2e"; 
     descriptionArea.style.color = "white"; 
-
     descriptionArea.focus();
+    
+    document.getElementById("submitBackgroundEditBtn").disabled = false;
+    
     isEditMode = true;
 }
 
-function disableEditMode() {
+
+function disableBackgroundEditMode() {
     const descriptionArea = document.querySelector(".background-description textarea");
 
     descriptionArea.setAttribute("readonly", true);
     descriptionArea.style.border = "none";
     descriptionArea.style.backgroundColor = "#2e2e2e";
 
+    document.getElementById("submitBackgroundEditBtn").disabled = true;
+    
     isEditMode = false;
 }
+
+
 </script>

@@ -106,8 +106,6 @@ public class TemaMgr {
 	    return vlist;
 	}
 	
-	
-	
 	//테마 선택
 	public TemaBean selectTema(int tema_id) {
 		Connection con = null;

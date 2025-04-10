@@ -4,7 +4,7 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-    String user_id = (String) session.getAttribute("id");
+    String user_id = (String) session.getAttribute("user_id");
 
     if (user_id == null || user_id.trim().equals("")) {
         response.setStatus(401);

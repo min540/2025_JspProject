@@ -238,7 +238,7 @@ public class ObjMgr {
 		}
 	}
 	
-<<<<<<< HEAD
+
 	//작업 목록 리스트 받아오기
 	public Vector<ObjBean> getObjList(String user_id) {
 		Connection con = null;
@@ -269,7 +269,8 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt, rs);
 		}
 		return vlist;
-=======
+	}
+
 	//작업 목록 리스트 받아오기(objgroup_id로 구분하도록 만듦), user_id
 	public Vector<ObjBean> getObjList(int objgroup_id, String user_id) {
 	    Connection con = null;
@@ -297,7 +298,7 @@ public class ObjMgr {
 	        pool.freeConnection(con, pstmt, rs);
 	    }
 	    return vlist;
->>>>>>> branch 'main' of https://github.com/HWAJINJJANG/2025_JspProject.git
+
 	}
 	//전체작업목표 받아오기
 	public Vector<ObjBean> getTotalObjList(String user_id) {
