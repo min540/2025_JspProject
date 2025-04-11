@@ -18,7 +18,7 @@ public class UserTimerMgr {
 		String sql = null;
 		try {
 			con = pool.getConnection();
-			sql ="insert into user_timer(user_id, timer_id, timer_session, timer_break, timer_loc) values (?, 1, 600, 300, '1604,99')";
+			sql ="insert into user_timer(user_id, timer_id, timer_session, timer_break, timer_loc) values (?, 1, 600, 300, '1693,247')";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			pstmt.executeUpdate();
@@ -164,5 +164,29 @@ public class UserTimerMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	// 타이머 아이디 업데이트
+	public boolean updateTimerId(String user_id, int timer_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = "UPDATE user_timer SET timer_id=? WHERE user_id=?";
+
+		try {
+			con = pool.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, timer_id);
+			pstmt.setString(2, user_id);
+
+			int count = pstmt.executeUpdate();
+			return count > 0; // 성공하면 true
+
+		} catch(Exception e){
+			e.printStackTrace();
+			return false;
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}
+
 
 }
