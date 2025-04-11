@@ -793,14 +793,47 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
 	        deleteBtn.addEventListener('click', function () {
 	            const items = musicList.querySelectorAll('.music-list-item2');
+	            const idsToDelete = [];
+
 	            items.forEach(item => {
 	                const checkbox = item.querySelector('input[type="checkbox"]');
 	                if (checkbox && checkbox.checked) {
-	                    item.remove();
+	                    const id = item.dataset.mplistmgrId;
+	                    if (id) idsToDelete.push(parseInt(id));
 	                }
 	            });
-	            selectAll.checked = false;
+
+	            if (idsToDelete.length === 0) {
+	                alert("삭제할 곡을 선택해주세요.");
+	                return;
+	            }
+
+	            if (!confirm("선택한 곡들을 재생목록에서 삭제하시겠습니까?")) return;
+
+	            // 여러 개 삭제를 하나씩 보내는 방식으로 처리
+	            Promise.all(idsToDelete.map(id =>
+	                fetch("<%= request.getContextPath() %>/jspproject/deleteMplistBgm", {
+	                    method: "POST",
+	                    headers: {
+	                        "Content-Type": "application/json"
+	                    },
+	                    body: JSON.stringify({ mplistmgr_id: id })
+	                })
+	            ))
+	            .then(() => {
+	                alert("삭제 완료!");
+	                const currentMplistId = document.getElementById("hiddenMplistId_detail").value;
+	                loadMusicListByMplistId(currentMplistId);
+	                document.getElementById("playlistPreview").style.display = "block";
+	                document.getElementById("musicPreview").style.display = "none";
+	                selectAll.checked = false;
+	            })
+	            .catch(err => {
+	                console.error("삭제 실패:", err);
+	                alert("삭제 중 오류 발생");
+	            });
 	        });
+
 	    }
 	
 	    // ✅ 재생목록 클릭 이벤트
