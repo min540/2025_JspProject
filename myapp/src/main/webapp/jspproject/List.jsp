@@ -303,7 +303,6 @@
                 const input = document.createElement("input");
                 input.type = "text";
                 input.value = group.objgroup_name;
-                /* input.readOnly = false; */
                 input.style.border = 'none';
                 input.style.background = 'transparent';
                 input.style.color = 'white';

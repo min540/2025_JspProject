@@ -10,11 +10,20 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
+
+@font-face {
+    font-family: 'PFStarDust';
+    src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 body, html {
   	margin: 0;
     padding: 0;
     height: 100%;
     background-color:#372358;
+    font-family: 'PFStarDust', sans-serif;
 }
 .container {
 	display: flex;
@@ -41,45 +50,57 @@ body, html {
 }
 .login-box{
 	background-color: #4A3C6E;
-	border-radius: 10px;
-	width: 458px;
-	height: 588px;
-	margin-top: 20px;/*세로*/
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    width: 458px;
+    height: 520px;
+    margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .login-box_title{
 	display: flex;
 	justify-content: center;
 	color: white;
+	margin: 50px;
 }
 .line{
 	width: 100%;
     height: 1px;
     background-color: white;
-    margin-top: 80px;
+    margin-bottom: 60px;
 }
 .login-box_text{
   color: white;
   margin-left: 30px;
 }
-.input-field{
+.input-field1 {
 	display: block;
-	width: 400px;
-	height: 50px;
-	
+    width: 400px;
+    height: 50px;
     padding: 10px;
     margin: 18px auto;
     border-radius: 10px;
     border: none;
+    margin-bottom: 10px;
+}
+.input-field2 {
+	display: block;
+    width: 400px;
+    height: 50px;
+    padding: 10px;
+    margin: 18px auto;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 40px;
 }
 .signup-button{
-  display: block;
+  	display: block;
     text-align: right;
-    font-size: 13px;
+    font-size: 16px;
     color: white;
     margin: 10px auto 0;
-    width: 80%; /* input 필드랑 폭 맞춰주기 */
+    width: 80%;
     text-decoration: none;
+    margin-bottom: 20px;
 }
 .login-btn{
 	display: block;
@@ -90,20 +111,35 @@ body, html {
     border-radius: 10px;
     border: none;
     background-color: #6D4CD4;
+    color: white;
+    font-family: 'PFStarDust', sans-serif;
+    font-size: 20px;
 }
 .g_id_signin {
 	margin: 18px auto ;
 	display: block;
 	width: 400px;
 }
+.find-button {
+	display: block;
+    text-align: right;
+    font-size: 15px;
+    color: white;
+    margin: 10px auto 0;
+    width: 10%;
+    text-decoration: none;
+    position: absolute;
+    margin-left: -30;
+    margin-top: revert-layer;
+}
 </style>
 </head>
 <script>
-  function handleCredential(response) {
+/*   function handleCredential(response) {
     console.log("✅ 구글 로그인 성공:", response.credential);
 
     // 여기서 JWT 토큰을 서버로 보내거나 처리하면 됨
-  }
+  } */
   function parseJwt(token) {
 	  const base64Url = token.split('.')[1];
 	  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -157,17 +193,18 @@ body, html {
 		<div class="login-box">
 			<h2 class="login-box_title" >로그인</h2>
 			<div class="line"></div>
-			<h2 class= "login-box_text">어서와!</h2>
+			<h2 class= "login-box_text"></h2>
 			<form action="loginPost" method="post">
+			<input type="text"  name="user_id" placeholder="아이디" class="input-field1">
+			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field2">
 			<%
 				String error = request.getParameter("error");
 				if("login_failed".equals(error)) { %>
-					 <div style="width: 400px; margin: 0 auto; color: #ffcccc; text-align: center; background-color: #7c3f58; padding: 10px; border-radius: 8px;">
+					 <div style="width: 400px; margin: 0 auto; color: red; text-align: center; padding: 5px; border-radius: 10px; position: absolute; margin-top: -35; margin-left: -30;">
 			            아이디 또는 비밀번호가 올바르지 않습니다.
 			        </div>
 				<%} %>
-			<input type="text"  name="user_id" placeholder="이메일" class="input-field">
-			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field">
+			<a href="findId.jsp" class="find-button">아이디/비밀번호 찾기</a>
 			<a href="register.jsp" class="signup-button">회원가입</a>
 			<button type="submit" class="login-btn">로그인</button>
 			</form>
