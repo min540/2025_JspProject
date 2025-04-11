@@ -2,7 +2,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%
 String path = request.getContextPath();
-String foundUserId = (String) request.getAttribute("foundUserId");
+String foundUserPwd = (String) request.getAttribute("foundUserPwd");
 String error = request.getParameter("error");
 %>
 <html>
@@ -61,7 +61,7 @@ body, html {
 	background-color: #4A3C6E;
 	border-radius: 10px;
 	width: 458px;
-	height: 460px;
+	height: 530px;
 	margin-top: 20px; /*세로*/
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -97,6 +97,17 @@ body, html {
 }
 
 .input-field2 {
+	display: block;
+	width: 400px;
+	height: 50px;
+	padding: 10px;
+	margin: 18px auto;
+	border-radius: 10px;
+	border: none;
+	margin-bottom: 10px;
+}
+
+.input-field3 {
 	display: block;
 	width: 400px;
 	height: 50px;
@@ -189,20 +200,20 @@ body, html {
 </head>
 <script>
 window.onload = function() {
-	  <% if(foundUserId != null) { %>
+	  <% if(foundUserPwd != null) { %>
 	    // 모달 요소 가져오기
 	    var modal = document.getElementById('idModal');
 	    var span = document.getElementsByClassName('close')[0];
 	    
 	    // 아이디 값을 모달 내에 표시
-	    document.getElementById('userIdDisplay').textContent = "<%= foundUserId %>";
+	    document.getElementById('userPwDisplay').textContent = "<%= foundUserPwd %>";
 	    
 	    // 모달 보이도록 설정
 	    modal.style.display = "block";
 	    
-	    // 닫기 버튼 클릭 시 모달 닫기
+	    // 닫기 버튼 클릭 시 로그인 페이지로 이동
 	    span.onclick = function() {
-	      modal.style.display = "none";
+	      window.location.href = "login.jsp";
 	    }
 	    
 	    // 모달 영역 외부 클릭 시 닫기
@@ -220,7 +231,7 @@ window.onload = function() {
 	<div id="idModal" class="modal">
 	  <div class="modal-content">
 	    <span class="close">&times;</span>
-	    <p>찾으시는 아이디는 : <span id="userIdDisplay"></span></p>
+	    <p>찾으시는 비밀번호는 : <span id="userPwDisplay"></span></p>
 	  </div>
 	</div>
 	<div class="container">
@@ -231,13 +242,14 @@ window.onload = function() {
 				<a href="login.jsp">오늘, 내일</a>
 			</h1>
 			<div class="find-box">
-				<h2 class="find-box_title">아이디 찾기</h2>
+				<h2 class="find-box_title">비밀번호 찾기</h2>
 				<div class="line"></div>
 				<h2 class="login-box_text"></h2>
-				<form action="findPost" method="post">
-					<input type="text" name="user_name" placeholder="이름"
-						class="input-field1"> <input type="text" name="user_phone"
-						placeholder="전화번호" class="input-field2">
+				<form action="findPwPost" method="post">
+					<input type="text" name="user_id" placeholder="아이디" class="input-field1"> 
+					<input type="text" name="user_name" placeholder="이름" class="input-field2">
+					<input type="text" name="user_phone" placeholder="전화번호" class="input-field3">
+					
 					<%
 					if ("find_failed".equals(error)) {
 					%>
@@ -247,9 +259,8 @@ window.onload = function() {
 					<%
 					}
 					%>
-					<a href="findPwd.jsp" class="findpw-button">비밀번호 찾기</a> <a
-						href="register.jsp" class="signup-button">회원가입</a>
-					<button type="submit" class="find-btn">아이디 찾기</button>
+					<a href="register.jsp" class="signup-button">회원가입</a>
+					<button type="submit" class="find-btn">비밀번호 찾기</button>
 				</form>
 			</div>
 			<!-- 로그인 박스 -->
