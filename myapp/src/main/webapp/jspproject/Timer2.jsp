@@ -1,5 +1,6 @@
 <!-- 대충만든 타이머 -->
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="TimerInfo.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -111,7 +112,7 @@
 </head>
 <body>
 
-<div class="timer2-card" id="timerCard">
+<div class="timer2-card" id="timerCard" style="left:<%= left %>px; top:<%= top %>px;">
   <div class="timer2-drag-handle" id="dragHandle">:::</div>
 
   <div class="timer2-progress-container">
@@ -273,11 +274,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
-    }
-  });
+	  if (isDragging) {
+	    isDragging = false;
+	    document.body.style.cursor = "default";
+
+	    const x = parseInt(timerCard.style.left);
+	    const y = parseInt(timerCard.style.top);
+
+	    fetch("UpdateTimerSessionProc.jsp", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	      body: "user_id=" + "<%= user_id %>" + "&timer_loc=" + x + "," + y
+	    })
+	    .then(res => res.text())
+	    .then(data => console.log("Timer2 위치 저장 결과 : ", data));
+	  }
+	});
 });
 </script>
 

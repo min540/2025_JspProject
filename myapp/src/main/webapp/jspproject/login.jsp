@@ -166,7 +166,6 @@ body, html {
         user_icon: userInfo.picture
       })
     })
-    
     .then(res => res.json())
     .then(data => {
       if (data.status === "ok") {
@@ -184,7 +183,6 @@ body, html {
 </script>
 
 <body>
-
 <div class="container">
 	<div class="left-half"></div>
 	<div class="right-half">
