@@ -50,11 +50,11 @@ body, html {
 }
 .login-box{
 	background-color: #4A3C6E;
-	border-radius: 10px;
-	width: 458px;
-	height: 588px;
-	margin-top: 20px;/*세로*/
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    width: 458px;
+    height: 520px;
+    margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .login-box_title{
 	display: flex;
@@ -72,15 +72,25 @@ body, html {
   color: white;
   margin-left: 30px;
 }
-.input-field{
+.input-field1 {
 	display: block;
-	width: 400px;
-	height: 50px;
-	
+    width: 400px;
+    height: 50px;
     padding: 10px;
     margin: 18px auto;
     border-radius: 10px;
     border: none;
+    margin-bottom: 10px;
+}
+.input-field2 {
+	display: block;
+    width: 400px;
+    height: 50px;
+    padding: 10px;
+    margin: 18px auto;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 40px;
 }
 .signup-button{
   	display: block;
@@ -90,6 +100,7 @@ body, html {
     margin: 10px auto 0;
     width: 80%;
     text-decoration: none;
+    margin-bottom: 20px;
 }
 .login-btn{
 	display: block;
@@ -108,6 +119,18 @@ body, html {
 	margin: 18px auto ;
 	display: block;
 	width: 400px;
+}
+.find-button {
+	display: block;
+    text-align: right;
+    font-size: 15px;
+    color: white;
+    margin: 10px auto 0;
+    width: 10%;
+    text-decoration: none;
+    position: absolute;
+    margin-left: -30;
+    margin-top: revert-layer;
 }
 </style>
 </head>
@@ -172,15 +195,16 @@ body, html {
 			<div class="line"></div>
 			<h2 class= "login-box_text"></h2>
 			<form action="loginPost" method="post">
+			<input type="text"  name="user_id" placeholder="아이디" class="input-field1">
+			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field2">
 			<%
 				String error = request.getParameter("error");
 				if("login_failed".equals(error)) { %>
-					 <div style="width: 400px; margin: 0 auto; color: #ffcccc; text-align: center; background-color: #7c3f58; padding: 10px; border-radius: 8px;">
+					 <div style="width: 400px; margin: 0 auto; color: red; text-align: center; padding: 5px; border-radius: 10px; position: absolute; margin-top: -35; margin-left: -30;">
 			            아이디 또는 비밀번호가 올바르지 않습니다.
 			        </div>
 				<%} %>
-			<input type="text"  name="user_id" placeholder="아이디" class="input-field">
-			<input type="password" name="user_pwd" placeholder="비밀번호" class="input-field">
+			<a href="findId.jsp" class="find-button">아이디/비밀번호 찾기</a>
 			<a href="register.jsp" class="signup-button">회원가입</a>
 			<button type="submit" class="login-btn">로그인</button>
 			</form>
