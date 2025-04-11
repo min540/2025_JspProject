@@ -73,6 +73,7 @@ function enableEdit() {
     document.getElementById('phone').disabled = false;
     document.getElementById('email').disabled = false;
     document.getElementById('success').disabled = false;
+    document.getElementById('delete').disabled = false;
 
     const fileInput = document.getElementById('profileImage');
     fileInput.removeAttribute('disabled');
@@ -110,6 +111,28 @@ function update() {
         });
     } else {
         alert("수정이 완료되었습니다.");
+        form.submit();
+    }
+}
+
+//유저 삭제 함수
+function deleteUser() {
+    // 삭제 전 사용자 확인
+    if (confirm("정말로 계정을 삭제하시겠습니까?")) {
+        // 폼 생성 및 제출
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'deleteUser'; // 서블릿 URL 매핑
+        
+        // 사용자 ID를 히든 필드로 추가
+        const userIdField = document.createElement('input');
+        userIdField.type = 'hidden';
+        userIdField.name = 'user_id';
+        userIdField.value = document.getElementById('username').value;
+        form.appendChild(userIdField);
+        
+        // body에 폼 추가 후 제출
+        document.body.appendChild(form);
         form.submit();
     }
 }
@@ -234,6 +257,23 @@ function update() {
 	}
 	.submit-btn:hover {
 	    background-color: #836cb0;
+	    }
+	    	.delete-btn {
+	    background-color: #ff0000;
+	    color: white;
+	    border: none;
+	    border-radius: 6px;
+	    padding: 10px 20px;
+	    cursor: pointer;
+	    margin-top: 95px;
+	    margin-left:290;
+	    font-size: 15px;
+	    width: 30%;
+	    transition: background-color 0.3s ease;
+	}
+	.delete-btn:hover {
+	    background-color: #FA5858;
+	 
 	}
 </style>
 
@@ -282,7 +322,8 @@ function update() {
                 <input type="text" id="email" name="user_email" value="<%=ubean.getUser_email()%>" disabled>
             </label>
         </div>
-
         <input type="button" value="완료" id="success" class="submit-btn" onclick="update()" disabled>
+        
+        <input type="button" value="유저 삭제" id="delete" class="delete-btn" onclick="deleteUser()" disabled>
     </form>
 </div>
