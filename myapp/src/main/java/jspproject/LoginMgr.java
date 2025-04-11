@@ -339,4 +339,52 @@ public class LoginMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
+	
+	//아이디 찾기
+	public void findUser(UserBean bean) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		try {
+			con = pool.getConnection();
+			sql = "SELECT user_id FROM user WHERE user_name = ? AND user_phone = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, bean.getUser_name());
+			pstmt.setString(2, bean.getUser_phone());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				bean.setUser_id(rs.getString("user_id"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+	}
+	
+	//비밀번호 찾기
+	public void findpwUser(UserBean bean) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		try {
+			con = pool.getConnection();
+			sql = "SELECT user_pwd FROM user WHERE user_id = ? AND user_name = ? AND user_phone = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, bean.getUser_id());
+			pstmt.setString(2, bean.getUser_name());
+			pstmt.setString(3, bean.getUser_phone());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				bean.setUser_pwd(rs.getString("user_pwd"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(con, pstmt, rs);
+		}
+	}
+	
 }
