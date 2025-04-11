@@ -77,7 +77,7 @@ public class LoginMgr {
 
 		try {
 			con = pool.getConnection();
-			sql = "INSERT INTO user (user_id, user_pwd, user_name, user_email, user_phone, grade, user_icon) " +
+			sql = "INSERT INTO user (user_id, user_pwd, user_name, user_email, user_phone, grade, user_icon, timer_id) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, id);

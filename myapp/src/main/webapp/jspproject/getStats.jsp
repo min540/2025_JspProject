@@ -39,49 +39,42 @@
         monthLabels[5 - i] = "\"" + month + "월\"";
     }
 
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 M월 d일", Locale.KOREAN);
-
     ObjMgr objMgr = new ObjMgr();
     JourMgr jourMgr = new JourMgr();
 
     Vector<ObjBean> objList = objMgr.getTotalObjList(user_id);
     Vector<JourBean> jourList = jourMgr.listJour(user_id);
 
-    // 목표 분석
-    // 목표 분석
-	for (ObjBean bean : objList) {
-	    if (bean.getObj_check() == 1) {
-	        try {
-	            String original = bean.getObj_regdate().split("\\(")[0].trim();
-	            Date regDate = sdf.parse(original);
-	            Calendar cal = Calendar.getInstance();
-	            cal.setTime(regDate);
-	
-	            int beanWeek = cal.get(Calendar.WEEK_OF_YEAR);
-	            int beanYear = cal.get(Calendar.YEAR);
-	            int beanMonth = cal.get(Calendar.MONTH) + 1;
-	
-	            if (beanWeek == currentWeek && beanYear == currentYear) {
-	                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
-	                weeklyComplete[dayOfWeek]++;
-	            }
-	
-	            int monthDiff = (currentYear - beanYear) * 12 + (currentMonth - beanMonth);
-	            if (monthDiff >= 0 && monthDiff < 6) {
-	                monthlyComplete[5 - monthDiff]++;
-	            }
-	
-	            // ✅ 이번 달이면 카운트
-	            if (beanMonth == currentMonth && beanYear == currentYear) {
-	                thisMonthComplete++;
-	            }
-	
-	        } catch (ParseException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+    for (ObjBean bean : objList) {
+        try {
+            String original = bean.getObj_regdate().trim(); // 괄호 제거 필요 없음
+            Date regDate = sdf.parse(original);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(regDate);
+
+            int beanWeek = cal.get(Calendar.WEEK_OF_YEAR);
+            int beanYear = cal.get(Calendar.YEAR);
+            int beanMonth = cal.get(Calendar.MONTH) + 1;
+
+            if (beanWeek == currentWeek && beanYear == currentYear) {
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                weeklyComplete[dayOfWeek]++;
+            }
+
+            int monthDiff = (currentYear - beanYear) * 12 + (currentMonth - beanMonth);
+            if (monthDiff >= 0 && monthDiff < 6) {
+                monthlyComplete[5 - monthDiff]++;
+            }
+
+            if (beanMonth == currentMonth && beanYear == currentYear) {
+                thisMonthComplete++;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
     // 총 주간 완료 수 계산
     for (int count : weeklyComplete) {
@@ -91,8 +84,10 @@
     // 일지 분석
 	for (JourBean bean : jourList) {
 	    try {
-	        String original = bean.getJour_regdate().split("\\(")[0].trim();
-	        Date regDate = sdf.parse(original);
+	    	SimpleDateFormat korFormat = new SimpleDateFormat("yyyy년 M월 d일", Locale.KOREAN);
+	    	
+	    	String original = bean.getJour_regdate().split("\\(")[0].trim();
+	    	Date regDate = korFormat.parse(original);
 	        Calendar cal = Calendar.getInstance();
 	        cal.setTime(regDate);
 	

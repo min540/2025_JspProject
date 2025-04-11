@@ -121,6 +121,25 @@ public class ObjMgr {
 	        pool.freeConnection(con, pstmt);
 	    }
 	}
+	
+	//체크박스 전용
+	public void updateCheckOnly(int objId, int objCheck) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = "UPDATE obj SET obj_check = ? WHERE obj_id = ?";
+
+	    try {
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, objCheck);
+	        pstmt.setInt(2, objId);
+	        pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+	}
 
 	
 	//작업 목록 삭제
@@ -246,7 +265,7 @@ public class ObjMgr {
 			pool.freeConnection(con, pstmt);
 		}
 	}
-	
+
 	//작업 목록 리스트 받아오기(objgroup_id로 구분하도록 만듦), user_id
 	public Vector<ObjBean> getObjList(int objgroup_id, String user_id) {
 	    Connection con = null;
@@ -277,7 +296,8 @@ public class ObjMgr {
 	    }
 	    return vlist;
 	}
-	//전체작업목표 받아오기
+	
+	// 전체 완료된 작업 목표 받아오기 (obj_check = 1인 것만)
 	public Vector<ObjBean> getTotalObjList(String user_id) {
 	    Connection con = null;
 	    PreparedStatement pstmt = null;
@@ -285,7 +305,8 @@ public class ObjMgr {
 	    Vector<ObjBean> vlist = new Vector<>();
 	    try {
 	        con = pool.getConnection();
-	        String sql = "SELECT obj_id, obj_title, obj_check, obj_edate FROM obj WHERE user_id=? ";
+	        String sql = "SELECT obj_id, obj_title, obj_check, obj_regdate, obj_edate " +
+	                     "FROM obj WHERE user_id = ? AND obj_check = 1";
 	        pstmt = con.prepareStatement(sql);      
 	        pstmt.setString(1, user_id);
 	        rs = pstmt.executeQuery();
@@ -294,7 +315,8 @@ public class ObjMgr {
 	            bean.setObj_id(rs.getInt("obj_id"));
 	            bean.setObj_title(rs.getString("obj_title"));
 	            bean.setObj_check(rs.getInt("obj_check"));
-	            bean.setObj_edate(rs.getString("obj_edate"));  // 형식 변환 필요 시 여기도 SDF_DATE 가능
+	            bean.setObj_regdate(rs.getString("obj_regdate"));
+	            bean.setObj_edate(rs.getString("obj_edate"));
 	            vlist.add(bean);
 	        }
 	    } catch (Exception e) {
@@ -304,7 +326,6 @@ public class ObjMgr {
 	    }
 	    return vlist;
 	}
-
 	
 	//작업 목록 카테고리 리스트 받아오기
 	public Vector<ObjGroupBean> getObjGroupList(String user_id) {

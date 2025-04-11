@@ -1,3 +1,4 @@
+<!-- Objective.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -284,37 +285,43 @@ display: inline-flex !important;
 			<p class="obj-completed">
 				완료된 항목 : <span id="completedNum">0</span>/<span id="totalNum">0</span>
 			</p>
-			<div id="obj-taskList"></div>
-			<button class="obj-add-task-btn">과제 추가하기</button>
+			
+			<!-- ✅ 과제 리스트 영역을 form으로 감싸기 -->
+			<form id="taskForm" onsubmit="return false;">
+				<div id="obj-taskList"></div>
+				<button type="button" class="obj-add-task-btn">과제 추가하기</button>
+			</form>
 		</div>
 	</div>
 
+<!-- ✅ 마감일 설정용 달력 폼 -->
 <div id="calendarModal">
   <div class="calendar-content" id="calendarContent">
     <p id="calendarTitle">기간 설정</p>
 
-    <label for="startDatePicker" style="color:white;">시작일:</label>
-    <input type="date" id="startDatePicker" style="margin-bottom: 20px;"><br>
+    <label for="startDatePicker">시작일:</label>
+    <input type="date" id="startDatePicker"><br>
 
-    <label for="endDatePicker" style="color:white;">마감일:</label>
-    <input type="date" id="endDatePicker"><br><br>
+    <label for="endDatePicker">마감일:</label>
+    <input type="date" id="endDatePicker"><br>
 
     <button id="confirmDateBtn">확인</button>
   </div>
 </div>
 
 
+	<!-- 기존 목록 추가용 div -->
 	<div id="newListCard" style="display: none;">
 		<div class="calendar-content" style="text-align: center;">
-			<input type="text" class = "pf-font" placeholder="새로운 목록"
-				style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; font-family: 'PFStarDust', sans-serif;"><br>
-			<button
-				style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
-				리스트 추가하기</button>
-			<br>
-			<button
-				style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록
-				확인</button>
+			<form id="newListForm" onsubmit="return false;">
+				<input type="text" class="pf-font" placeholder="새로운 목록"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; font-family: 'PFStarDust', sans-serif;"><br>
+				<button type="submit"
+					style="margin-bottom: 10px; width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">+
+					리스트 추가하기</button><br>
+				<button type="button"
+					style="width: 80%; padding: 10px; border-radius: 10px; border: 1px solid white; background: none; color: white;">목록 확인</button>
+			</form>
 		</div>
 	</div>
 
@@ -324,20 +331,11 @@ display: inline-flex !important;
         const calendarContent = document.getElementById('calendarContent');
         const taskList = document.getElementById('obj-taskList');
         const addBtn = document.querySelector('.obj-add-task-btn');
-        const calendarModal = document.getElementById('calendarModal');
+        /* const calendarModal = document.getElementById('calendarModal'); */
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarPicker = document.getElementById('calendarPicker'); 
         const confirmDateBtn = document.getElementById('confirmDateBtn');
         let currentTargetTask = null;
-        let startDate = "";
-        let endDate = "";
-        function clean(str) {
-            if (typeof str !== "string") return "";
-            return str.replace(/[\u200B-\u200D\uFEFF]/g, "")
-                      .replace(/[\r\n\t]/g, "")
-                      .trim();
-        }
-
         let isDragging = false, offsetX = 0, offsetY = 0;
         handle.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -365,7 +363,7 @@ display: inline-flex !important;
         }
 
         function updateCompleteCount() {
-            const allTasks = document.querySelectorAll('#taskList .obj-task-item');
+            const allTasks = document.querySelectorAll('#obj-taskList .obj-task-item');
             const total = allTasks.length;
             let completed = 0;
 
@@ -446,7 +444,6 @@ display: inline-flex !important;
                 </div>
             `;
 
-            taskList.appendChild(taskItem);        
             //user_id 값 가져오기
           	<%
             String userId = (String) session.getAttribute("user_id");
@@ -456,6 +453,7 @@ display: inline-flex !important;
 			const user_id = "<%= userId %>";
 		    sessionStorage.setItem("user_id", user_id); 
 		  
+
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
@@ -537,66 +535,74 @@ display: inline-flex !important;
                 updateCompleteCount();
             });
 
-            const checkbox = taskItem.querySelector('.task-check');
-            checkbox.addEventListener('change', updateCompleteCount);
+            checkbox.addEventListener("change", () => {
+                const checked = checkbox.checked ? 1 : 0;
+                const objId = taskItem.dataset.objId;
 
-            taskItem.querySelector('.calendar-btn').addEventListener('click', () => {
-                currentTargetTask = taskItem;
-                const title = taskItem.querySelector('input[type="text"]').value;
-                calendarTitle.textContent = `마감일 설정: ${title}`;
-                calendarContent.style.left = cardWrapper.offsetLeft + 'px';
-                calendarContent.style.top = cardWrapper.offsetTop + 'px';
-                cardWrapper.style.display = 'none';
-                calendarModal.style.display = 'block';
+                fetch("objCheckUpdateServlet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        obj_id: objId,
+                        obj_check: checked
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("✅ 체크 상태 업데이트 완료", data);
+                })
+                .catch(err => {
+                    console.error("❌ 체크 상태 업데이트 실패", err);
+                });
+
+                updateCompleteCount();
             });
-
-            updateCompleteCount();
         });
 
-		//날짜 확인 버튼
-	confirmDateBtn.addEventListener('click', () => {
-		const startDateVal = document.getElementById("startDatePicker").value;
-	 	const endDateVal = document.getElementById("endDatePicker").value;
-
+// 날짜 확인 버튼
+confirmDateBtn.addEventListener('click', () => {
+	const startDateVal = document.getElementById("startDatePicker").value;
+	const endDateVal = document.getElementById("endDatePicker").value;
 	
-	 	startDate = startDateVal ? startDateVal.replace(/-/g, "/") : "";
-	    endDate = endDateVal ? endDateVal.replace(/-/g, "/") : "";
+	console.log("🧪 startDatePicker.value:", startDateVal);
+	console.log("🧪 endDatePicker.value:", endDateVal);
+	console.log("📥 raw 입력값:", startDateVal, endDateVal);
 
-	    if (currentTargetTask) {
-	        const objId = currentTargetTask.dataset.objId;
-	        if (!objId) return;
+	if (!startDateVal || !endDateVal) {
+		console.error("❌ 시작일 또는 마감일이 비어있습니다.");
+		alert("📛 날짜를 모두 입력해주세요.");
+		return;
+	}
 
-	        // UI 반영
-	      const dateLabel = currentTargetTask.querySelector('.obj-created-date');
-				if (dateLabel) {
-    				if (startDate && endDate) {
-        				dateLabel.textContent = `${startDate} ~ ${endDate}`;
-        				dateLabel.title = `시작일: ${startDate} / 마감일: ${endDate}`;
-   				 } else {
-        			dateLabel.textContent = '';
-        			dateLabel.title = '';
-    			}
-			}
 
-				// 서버에 날짜 업데이트
-			fetch("objUpdateServlet", {
-    			method: "POST",
-    			headers: { "Content-Type": "application/json" },
-    			body: JSON.stringify({
-       			obj_id: objId,
-        		obj_sdate: startDate,
-        		obj_edate: endDate
-    			})
-	        }).then(res => res.json())
-	          .then(data => console.log("📅 날짜 업데이트 완료", data))
-	          .catch(err => console.error("❌ 날짜 업데이트 실패", err));
+	if (currentTargetTask) {
+		const objId = currentTargetTask.dataset.objId;
+		if (!objId) return;
 
-	        calendarModal.style.display = 'none';
-	        cardWrapper.style.display = 'block';
-	    }
+		const dateLabel = currentTargetTask.querySelector('.obj-created-date');
+		if (dateLabel) {
+			dateLabel.textContent = `${endDateVal}`;
+			dateLabel.title = `마감일: ${endDateVal}`;
+		}
 
+		// 서버 반영
+		fetch("objUpdateServlet", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				obj_id: objId,
+				obj_sdate: startDateVal,
+				obj_edate: endDateVal
+			})
+		})
+		.then(res => res.json())
+		.then(data => console.log("📅 날짜 업데이트 완료", data))
+		.catch(err => console.error("❌ 날짜 업데이트 실패", err));
+
+		calendarModal.style.display = 'none';
+		cardWrapper.style.display = 'block';
+	}
 });
-
 
 
         window.addEventListener('click', (e) => {
@@ -702,8 +708,15 @@ display: inline-flex !important;
             document.getElementById("cardWrapper").style.top = savedTop + "px";
             renderTasksForCurrentList(); // 초기 렌더링
         });
+        
+        function getFormattedDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}/${month}/${day}`;
+        }
 
-   
       	//여기가 리스트 표시인듯?
       		const pendingDeletes = new Set();
             const deleteTaskDebounced = debounce((objId) => {
@@ -777,68 +790,88 @@ display: inline-flex !important;
             taskItem.dataset.objId = task.obj_id;
            
             const safeTitle = escapeHtml(task.obj_title || "");
-            const sdate = clean(task.obj_sdate);
-            const edate = clean(task.obj_edate);
-            console.log("🎯 sdate / edate 확인:", { sdate, edate }); // 👈 이건 OK
-            console.log("✅ 최종 보여질 날짜 텍스트:", `${sdate} ~ ${edate}`);
+            
             
             taskItem.innerHTML = `
               <div class="obj-task-left">
                 <input type="checkbox" class="task-check">
                 <input type="text" class="pf-font" placeholder="과제 제목 입력" value="${safeTitle}">
-                <span class="obj-created-date"></span>
+                <span class="obj-created-date">${task.obj_edate || '기간을 설정해주세요'}</span>
               </div>
               <div class="obj-task-buttons">
                 <button class="calendar-btn">📅</button>
                 <button class="delete-task">X</button>
               </div>
             `;
+            
+		    	const sdate = task.obj_sdate;
+				const edate = task.obj_edate;
 
-            const dateLabel = taskItem.querySelector(".obj-created-date");
+				// 디버깅용 콘솔 출력
+				console.log("🟢 시작일:", sdate);
+				console.log("🟡 마감일:", edate);
+				console.log("📅 최종 출력 문자열:", sdate && edate ? `${sdate} ~ ${edate}` : "⛔ 날짜 없음");
 
-console.log("✅ 최종 보여질 날짜 텍스트:", `${sdate} ~ ${edate}`);
+            	const dateLabel = taskItem.querySelector(".obj-created-date");
+            	
+            	if (sdate && edate) {
+            		  dateLabel.textContent = `${edate}`;
+            		  dateLabel.title = `마감일: ${edate}`;
+            		} else {
+            		  dateLabel.textContent = "기간을 설정해주세요";
+            		  dateLabel.title = "마감일이 지정되지 않았습니다.";
+            		}
 
-if (sdate && edate) {
-  dateLabel.textContent = `${sdate} ~ ${edate}`;
-  dateLabel.title = `시작일: ${sdate} / 마감일: ${edate}`;
-  dateLabel.style.border = "1px solid red";
-  dateLabel.style.background = "yellow";
-} else {
-  dateLabel.textContent = "⛔ 날짜 미설정";
-  dateLabel.title = "시작일/마감일이 지정되지 않았습니다.";
-  dateLabel.style.color = "orange";
-}
+		            taskList.appendChild(taskItem); 
+					const titleInput = taskItem.querySelector("input[type='text']");
+						titleInput.value = task.obj_title || "";
+		            const computed = window.getComputedStyle(titleInput);
+		 		
+		            const checkbox = taskItem.querySelector(".task-check");
+		            checkbox.checked = task.obj_check === 1;
+		            checkbox.addEventListener("change", () => {
+		                const checked = checkbox.checked ? 1 : 0;
+		                const objId = taskItem.dataset.objId;
 
+		                fetch("objCheckUpdateServlet", {  // 👉 체크 전용 서블릿 추천
+		                    method: "POST",
+		                    headers: { "Content-Type": "application/json" },
+		                    body: JSON.stringify({
+		                        obj_id: objId,
+		                        obj_check: checked
+		                    })
+		                })
+		                .then(res => res.json())
+		                .then(data => {
+		                    console.log("✅ 체크 상태 업데이트 성공:", data);
+		                })
+		                .catch(err => {
+		                    console.error("❌ 체크 상태 업데이트 실패:", err);
+		                });
 
-	
-            taskList.appendChild(taskItem); 
-		const titleInput = taskItem.querySelector("input[type='text']");
-				titleInput.value = task.obj_title || "";
-           const computed = window.getComputedStyle(titleInput);
- 
-            const checkbox = taskItem.querySelector(".task-check");
-            checkbox.addEventListener("change", () => {
-                const checked = checkbox.checked ? 1 : 0;
-                fetch("objCheckUpdateServlet", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        obj_id: task.obj_id,
-                        obj_check: checked
-                    })
-                });
-                updateCompleteCount();
-            });
+		                updateCompleteCount();
+		            });
+
            
             titleInput.addEventListener("input", debounce(() => {
                 const updatedTitle = titleInput.value.trim();
                 if (!updatedTitle) return;
+                
+                const objId = taskItem.dataset.objId;
+                const startDateVal = document.getElementById("startDatePicker").value || "";
+                const endDateVal = document.getElementById("endDatePicker").value || "";
+                const checkbox = taskItem.querySelector(".task-check");
+                const checked = checkbox && checkbox.checked ? 1 : 0;
+                
                 fetch("objUpdateServlet", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        obj_id: task.obj_id,
-                        obj_title: updatedTitle
+                    	obj_id: objId,
+                   	 	obj_title: titleInput.value,
+                   	 	obj_sdate: startDateVal,   
+                     	obj_edate: endDateVal,
+                    	 obj_check: checked 
                     })
                 });
             }, 500));
@@ -855,6 +888,7 @@ if (sdate && edate) {
         });
         
         updateCompleteCount();
+    	
     })
     .catch(err => {
         console.error("❌ 과제 목록 불러오기 실패:", err);
