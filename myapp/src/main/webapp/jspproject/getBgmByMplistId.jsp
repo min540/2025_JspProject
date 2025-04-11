@@ -18,10 +18,15 @@ try {
     if (bgms != null && !bgms.isEmpty()) {
         for (BgmBean b : bgms) {
 %>
-    <div class="music-list-item2">
-        <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>"/>
-        <span><%= b.getBgm_name() %></span>
-    </div>
+    <div class="music-list-item2"
+	     data-bgm-id="<%= b.getBgm_id() %>"
+	     data-bgm-name="<%= b.getBgm_name() %>"
+	     data-bgm-src="<%= b.getBgm_music() %>"
+	     data-bgm-img="<%= b.getBgm_image() != null ? b.getBgm_image() : "default.png" %>"
+	     data-bgm-cnt="<%= b.getBgm_cnt() != null ? b.getBgm_cnt() : "설명이 없습니다." %>">
+	  <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>"/>
+	  <span><%= b.getBgm_name() %></span>
+	</div>
 <%
         }
     } else {

@@ -554,7 +554,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
 </style>
         
-<div class="music-container2" id="musicPlayListWrapper">
+<div class="music-container2" id="musicPlayListWrapper" style="display: none;">
  	<!-- 🔸 div1: 탭 + 레이아웃 묶는 부모 -->
 	  <div class="music-main2">
 		<!-- 🔹 왼쪽: 재생 목록 UI -->
@@ -565,35 +565,37 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		<div class="music-layout2">
 		    <div class="music-left2">
 		    	<% if (mplist != null && !mplist.isEmpty()) {
-				     for (MplistBean m : mplist) {
-				%>
-				    <div class="playlist-box2">
-				        <img src="img/<%= (m.getMplist_img() != null && !m.getMplist_img().isEmpty()) ? m.getMplist_img() : "default.gif" %>" alt="">
-				        <div class="playlist-name2"><%= m.getMplist_name() %></div>
-				        <div class="playlist-count2"><%= m.getMplist_cnt() %></div>
-				        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
-				    </div>
-				<%   }
-				   } else { %>
-				    <div style="color:white; padding:10px;">재생목록이 없습니다.</div>
+					     for (MplistBean m : mplist) { %>
+					    <div class="playlist-box2"
+					         data-mplist-id="<%= m.getMplist_id() %>"
+					         data-mplist-name="<%= m.getMplist_name() %>"
+					         data-mplist-img="<%= m.getMplist_img() %>"
+					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
+					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
+					        <div class="playlist-count2">곡 수</div>
+					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
+					    </div>
+					<% }
+					} else { %>
+					    <div style="color:white;">재생 목록이 없습니다.</div>
 				<% } %>
-		        <div class="add-playlist2" onclick = "addPlaylistBox()">+</div>
+		        <div class="add-playlist2" onclick = "addPlaylistBox_detail()">+</div>
 		    </div>
 		
 		    <!-- 왼쪽 영역 -->
 		    <div class="music-middle2">
 		    	<!-- 상단 타이틀 -->
 			    <div class="header-title2">
-			        재생 목록 이름
-			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" 
-			        onclick="openMusicPlayListDetail()">
+			        <span id="headerMplistName">재생 목록 이름</span>
+			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" >
 			    </div>
 			    
 		    	<!-- 재생 목록 탭 -->    
 		        <div class="music-header2">
 				    <!-- 왼쪽: 전체 선택 -->
 				    <div class="header-left2">
-				        <input type="checkbox" id="selectAll2">
+				        <input type="checkbox" id="selectAll_detail">
 				        <label for="selectAll2">전체 선택</label>
 				    </div>
 				
@@ -605,9 +607,9 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 				    </div>
 				</div>
 		
-				
-		        <div class="music-list2" id="musicList2">
-					<% if (bgm != null && !bgm.isEmpty()) {
+		
+		        <div class="music-list2" id="musicList_detail">
+		        	<% if (bgm != null && !bgm.isEmpty()) {
 					     for (BgmBean b : bgm) {
 					%>
 					    <div class="music-list-item2">
@@ -618,110 +620,258 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 					   } else { %>
 					    <div class="music-list-item2" style="color:white;">재생 가능한 음악이 없습니다.</div>
 					<% } %>
-				</div>
+		        </div>
 		
 		        <div class="music-footer2">
-		            <button class="btn-red delete-selected2">삭제</button>
+		            <button class="btn-red delete-selected_detail">삭제</button>
 		        </div>
 		    </div>
 		</div>
 	</div>
 	<!-- 오른쪽 영역 -->
-	<div class="music-right2">
-	    	<div class="preview-icons2">
-	    		<img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
-			</div>
-			
-	        <div class="music-preview2">
-	        <% if (bgm != null && !bgm.isEmpty()) {
-					 for (BgmBean b : bgm) {
-			%>
-	            <img class = "musicImg2" src="img/<%=b.getBgm_image()%>" alt="음악 이미지">
-	            <h2 style="text-align:center;"><%=b.getBgm_name()%></h2>
-	        </div>
+	<div class="music-right">
+	  <div class="preview-icons">
+	    <img class="iconMusicList" id="editIcon" src="icon/아이콘_수정_1.png" alt="수정">
+	    <img class="iconDelete" src="icon/아이콘_삭제_1.png" alt="삭제">
+	  </div>
 	
-	        <div class="music-controls2">
-	            <span><img class = "iconMusic2" src="icon/아이콘_이전음악_1.png" border="0" alt="음악 재생" ></span>
-	            <span>
-				  <img id="playToggleBtn2" class="iconMusic2" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" data-state="paused">
-				</span>
-				<audio id="playListAudioPlayer" src="music/music1.mp3"></audio>
-	            <span><img class = "iconMusic2" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > </span>
-	        </div>
+	  <div class="music-preview">
+	    <img id="bgmImg" class="musicImg" src="img/default.png" />
+	    <h2 id="bgmName" contenteditable="false">선택된 음악 없음</h2>
+	  </div>
 	
-	        <div class="music-description2">
-	            <textarea><%=b.getBgm_cnt()%></textarea>
-	        </div>
-	       <%} %>
-	      <%}%>
-	        <!-- 가운데 위 버튼 -->
-			<div class="music-cancel-button2">
-			    <button class="btn-purple">음악 취소</button>
-			</div>
-			
-			<div class="music-right-buttons2">
-			    <button class="btn-purple">적용</button>
+	  <div class="music-controls">
+	    <span><img class="iconMusic2" src="icon/아이콘_이전음악_1.png" alt="이전"></span>
+	    <span>
+	      <audio id="playAudioPlayer">
+	        <source src="<%= request.getContextPath() %>/jspproject/music/" type="audio/mpeg">
+	      </audio>
+	      <img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" data-state="paused" alt="재생">
+	    </span>
+	    <span><img class="iconMusic2" src="icon/아이콘_다음음악_1.png" alt="다음"></span>
+	  </div>
+	
+	  <div class="music-description">
+	    <textarea id="bgmCnt" readonly>음악을 선택해주세요</textarea>
+	  </div>
+	
+	  <!-- 가운데 위 버튼 -->
+	  <div class="music-cancel-button">
+	    <button class="btn-purple">음악 취소</button>
+	  </div>
+	
+	  <!-- 아래 좌우 버튼 -->
+	  <div class="music-right-buttons">
+	    <button class="btn-dark" id="submitEditBtn" onclick="submitBgmEdit()" disabled>수정</button>
+	    <button class="btn-purple">적용</button>
+	  </div>
+	
+	  <!-- ✅ 추가된 hidden 필드 (반드시 여기 추가!) -->
+	  <input type="hidden" id="hiddenBgmId">
+	  <input type="hidden" id="hiddenBgmName">
+	  <input type="hidden" id="hiddenBgmCnt">
+	  <input type="file" id="bgmImgInput" accept="image/*" style="display:none;" onchange="uploadBgmImage(event)">
+	  
+	  <!-- 🎵 음악 미리보기 (재생목록 미리보기 아래쪽에 추가) -->
+		<div class="music-preview2">
+		  <img id="bgmImg" class="musicImg2" src="img/default.png" />
+		  <h2 id="bgmName">선택된 음악 없음</h2>
 		</div>
+		
+		<div class="music-controls2">
+		  <span><img class="iconMusic2" src="icon/아이콘_이전음악_1.png" alt="이전"></span>
+		  <span>
+		    <audio id="playAudioPlayer">
+		      <source src="<%= request.getContextPath() %>/jspproject/music/" type="audio/mpeg">
+		    </audio>
+		    <img id="playToggleBtn" class="iconMusic2" src="icon/아이콘_재생_1.png" data-state="paused" alt="재생">
+		  </span>
+		  <span><img class="iconMusic2" src="icon/아이콘_다음음악_1.png" alt="다음"></span>
+		</div>
+		
+		<div class="music-description3">
+		  <textarea id="bgmCnt" readonly>음악을 선택해주세요</textarea>
+		</div>
+		
+		<!-- 히든 필드 -->
+		<input type="hidden" id="hiddenBgmId">
+		<input type="hidden" id="hiddenBgmName">
+		<input type="hidden" id="hiddenBgmCnt">
+	  
 	</div>
 </div>
 
 <script>
-
-	// 체크박스 선택 삭제 관련 코드 (ChatGpt가 짜줌)
 	document.addEventListener('DOMContentLoaded', function () {
-	    const selectAll2 = document.getElementById('selectAll2');
-	    const musicList2 = document.getElementById('musicList2');
-	    const deleteBtn2 = document.querySelector('.delete-selected2'); // 버튼 하나만 선택!
+	    const selectAll = document.getElementById('selectAll_detail');
+	    const musicList = document.getElementById('musicList_detail');
+	    const deleteBtn = document.querySelector('.delete-selected_detail');
+	    const musicLeft = document.querySelector(".music-left2");
+	    const previewIcons = document.querySelector('.preview-icons2');
+	    const rightButtons = document.querySelector('.music-right-buttons2');
+	    const editIcon = document.getElementById('editIcon2');
+	    let isEditing = false;
 	
-	    // 전체 선택 체크박스
-	    selectAll2.addEventListener('change', function () {
-	        const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
-	        checkboxes.forEach(cb => cb.checked = selectAll2.checked);
-	    });
+	    // ✅ 전체 선택 체크박스
+	    if (selectAll && musicList && deleteBtn) {
+	        selectAll.addEventListener('change', function () {
+	            const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+	        });
 	
-	    // 개별 체크박스 변경 → 전체 선택 상태 갱신
-	    musicList2.addEventListener('change', function (e) {
-	        if (e.target.type === 'checkbox') {
-	            const checkboxes = musicList2.querySelectorAll('input[type="checkbox"]');
-	            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-	            selectAll2.checked = checkedCount === checkboxes.length;
-	        }
-	    });
-	
-	    // ✅ 삭제 버튼 하나에만 기능 적용
-	    deleteBtn2.addEventListener('click', function () {
-	        const items = musicList2.querySelectorAll('.music-list-item2');
-	        items.forEach(item => {
-	            const checkbox = item.querySelector('input[type="checkbox"]');
-	            if (checkbox && checkbox.checked) {
-	                item.remove();
+	        musicList.addEventListener('change', function (e) {
+	            if (e.target.type === 'checkbox') {
+	                const checkboxes = musicList.querySelectorAll('input[type="checkbox"]');
+	                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+	                selectAll.checked = checkedCount === checkboxes.length;
 	            }
 	        });
-	        selectAll2.checked = false;
-	    });
-	});
+	
+	        deleteBtn.addEventListener('click', function () {
+	            const items = musicList.querySelectorAll('.music-list-item2');
+	            items.forEach(item => {
+	                const checkbox = item.querySelector('input[type="checkbox"]');
+	                if (checkbox && checkbox.checked) {
+	                    item.remove();
+	                }
+	            });
+	            selectAll.checked = false;
+	        });
+	    }
+	
+	    // ✅ 재생목록 클릭 이벤트
+	    musicLeft.addEventListener("click", function (e) {
+		    const box = e.target.closest(".playlist-box2");
+		    if (!box || e.target.classList.contains("iconDelete2")) return;
 		
-	function addPlaylistBox() {
-	    const musicLeft = document.querySelector('.music-left2');
-	    const addButton = document.querySelector('.add-playlist2');
+		    // 🔥 선택 표시
+		    document.querySelectorAll(".playlist-box2").forEach(el => el.classList.remove("selected"));
+		    box.classList.add("selected");
+		
+		    const id = box.dataset.mplistId;
+		    const name = box.dataset.mplistName;
+		    const img = box.dataset.mplistImg || "default.png";
+		    const cnt = box.dataset.mplistCnt;
+		
+		    // ✅ 상세 화면 전환
+		    document.getElementById("musicPlayListWrapper").style.display = "none";
+		    document.getElementById("musicPlayListDetailWrapper").style.display = "flex";
+		
+		    // 🔥 상세 정보 반영
+		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
+		    document.getElementById("mplistName_detail").innerText = name;
+		    document.getElementById("mplistCnt_detail").innerText = cnt;
+		    document.getElementById("hiddenMplistId_detail").value = id;
+		    document.getElementById("hiddenMplistName_detail").value = name;
+		    document.getElementById("hiddenMplistCnt_detail").value = cnt;
+		    document.getElementById("originalImgInput_detail").value = img;
+		
+		    if (previewIcons) previewIcons.style.display = 'flex';
+		    if (rightButtons) rightButtons.style.display = 'flex';
+		
+		    loadMusicListByMplistId(id);
+		});
+	
+	    // ✅ 수정 아이콘
+	    if (editIcon) {
+	    editIcon.addEventListener('click', () => {
+	        const nameField = document.getElementById('mplistName_detail');
+	        const cntField = document.getElementById('mplistCnt_detail');
+	
+	        isEditing = !isEditing;
+	
+	        nameField.setAttribute('contenteditable', isEditing ? "true" : "false");
+	        cntField.readOnly = !isEditing; // textarea는 readOnly로 컨트롤
+	        cntField.style.backgroundColor = isEditing ? "#2e2e2e" : "transparent";
+	        cntField.style.border = isEditing ? "1px dashed white" : "none";
+	
+	        rightButtons.style.pointerEvents = isEditing ? 'auto' : 'none';
+	        rightButtons.style.opacity = isEditing ? '1' : '0.5';
+	    });
+	}
+
+	    // ✅ 삭제 아이콘
+	    const deleteIcon = document.querySelector('.preview-icons2 img[alt="삭제"]');
+	    if (deleteIcon) {
+	        deleteIcon.addEventListener('click', () => {
+	            const id = document.getElementById("hiddenMplistId_detail").value;
+	            if (!id) return alert("삭제할 재생목록이 선택되지 않았습니다.");
+	            if (!confirm("정말 삭제하시겠습니까?")) return;
+	
+	            fetch('<%= request.getContextPath() %>/jspproject/mplistDelete', {
+	                method: 'POST',
+	                headers: { 'Content-Type': 'application/json' },
+	                body: JSON.stringify({ mplist_id: parseInt(id) })
+	            })
+	            .then(res => res.json())
+	            .then(data => {
+	                if (data.success) {
+	                    alert("삭제 완료!");
+	                    location.reload();
+	                } else {
+	                    alert("삭제 실패: " + data.message);
+	                }
+	            })
+	            .catch(err => {
+	                console.error(err);
+	                alert("삭제 중 오류 발생");
+	            });
+	        });
+	    }
+	    
+	    const mplistImg = document.getElementById("mplistImg");
+	    if (mplistImg) {
+	        mplistImg.style.cursor = "pointer"; // 마우스 커서도 바뀌게
+	        mplistImg.addEventListener("click", () => {
+	            document.getElementById("mplistImgInput_detail").click();
+	        });
+	    }
+
+});
+
+	function addPlaylistBox_detail() {
+	    const musicLeft = document.querySelector('#musicPlayListDetailWrapper .music-left2');
+	    const addButton = document.querySelector('#musicPlayListDetailWrapper .add-playlist2');
+	    if (!musicLeft || !addButton) return;
 
 	    const playlistCount = musicLeft.querySelectorAll('.playlist-box2').length + 1;
 
+	    // 프론트에 추가
 	    const newBox = document.createElement('div');
 	    newBox.className = 'playlist-box2';
 	    newBox.innerHTML =
-	        '<img src="mplistImg/tema1.gif" alt="">' +
-	        '<div class="playlist-name2">예시' + playlistCount + '</div>' +
-	        '<div class="playlist-count2">n곡</div>' +
+	        '<img src="img/default.png" alt="">' +
+	        '<div class="playlist-name2">제목을 지어주세요</div>' +
+	        '<div class="playlist-count2">내용을 정해주세요</div>' +
 	        '<img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">';
-
 	    musicLeft.insertBefore(newBox, addButton);
+
+	    // 서버(DB)에 추가 요청
+	    const formData = new FormData();
+	    formData.append("mplist_name", "제목을 지어주세요");
+	    formData.append("mplist_cnt", "내용을 정해주세요");
+	    formData.append("user_id", "<%= user_id %>");
+	    formData.append("mplist_img", "default.png"); // ✅ 문자열로 직접 전달
+
+	    fetch("<%= request.getContextPath() %>/jspproject/mplistInsert", {
+	        method: "POST",
+	        body: formData
+	    })
+	    .then(res => res.text())
+	    .then(text => {
+	        console.log("DB 추가 완료:", text);
+	        // 필요한 경우 서버 응답에 따라 박스에 ID나 데이터셋 추가 가능
+	        window.location.href = "<%= request.getContextPath() %>/jspproject/mainScreen.jsp";
+	    })
+	    .catch(err => {
+	        console.error("재생목록 추가 실패:", err);
+	        alert("서버에 재생목록 추가 중 오류가 발생했습니다.");
+	    });
 	}
 
-	// ✅ 페이지 로드 시 한 번만 등록: 기존 + 새로 생긴 박스 모두 대응
+
 	document.addEventListener("DOMContentLoaded", function () {
 	    const musicLeft = document.querySelector(".music-left2");
-
 	    musicLeft.addEventListener("click", function (e) {
 	        if (e.target.classList.contains("iconDelete2")) {
 	            const box = e.target.closest(".playlist-box2");
@@ -733,88 +883,98 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	function switchToMusicList() {
 	    const musicListContainer = document.querySelector('.music-container');
 	    const playListContainer = document.querySelector('#musicPlayListWrapper');
-
-	    if (musicListContainer && playListContainer) {
-	        // 음악 목록 숨기고, 재생 목록 보이기
-	        playListContainer.style.display = 'none';
-	        musicListContainer.style.display = 'flex';
-
-	        // 💡 내부 컨테이너도 보이게 설정 (혹시나 내부가 display: none일 때 대비)
-	        const container = playListContainer.querySelector('.music-container');
-	        if (container) {
-	            container.style.display = 'flex';
-	        }
-	    }
-	}
-	
-	function openMusicPlayListDetail() {
-	    const playListContainer = document.querySelector('.music-container2');
 	    const detailContainer = document.querySelector('#musicPlayListDetailWrapper');
+	    if (playListContainer) playListContainer.style.display = 'none';
+	    if (detailContainer) detailContainer.style.display = 'none';
+	    if (musicListContainer) musicListContainer.style.display = 'flex';
+	}
 
-	    if (playListContainer) {
-	        playListContainer.style.display = 'none';
-	        console.log("재생 목록 화면 숨김");
+	function previewImage(event) {
+	    const reader = new FileReader();
+	    reader.onload = function (e) {
+	    	document.getElementById('mplistImg').src = "mplistImg/" + e.target.result;
+	    };
+	    reader.readAsDataURL(event.target.files[0]);
+	}
+
+	function submitEditForm() {
+		const form = document.getElementById("mplistEditForm_detail");
+
+	    // 혹시라도 빠진 경우 대비해서 강제로 다시 세팅
+	    const selectedBox = document.querySelector(".playlist-box2.selected");
+	    if (selectedBox) {
+	        form.querySelector("input[name='mplist_id']").value = selectedBox.dataset.mplistId;
 	    }
 
-	    if (detailContainer) {
-	        detailContainer.style.display = 'flex';
-	        console.log("디테일 화면 표시");
+	    // ✅ 이미 위에서 const로 id 선언했으니 여기선 다시 선언하지 말고 그냥 변수만 사용
+	    const id = form.querySelector("input[name='mplist_id']").value;
+	    console.log("최종 제출 mplist_id:", id);
+
+	    if (!id || id.trim() === "") {
+	        alert("재생목록이 선택되지 않았습니다.");
+	        return;
 	    }
+
+	    // 제목과 내용 가져오기
+	    const name = document.getElementById("mplistName_detail").innerText.trim();
+		const cnt = document.getElementById("mplistCnt_detail").value.trim();
+
+	    // 히든에 반영
+	    document.getElementById('hiddenMplistName_detail').value = name;
+	    document.getElementById('hiddenMplistCnt_detail').value = cnt;
+
+	    // 편집 종료
+	    document.getElementById('mplistName_detail').setAttribute('contenteditable', 'false');
+	    document.getElementById('mplistCnt_detail').setAttribute('contenteditable', 'false');
+	    document.querySelector('.music-right-buttons2').style.display = 'none';
+
+	    form.submit();
 	}
 	
-	// 기존 삭제 + 디테일 진입 통합 처리
-    document.addEventListener("DOMContentLoaded", function () {
-        const allMusicLeftContainers = document.querySelectorAll(".music-left2");
+	function uploadMplistImage(event) {
+	    const file = event.target.files[0];
+	    if (!file) return;
 
-        allMusicLeftContainers.forEach(musicLeft => {
-            musicLeft.addEventListener("click", function (e) {
-                const playlistBox = e.target.closest(".playlist-box2");
-
-                if (!playlistBox) return;
-
-                if (e.target.classList.contains("iconDelete2")) {
-                    console.log("삭제 아이콘 클릭됨");
-                    playlistBox.remove();
-                    return;
-                }
-
-                // 디테일 화면 진입은 기본 목록에서만
-                const detailContainer = document.querySelector("#musicPlayListDetailWrapper");
-                if (detailContainer && detailContainer.style.display === "none") {
-                    openMusicPlayListDetail();
-                }
-            });
-        });
-    });
-	
-    document.addEventListener('DOMContentLoaded', function () {
-	    const playBtn = document.getElementById('playToggleBtn2');
-	    const audio = document.getElementById('playListAudioPlayer');
-
-	    if (playBtn && audio) {
-	        // 초기 상태 설정
-	        playBtn.setAttribute('data-state', 'paused');
-
-	        playBtn.addEventListener('click', function () {
-	            const currentState = playBtn.getAttribute('data-state');
-
-	            if (currentState === 'paused') {
-	                // ▶️ → ⏸️ + 음악 재생
-	                playBtn.src = 'icon/아이콘_일시정지_1.png';
-	                playBtn.alt = '일시정지';
-	                playBtn.setAttribute('data-state', 'playing');
-
-	                audio.play();
-	            } else {
-	                // ⏸️ → ▶️ + 음악 정지
-	                playBtn.src = 'icon/아이콘_재생_1.png';
-	                playBtn.alt = '재생';
-	                playBtn.setAttribute('data-state', 'paused');
-
-	                audio.pause();
-	            }
-	        });
+	    const mplistId = document.getElementById("hiddenMplistId_detail").value;
+	    if (!mplistId) {
+	        alert("먼저 재생목록을 선택해주세요.");
+	        return;
 	    }
-	});
+
+	    const formData = new FormData();
+	    formData.append("mplist_id", mplistId);
+	    formData.append("mplist_img", file);
+
+	    fetch("<%= request.getContextPath() %>/jspproject/mplistImageUpdate", {
+	        method: "POST",
+	        body: formData
+	    })
+	    .then(res => res.json())
+	    .then(data => {
+	        if (data.success) {
+	        	document.getElementById("mplistImg").src = "mplistImg/" + data.filename + "?t=" + new Date().getTime();
+	            alert("이미지가 성공적으로 변경되었습니다.");
+	        } else {
+	            alert("업로드 실패: " + data.message);
+	        }
+	    })
+	    .catch(err => {
+	        console.error(err);
+	        alert("이미지 업로드 중 오류 발생");
+	    });
+	}
+	
+	function loadMusicListByMplistId(mplistId) {
+	    fetch("<%= request.getContextPath() %>/jspproject/getBgmByMplistId.jsp?mplist_id=" + mplistId)
+	        .then(response => response.text())
+	        .then(html => {
+	            document.getElementById("musicList_detail").innerHTML = html;
+	        })
+	        .catch(error => {
+	            console.error("❌ 음악 리스트 불러오기 실패:", error);
+	        });
+	}
+
+	
 
 </script>

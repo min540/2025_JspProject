@@ -540,14 +540,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
     <jsp:include page="musicPlayListDetail.jsp" />
 </div>
 
-<%-- <!-- 재생목록 리스트 영역 (처음엔 숨김) -->
-<div id="musicPlayListWrapper">
-    <jsp:include page="musicPlayList.jsp" />
-</div>
-
-<!-- 재생목록 상세 정보 영역 (처음엔 숨김) --> 
-<jsp:include page="musicPlayListDetail.jsp" /> --%>
-
 </body>
 </html>
 
