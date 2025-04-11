@@ -427,23 +427,100 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
         gap: 20px;
         font-size: 24px;
     }
+    
+    .music-controls3 {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        font-size: 24px;
+        margin-top: 20px;
+    }
 
     .music-description3 textarea {
+	    width: 100%;
+	    height: 100px;
+	    resize: none;
+	    border-radius: 10px;
+	    border: none;
+	    align-items: center;         /* 세로 가운데 */
+	    justify-content: center;     /* 가로 가운데 (텍스트 기준) */
+	    padding: 0;
+	    text-align: center;
+	    line-height: 100px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
+	
+	    /* ✅ 다크 스타일 추가 */
+	    background-color: #2e2e2e;   /* 짙은 회색 */
+	    color: white;                /* 흰 글자 */
+	    font-size: 14px;
+	    font-family: 'PFStarDust', sans-serif;
+	    box-shadow: 0 0 12px rgba(123, 44, 191, 0.4);  /* 살짝 보라빛 glow */
+	}
+	
+	.music-preview3 {
+	    padding-top: 60px; /* 👈 아이콘 높이만큼 위에 여유 공간 줌 */
+    	text-align: center;
+	}
+	
+	.music-preview3 h2 {
+	    margin-top: 20px;     /* 줄이거나 0으로 설정 가능 */
+	    margin-bottom: -3px;
+	    font-size: 1.1vw;    /* 사이즈도 적당히 */
+	}
+	
+			
+	.music-description2 textarea {
 	    width: 100%;
 	    height: 200px;
 	    resize: none;
 	    border-radius: 10px;
 	    border: none;
-	    padding: 12px; /* ✅ padding 추가 */
+	    padding: 12px;
 	    background-color: #2e2e2e;
 	    color: white;
 	    font-size: 14px;
 	    font-family: 'PFStarDust', sans-serif;
 	    box-shadow: 0 0 12px rgba(123, 44, 191, 0.4);
-	    line-height: 1.4; /* ✅ 일반적인 텍스트 라인 높이 */
-	    text-align: center; /* ✅ 왼쪽 정렬 */
+	    text-align: center;
 	}
-
+	
+	.music-cancel-button3 {
+	    display: flex;
+	    justify-content: center;
+	    margin-bottom: 12px;
+	}
+	
+	.music-cancel-button3 button {
+		width: 80%;
+	    height:40px;
+	    padding: 12px;
+	    border-radius: 8px;
+	    border: none;
+	    font-weight: bold;
+	    font-size: 0.7vw;
+	    cursor: pointer;
+	    background-color: #7b2cbf;
+	    color: white;
+	    box-shadow: 0 0 8px rgba(123, 44, 191, 0.4);
+	}
+	
+	/* 기존 버튼 영역 아래 좌우 배치 */
+	.music-right-buttons3 {
+	    display: flex;
+	    justify-content: space-between;
+	}
+	
+	.music-right-buttons3 button {
+	    width: 30%;
+	    height:40px;
+	    padding: 5px;
+	    border-radius: 8px;
+	    border: 2px solid white;
+	    background: none;
+	    color: white;
+	    font-weight: bold;
+	    font-size: 0.9vw;
+	    cursor: pointer;
+	}
 
     .music-cancel-button2 {
     display: flex;
@@ -484,6 +561,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	    font-weight: bold;
 	    font-size: 0.9vw;
 	    cursor: pointer;
+	    margin-top: 57px;
 	}
 
     .btn-purple {
@@ -645,39 +723,47 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		</div>
 	</div>
 	<!-- 오른쪽 영역 -->
-		<div class="music-right2">
-		  <div class="preview-icons2" style="display: none;">
-		    <img id="editIcon2" class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="재생 목록 수정">
-		    <img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
-		  </div>
-		
-		  <div class="music-preview2">
-		    <img id="mplistImg" class="musicImg2" src="img/default.png" alt="기본 이미지" />
-		    <div id="mplistName_detail" class="editable-title">재생목록을 선택해주세요.</div>
-		  </div>
-		
-		  <div class="music-description3">
-		    <textarea id="mplistCnt_detail" readonly>재생목록을 선택해주세요.</textarea>
-		  </div>
-		
-		  <div class="music-right-buttons2" style="display: none;">
-		    <button class="btn-purple" onclick="submitEditForm()">수정</button>
-		  </div>
-		
-		  <!-- ✅ 수정 폼 (파일 + 히든) -->
-		  <form id="mplistEditForm_detail"
-		      method="post"
-		      action="<%= request.getContextPath() %>/jspproject/mplistUpdate"
-		      enctype="multipart/form-data"
-		      style="display:none;">
-		    <input type="hidden" name="mplist_id" id="hiddenMplistId_detail" value="">
-		    <input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
-		    <input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
-		    <input type="hidden" name="original_img" id="originalImgInput_detail">
-		    <input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="uploadMplistImage(event)">
-		  </form>
-		</div>
+	<div class="music-right2">
+	
+	  <!-- 🔹 재생목록 정보 -->
+	  <div id="playlistPreview">
+	    <!-- 재생목록용 아이콘 -->
+	    <div class="preview-icons2" style="display: none;">
+	      <img id="editIcon2" class="iconMusicList2" src="icon/아이콘_수정_1.png" alt="재생 목록 수정">
+	      <img class="iconMusicList2" src="icon/아이콘_삭제_1.png" alt="삭제">
+	    </div>
+	
+	    <div class="music-preview2">
+	      <img id="mplistImg" class="musicImg2" src="img/default.png" alt="기본 이미지" />
+	      <div id="mplistName_detail" class="editable-title">재생목록을 선택해주세요.</div>
+	    </div>
+	
+	    <div class="music-description2">
+	      <textarea id="mplistCnt_detail" readonly>재생목록을 선택해주세요.</textarea>
+	    </div>
+	
+	    <div class="music-right-buttons2" style="display: none;">
+	      <button class="btn-purple" onclick="submitEditForm()">수정</button>
+	    </div>
+	
+	    <!-- 수정 폼 -->
+	    <form id="mplistEditForm_detail"
+	          method="post"
+	          action="<%= request.getContextPath() %>/jspproject/mplistUpdate"
+	          enctype="multipart/form-data"
+	          style="display:none;">
+	      <input type="hidden" name="mplist_id" id="hiddenMplistId_detail" value="">
+	      <input type="hidden" name="mplist_name" id="hiddenMplistName_detail">
+	      <input type="hidden" name="mplist_cnt" id="hiddenMplistCnt_detail">
+	      <input type="hidden" name="original_img" id="originalImgInput_detail">
+	      <input type="file" name="mplist_img" id="mplistImgInput_detail" onchange="uploadMplistImage(event)">
+	    </form>
+	  </div>
+	
+	  <!-- 🔸 음악 미리보기 -->
+	  <div id="musicPreview" style="display: none;"></div>
 </div>
+
 
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
@@ -707,45 +793,82 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	
 	        deleteBtn.addEventListener('click', function () {
 	            const items = musicList.querySelectorAll('.music-list-item2');
+	            const idsToDelete = [];
+
 	            items.forEach(item => {
 	                const checkbox = item.querySelector('input[type="checkbox"]');
 	                if (checkbox && checkbox.checked) {
-	                    item.remove();
+	                    const id = item.dataset.mplistmgrId;
+	                    if (id) idsToDelete.push(parseInt(id));
 	                }
 	            });
-	            selectAll.checked = false;
+
+	            if (idsToDelete.length === 0) {
+	                alert("삭제할 곡을 선택해주세요.");
+	                return;
+	            }
+
+	            if (!confirm("선택한 곡들을 재생목록에서 삭제하시겠습니까?")) return;
+
+	            // 여러 개 삭제를 하나씩 보내는 방식으로 처리
+	            Promise.all(idsToDelete.map(id =>
+	                fetch("<%= request.getContextPath() %>/jspproject/deleteMplistBgm", {
+	                    method: "POST",
+	                    headers: {
+	                        "Content-Type": "application/json"
+	                    },
+	                    body: JSON.stringify({ mplistmgr_id: id })
+	                })
+	            ))
+	            .then(() => {
+	                alert("삭제 완료!");
+	                const currentMplistId = document.getElementById("hiddenMplistId_detail").value;
+	                loadMusicListByMplistId(currentMplistId);
+	                document.getElementById("playlistPreview").style.display = "block";
+	                document.getElementById("musicPreview").style.display = "none";
+	                selectAll.checked = false;
+	            })
+	            .catch(err => {
+	                console.error("삭제 실패:", err);
+	                alert("삭제 중 오류 발생");
+	            });
 	        });
+
 	    }
 	
 	    // ✅ 재생목록 클릭 이벤트
 	    musicLeft.addEventListener("click", function (e) {
-	        const box = e.target.closest(".playlist-box2");
-	        if (!box || e.target.classList.contains("iconDelete2")) return;
-	
-	        // 🔥 선택 표시
-	        document.querySelectorAll(".playlist-box2").forEach(el => el.classList.remove("selected"));
-	        box.classList.add("selected");
-	
-	        const id = box.dataset.mplistId;
-	        const name = box.dataset.mplistName;
-	        const img = box.dataset.mplistImg || "default.png";
-	        const cnt = box.dataset.mplistCnt;
-	
-	        // 🔥 우측 반영
-	        document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
-	        document.getElementById("mplistName_detail").innerText = name;
-	        document.getElementById("mplistCnt_detail").innerText = cnt;
-	        document.getElementById("hiddenMplistId_detail").value = id;
-	        document.getElementById("hiddenMplistName_detail").value = name;
-	        document.getElementById("hiddenMplistCnt_detail").value = cnt;
-	        document.getElementById("originalImgInput_detail").value = img;
-	
-	        if (previewIcons) previewIcons.style.display = 'flex';
-	        if (rightButtons) rightButtons.style.display = 'flex';
-	        
-	        loadMusicListByMplistId(id);
-	    });
-	
+		    const box = e.target.closest(".playlist-box2");
+		    if (!box || e.target.classList.contains("iconDelete2")) return;
+		
+		    document.querySelectorAll(".playlist-box2").forEach(el => el.classList.remove("selected"));
+		    box.classList.add("selected");
+		
+		    const id = box.dataset.mplistId;
+		    const name = box.dataset.mplistName;
+		    const img = box.dataset.mplistImg || "default.png";
+		    const cnt = box.dataset.mplistCnt;
+		
+		    // 🔥 복원
+		    document.getElementById("playlistPreview").style.display = "block";
+		    document.getElementById("musicPreview").style.display = "none";
+		    document.getElementById("musicPreview").innerHTML = "";
+		
+		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
+		    document.getElementById("mplistName_detail").innerText = name;
+		    document.getElementById("mplistCnt_detail").innerText = cnt;
+		
+		    document.getElementById("hiddenMplistId_detail").value = id;
+		    document.getElementById("hiddenMplistName_detail").value = name;
+		    document.getElementById("hiddenMplistCnt_detail").value = cnt;
+		    document.getElementById("originalImgInput_detail").value = img;
+		
+		    previewIcons.style.display = 'flex';
+		    rightButtons.style.display = 'flex';
+		
+		    loadMusicListByMplistId(id); // 중앙 리스트도 갱신
+		});
+
 	    // ✅ 수정 아이콘
 	    if (editIcon) {
 	    editIcon.addEventListener('click', () => {
@@ -800,8 +923,46 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            document.getElementById("mplistImgInput_detail").click();
 	        });
 	    }
-
 });
+	
+	// ✅ 곡 삭제 아이콘 클릭 시 삭제 처리
+	document.addEventListener("click", function (e) {
+	    if (e.target && e.target.classList.contains("delete-bgm")) {
+	        const mplistmgrId = e.target.dataset.mplistmgrId;
+	        if (!mplistmgrId) {
+	            alert("삭제할 항목 ID를 찾을 수 없습니다.");
+	            return;
+	        }
+
+	        if (!confirm("정말 이 곡을 재생목록에서 삭제할까요?")) return;
+
+	        fetch("<%= request.getContextPath() %>/jspproject/deleteMplistBgm", {
+	            method: "POST",
+	            headers: {
+	                "Content-Type": "application/json"
+	            },
+	            body: JSON.stringify({ mplistmgr_id: parseInt(mplistmgrId) })
+	        })
+	        .then(res => res.json())
+	        .then(data => {
+	            if (data.success) {
+	                alert("삭제되었습니다.");
+	                // 목록 갱신
+	                const currentMplistId = document.getElementById("hiddenMplistId_detail").value;
+	                loadMusicListByMplistId(currentMplistId);
+	                document.getElementById("playlistPreview").style.display = "block";
+	                document.getElementById("musicPreview").style.display = "none";
+	            } else {
+	                alert("삭제 실패: " + data.message);
+	            }
+	        })
+	        .catch(err => {
+	            console.error("삭제 오류:", err);
+	            alert("서버 오류가 발생했습니다.");
+	        });
+	    }
+	});
+
 
 	function addPlaylistBox_detail() {
 	    const musicLeft = document.querySelector('#musicPlayListDetailWrapper .music-left2');
@@ -939,16 +1100,38 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	}
 	
 	function loadMusicListByMplistId(mplistId) {
-	    fetch("<%= request.getContextPath() %>/jspproject/getBgmByMplistId.jsp?mplist_id=" + mplistId)
+	    fetch("<%= request.getContextPath() %>/jspproject/getBgmByBgmId.jsp?mplist_id=" + mplistId)
 	        .then(response => response.text())
 	        .then(html => {
-	            document.getElementById("musicList_detail").innerHTML = html;
+	            const container = document.getElementById("musicList_detail");
+	            container.innerHTML = html;
+
+	            // ✅ 새로 삽입된 음악 항목에 클릭 이벤트 연결
+	            container.querySelectorAll('.music-list-item2').forEach(item => {
+	                item.addEventListener('click', function () {
+	                    const bgmId = this.querySelector('input[name="bgm_id"]').value;
+	                    loadMusicPreviewByBgmId(bgmId);
+	                });
+	            });
 	        })
 	        .catch(error => {
 	            console.error("❌ 음악 리스트 불러오기 실패:", error);
 	        });
 	}
-
 	
+	function loadMusicPreviewByBgmId(bgmId) {
+	    fetch("<%= request.getContextPath() %>/jspproject/getBgmIdByMplistId.jsp?bgm_id=" + bgmId)
+	        .then(res => res.text())
+	        .then(html => {
+	            document.getElementById("playlistPreview").style.display = "none";
+	            const preview = document.getElementById("musicPreview");
+	            preview.style.display = "block";
+	            preview.innerHTML = html;
+	        })
+	        .catch(err => {
+	            console.error("❌ 미리보기 로딩 실패:", err);
+	        });
+	}
+
 
 </script>
