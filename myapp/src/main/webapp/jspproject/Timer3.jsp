@@ -135,159 +135,164 @@ style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-	const userId = "<%= user_id %>";
-	let sessionDuration = <%= sessionTime %>;
-	let breakDuration = <%= breakTime %>;
-	let timeLeft = sessionDuration;
-	let isSession = true;
-	let isRunning = false;
-	let interval = null;
+  const userId = "<%= user_id %>";
+  const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
 
-	const RADIUS = 100;
-	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  let sessionDuration = <%= sessionTime %>;
+  let breakDuration = <%= breakTime %>;
+  let timeLeft = sessionDuration;
+  let isSession = true;
+  let isRunning = false;
+  let interval = null;
 
-	const timer = document.getElementById("timerContainer");
-	const dragHandle = document.querySelector(".timer3-drag-handle");
-	const timeDisplay = document.getElementById("timeDisplay");
-	const progressCircle = document.getElementById("progress");
-	const sessionTimeEl = document.getElementById("sessionTime");
-	const breakTimeEl = document.getElementById("breakTime");
-	const toggleBtn = document.getElementById("toggleBtn");
-	const btnReset = document.getElementById("btnReset");
-	const timerInfo = document.getElementById("timerInfo");
+  const RADIUS = 100;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-	progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer3-drag-handle");
+  const timeDisplay = document.getElementById("timeDisplay");
+  const progressCircle = document.getElementById("progress");
+  const sessionTimeEl = document.getElementById("sessionTime");
+  const breakTimeEl = document.getElementById("breakTime");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const btnReset = document.getElementById("btnReset");
+  const timerInfo = document.getElementById("timerInfo");
 
-	const formatTime = (sec) => {
-		const m = Math.floor(sec / 60);
-		const s = sec % 60;
-		return m + ":" + String(s).padStart(2, '0');
-	};
+  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
-	const updateProgress = () => {
-		const duration = isSession ? sessionDuration : breakDuration;
-		const percent = timeLeft / duration;
-		const offset = CIRCUMFERENCE * (1 - percent);
-		progressCircle.style.stroke = isSession ? "#8E24AA" : "#BA68C8";
-		progressCircle.style.strokeDashoffset = offset;
-		timeDisplay.textContent = formatTime(timeLeft);
-	};
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ":" + String(s).padStart(2, '0');
+  };
 
-	sessionTimeEl.textContent = formatTime(sessionDuration);
-	breakTimeEl.textContent = formatTime(breakDuration);
-	timeDisplay.textContent = formatTime(sessionDuration);
-	updateProgress();
+  const updateProgress = () => {
+    const duration = isSession ? sessionDuration : breakDuration;
+    const percent = timeLeft / duration;
+    const offset = CIRCUMFERENCE * (1 - percent);
+    progressCircle.style.stroke = isSession ? "#8E24AA" : "#BA68C8";
+    progressCircle.style.strokeDashoffset = offset;
+    timeDisplay.textContent = formatTime(timeLeft);
+  };
 
-	const resetTimer = () => {
-		clearInterval(interval);
-		isRunning = false;
-		isSession = true;
-		timeLeft = sessionDuration;
-		toggleBtn.textContent = "▶️";
-		updateProgress();
-		timerInfo.style.display = "block";
-	};
+  const resetTimer = () => {
+    clearInterval(interval);
+    isRunning = false;
+    isSession = true;
+    timeLeft = sessionDuration;
+    toggleBtn.textContent = "▶️";
+    updateProgress();
+    timerInfo.style.display = "block";
+  };
 
-	const updateTimerSettingToDB = () => {
-		fetch("UpdateTimerSessionProc.jsp", {
-			method: "POST",
-			headers: { "Content-Type": "application/x-www-form-urlencoded" },
-			body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
-		}).then(res => res.text())
-		  .then(data => console.log(data));
-	};
+  const updateTimerSettingToDB = () => {
+    fetch("UpdateTimerSessionProc.jsp", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
+    }).then(res => res.text())
+      .then(data => console.log(data));
+  };
 
-	btnReset.addEventListener("click", resetTimer);
+  btnReset.addEventListener("click", resetTimer);
 
-	toggleBtn.addEventListener("click", () => {
-		if (isRunning) {
-			clearInterval(interval);
-			isRunning = false;
-			toggleBtn.textContent = "▶️";
-			timerInfo.style.display = "block";
-		} else {
-			interval = setInterval(() => {
-				if (timeLeft > 0) {
-					timeLeft--;
-					updateProgress();
-				} else {
-					isSession = !isSession;
-					timeLeft = isSession ? sessionDuration : breakDuration;
-					updateProgress();
-				}
-			}, 1000);
-			isRunning = true;
-			toggleBtn.textContent = "⏸";
-			timerInfo.style.display = "none";
-		}
-	});
+  toggleBtn.addEventListener("click", () => {
+    if (isRunning) {
+      clearInterval(interval);
+      isRunning = false;
+      toggleBtn.textContent = "▶️";
+      timerInfo.style.display = "block";
+    } else {
+      interval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateProgress();
+        } else {
+          isSession = !isSession;
+          timeLeft = isSession ? sessionDuration : breakDuration;
+          updateProgress();
+        }
+      }, 1000);
+      isRunning = true;
+      toggleBtn.textContent = "⏸";
+      timerInfo.style.display = "none";
+    }
+  });
 
-	const makeEditable = (el, type) => {
-		const input = document.createElement("input");
-		input.type = "number";
-		input.className = "timer3-input";
-		input.value = type === "session" ? sessionDuration : breakDuration;
+  const makeEditable = (el, type) => {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.className = "timer3-input";
+    input.value = type === "session" ? sessionDuration : breakDuration;
 
-		const confirm = () => {
-			let val = parseInt(input.value);
-			if (isNaN(val) || val < 10) val = 10;
-			if (val > 3600) val = 3600;
-			if (type === "session") {
-				sessionDuration = val;
-				sessionTimeEl.textContent = formatTime(sessionDuration);
-			} else {
-				breakDuration = val;
-				breakTimeEl.textContent = formatTime(breakDuration);
-			}
-			input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
-			updateTimerSettingToDB();
-			resetTimer();
-		};
+    const confirm = () => {
+      let val = parseInt(input.value);
+      if (isNaN(val) || val < 10) val = 10;
+      if (val > 3600) val = 3600;
+      if (type === "session") {
+        sessionDuration = val;
+        sessionTimeEl.textContent = formatTime(sessionDuration);
+      } else {
+        breakDuration = val;
+        breakTimeEl.textContent = formatTime(breakDuration);
+      }
+      input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
+      updateTimerSettingToDB();
+      resetTimer();
+    };
 
-		input.addEventListener("blur", confirm);
-		input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
-		el.replaceWith(input);
-		input.focus();
-	};
+    input.addEventListener("blur", confirm);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+    el.replaceWith(input);
+    input.focus();
+  };
 
-	sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
-	breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
+  sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
+  breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-	let isDragging = false;
-	let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  timeDisplay.textContent = formatTime(sessionDuration);
+  updateProgress();
 
-	dragHandle.addEventListener("mousedown", (e) => {
-		e.preventDefault();
-		isDragging = true;
-		startX = e.clientX;
-		startY = e.clientY;
-		offsetX = timer.offsetLeft;
-		offsetY = timer.offsetTop;
-		document.body.style.cursor = "grabbing";
-	});
+  // 미리보기 모드 아닐때만 드래그 허용
+  if (!isPreview) {
+    let isDragging = false;
+    let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-	document.addEventListener("mousemove", (e) => {
-		if (!isDragging) return;
-		timer.style.left = (offsetX + e.clientX - startX) + "px";
-		timer.style.top = (offsetY + e.clientY - startY) + "px";
-	});
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      offsetX = timer.offsetLeft;
+      offsetY = timer.offsetTop;
+      document.body.style.cursor = "grabbing";
+    });
 
-	document.addEventListener("mouseup", () => {
-		if (isDragging) {
-			isDragging = false;
-			document.body.style.cursor = "default";
-			let x = parseInt(timer.style.left);
-			let y = parseInt(timer.style.top);
-			if (x < 10) x = 10;
-			if (y < 10) y = 10;
-			fetch("UpdateTimerSessionProc.jsp", {
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-			}).then(res => res.text())
-			  .then(data => console.log(data));
-		}
-	});
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timer.style.left = (offsetX + e.clientX - startX) + "px";
+      timer.style.top = (offsetY + e.clientY - startY) + "px";
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
+        let x = parseInt(timer.style.left);
+        let y = parseInt(timer.style.top);
+        if (x < 10) x = 10;
+        if (y < 10) y = 10;
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log(data));
+      }
+    });
+  }
 });
 </script>
 
