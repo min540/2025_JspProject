@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="jspproject.BgmBean" %>
+<%@ page import="jspproject.MplistBgmView" %>
 <%@ page import="jspproject.MplistMgrMgr" %>
 
 <%
@@ -13,12 +14,15 @@ try {
 
     int mplist_id = Integer.parseInt(param);
     MplistMgrMgr mgr = new MplistMgrMgr();
-    Vector<BgmBean> bgms = mgr.getBgmsInMplist(mplist_id);
+    Vector<MplistBgmView> bgms = mgr.getBgmsInMplist(mplist_id);
 
     if (bgms != null && !bgms.isEmpty()) {
-        for (BgmBean b : bgms) {
+        for (MplistBgmView view : bgms) {
+            BgmBean b = view.getBgm();
 %>
-    <div class="music-list-item2">
+    <div class="music-list-item2"
+         data-bgm-id="<%= b.getBgm_id() %>"
+         data-mplistmgr-id="<%= view.getMplistmgr_id() %>">
         <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>"/>
         <span><%= b.getBgm_name() %></span>
     </div>

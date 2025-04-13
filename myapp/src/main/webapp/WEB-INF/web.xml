@@ -45,7 +45,8 @@
 	
 	<servlet-mapping>
 	    <servlet-name>DeleteMplistBgm</servlet-name>
-	    <url-pattern>/jspproject/deleteMplistBgm</url-pattern>
+	    <url-pattern>/deleteMplistBgm</url-pattern>
 	</servlet-mapping>
+	
 
 </web-app>

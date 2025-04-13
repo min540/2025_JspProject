@@ -2,24 +2,27 @@
 <%
   TimerMgr mgr = new TimerMgr();
   Vector<TimerBean> timerList = mgr.listTimer(0);
+  String user_id = (String)session.getAttribute("user_id");
 %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>타이머 탭</title>
-  <link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/TimerDesign.css" />
-  <style>
-    .timer-preview-box {
-      width: 100%; height: 260px;
-      position: relative; overflow: hidden;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(123, 44, 191, 0.6);
-      background: white;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>타이머 탭</title>
+<link rel="stylesheet" href="<%= request.getContextPath() %>/jspproject/css/TimerDesign.css" />
+<style>
+.timer-preview-box {
+  width: 100%; height: 260px;
+  position: relative; overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(123, 44, 191, 0.6);
+  background: white;
+}
+</style>
 </head>
+
 <body>
+
 <div class="timer-container">
   <div class="timer-left">
     <div class="timer-tab">
@@ -32,7 +35,6 @@
       <div class="header-right">
         <div class="filter-controls">
           <img id="sortAlpha" class="icontimerList" src="icon/아이콘_글자순_1.png" alt="글자순 정렬">
-          <img id="sortLatest" class="icontimerList" src="icon/아이콘_오래된순_최신순_1.png" alt="최신/오래된 순">
           <input class="timer-search" type="text" placeholder="타이머 검색" />
           <img id="searchTimerBtn" class="icontimerList" src="icon/아이콘_검색_1.png" alt="검색">
         </div>
@@ -62,27 +64,28 @@
 <script>
 const contextPath = "<%= request.getContextPath() %>";
 const timerData = [
-  <% for (int i = 0; i < timerList.size(); i++) {
-    TimerBean t = timerList.get(i);
-  %>
-    {
-      id: <%= t.getTimer_id() %>,
-      label: "<%= t.getTimer_title().replace("\"", "\\\"") %>",
-      description: "<%= t.getTimer_cnt() != null ? t.getTimer_cnt().replaceAll("\"", "\\\"").replaceAll("\r", "").replaceAll("\n", "\\n") : "" %>",
-      thumb: contextPath + "/jspproject/img/<%= t.getTimer_img() %>",
-      type: <%= t.getTimer_design() %>,
-      session: <%= t.getTimer_session() %>,
-      rest: <%= t.getTimer_break() %>
-    }<%= (i < timerList.size() - 1) ? "," : "" %>
-  <% } %>
+<% for (int i = 0; i < timerList.size(); i++) {
+  TimerBean t = timerList.get(i);
+%>
+  {
+    id: <%= t.getTimer_id() %>,
+    label: "<%= t.getTimer_title().replace("\"", "\\\"") %>",
+    description: "<%= t.getTimer_cnt() != null ? t.getTimer_cnt().replaceAll("\"", "\\\"").replaceAll("\r", "").replaceAll("\n", "\\n") : "" %>",
+    thumb: contextPath + "/jspproject/img/<%= t.getTimer_img() %>",
+    type: <%= t.getTimer_id() %>,
+    session: 600,
+    rest: 300
+  }<%= (i < timerList.size() - 1) ? "," : ""%>
+<% } %>
 ];
 
 let selectedTimer = null;
-let currentSort = "latest";
+let isAlphaSort = false;
 
 function renderTimers(timers) {
   const grid = document.getElementById("timerGrid");
   grid.innerHTML = "";
+
   timers.forEach((timer) => {
     const div = document.createElement("div");
     div.className = "timer-button";
@@ -109,7 +112,7 @@ function selectTimer(type, label, description, session, rest) {
   previewBox.innerHTML = "";
 
   const iframe = document.createElement("iframe");
-  iframe.src = "Timer" + type + ".jsp?session=" + session + "&break=" + rest + "&t=" + new Date().getTime();
+  iframe.src = "Timer" + type + ".jsp?session=" + session + "&break=" + rest + "&preview=true&t=" + new Date().getTime();
   Object.assign(iframe.style, {
     width: "100%", height: "100%",
     border: "none", borderRadius: "12px"
@@ -121,14 +124,10 @@ function getFilteredAndSortedTimers() {
   const keyword = document.querySelector(".timer-search").value.trim().toLowerCase();
   let filtered = timerData.filter(timer => timer.label.toLowerCase().includes(keyword));
 
-  const basic = filtered.find(t => t.type === 1);
-  const others = filtered.filter(t => t.type !== 1);
+  const basic = filtered.find(t => t.type === 1);  // Timer1.jsp 고정
+  let others = filtered.filter(t => t.type !== 1);
 
-  if (currentSort === "latest") {
-    others.sort((a, b) => b.id - a.id);
-  } else if (currentSort === "oldest") {
-    others.sort((a, b) => a.id - b.id);
-  } else if (currentSort === "alpha") {
+  if(isAlphaSort){
     others.sort((a, b) => a.label.localeCompare(b.label));
   }
 
@@ -137,49 +136,47 @@ function getFilteredAndSortedTimers() {
 
 function refreshTimers() {
   renderTimers(getFilteredAndSortedTimers());
-  updateSortIcon();
 }
 
-function updateSortIcon() {
-  const sortLatest = document.getElementById("sortLatest");
-  if (currentSort === "latest") {
-    sortLatest.alt = "최신순";
-  } else if (currentSort === "oldest") {
-    sortLatest.alt = "오래된순";
-  } else {
-    sortLatest.alt = "정렬 없음";
-  }
-}
+document.getElementById("sortAlpha").addEventListener("click", () => {
+  isAlphaSort = !isAlphaSort;
+  refreshTimers();
+});
+
+document.getElementById("searchTimerBtn").addEventListener("click", refreshTimers);
+document.querySelector(".timer-search").addEventListener("input", refreshTimers);
+document.querySelector(".timer-search").addEventListener("keypress", e => {
+  if(e.key === "Enter") refreshTimers();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("sortAlpha").addEventListener("click", () => {
-    currentSort = currentSort === "alpha" ? "latest" : "alpha";
-    refreshTimers();
-  });
-
-  document.getElementById("sortLatest").addEventListener("click", () => {
-    if (currentSort === "latest") {
-      currentSort = "oldest";
-    } else if (currentSort === "oldest") {
-      currentSort = "latest";
-    } else {
-      currentSort = "latest";
-    }
-    refreshTimers();
-  });
-
-  document.getElementById("searchTimerBtn").addEventListener("click", refreshTimers);
-  document.querySelector(".timer-search").addEventListener("input", refreshTimers);
-  document.querySelector(".timer-search").addEventListener("keypress", e => {
-    if (e.key === "Enter") refreshTimers();
-  });
-
   refreshTimers();
-  if (timerData.length > 0) {
+  if(timerData.length > 0){
     const first = timerData.find(t => t.type === 1) || timerData[0];
     selectTimer(first.type, first.label, first.description, first.session, first.rest);
   }
 });
+
+document.getElementById("btnSave").addEventListener("click", function(){
+  if(!selectedTimer){
+    alert("타이머를 선택해주세요.");
+    return;
+  }
+
+  fetch("UpdateTimerIdProc.jsp", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "user_id=<%= user_id %>&timer_id=" + selectedTimer
+  }).then(res => res.text())
+  .then(result => {
+    if(result.trim() === "ok"){
+      alert("타이머가 변경되었습니다!");
+    }else{
+      alert("변경 실패 : " + result);
+    }
+  });
+});
 </script>
+
 </body>
 </html>

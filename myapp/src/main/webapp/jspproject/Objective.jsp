@@ -190,16 +190,23 @@
 	align-items: center;    /* ✅ 중앙 정렬 */
 }
 
+/* .obj-created-date {
+  display: inline-block;
+  color: white;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* 필요 시 늘려도 됨 */
+} */
+
 .obj-created-date {
-	display: inline-flex !important;
-	flex-shrink: 0;
-	min-width: 120px;
-	max-width: 150px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: visible;             /* 👈 잘리지 않게 */
-	text-overflow: unset;   
+  display: inline-block;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+  color: white;
 }
 
 .obj-task-buttons {
@@ -215,10 +222,10 @@
 	cursor: pointer;
 }
 
- .obj-task-item:hover .obj-task-buttons {
+.obj-task-item:hover .obj-task-buttons {
 	display: flex;
-}
-
+} 
+ 
 .obj-task-item:hover .obj-created-date {
 	display:  inline-block;
 }  
@@ -784,11 +791,11 @@ confirmDateBtn.addEventListener('click', () => {
                     deleteTaskDebounced(objId); // 서버 요청
                 });
             }
+            
             //화면 출력되는 부분
             async function renderTasksForCurrentList(objgroup_id) {
                 const taskList = document.getElementById("obj-taskList");
                 taskList.innerHTML = "";
-
                 const selectedId = localStorage.getItem("currentList");
                 console.log("✔️ 선택된 objgroup_id:", selectedId);
 
@@ -813,56 +820,80 @@ confirmDateBtn.addEventListener('click', () => {
 
                     // 3. 렌더링 시작
                     tasks.forEach(task => {
+                    	console.log("🧾 task 전체 확인 방금 추가함:", task);
+                    	
                         const taskItem = document.createElement("div");
                         taskItem.className = "obj-task-item";
                         taskItem.dataset.objId = task.obj_id;
 
-                        const safeTitle = escapeHtml(task.obj_title || "");
+                        const rawTitle = task.obj_title;
+                        const safeTitle = escapeHtml(rawTitle && rawTitle.trim() ? rawTitle : "제목 없음");
+                        console.log("task.obj_title:", task.obj_title);
+                        
+                      //제목
+                        const titleInput = taskItem.querySelector("input[type='text']");
+                        titleInput.value = task.obj_title || "";
+						
                         const sdate = task.obj_sdate;
                         const edate = task.obj_edate;
+                        
+                        const rawSdate = task.obj_sdate ?? "";
+                        const rawEdate = task.obj_edate ?? "";
+
+                        const sTrimmed = typeof rawSdate === "string" ? rawSdate.trim() : "";
+                        const eTrimmed = typeof rawEdate === "string" ? rawEdate.trim() : "";
+                        
+                     	// 방어적 검사 로그
+                        console.log("🧪 s/e 검사:", { rawSdate, rawEdate, sTrimmed, eTrimmed });
 
                         taskItem.innerHTML = `
                             <div class="obj-task-left">
                                 <input type="checkbox" class="task-check">
                                 <input type="text" class="pf-font" placeholder="과제 제목 입력" value="${safeTitle}">
-                                <span class="obj-created-date"></span>
+                           
                             </div>
                             <div class="obj-task-buttons">
                                 <button class="calendar-btn">📅</button>
                                 <button class="delete-task">X</button>
                             </div>
                         `;
+						 
+                     	const dateLabel = document.createElement("span");
+						dateLabel.className = "obj-created-date";
+						
+						if (sTrimmed && eTrimmed) {
+						  const cleanFormatted = `${sTrimmed} ~ ${eTrimmed}`;
+						  dateLabel.textContent = cleanFormatted;
+						  dateLabel.title = `마감일: ${cleanFormatted}`;
+						  console.log("✅ 날짜 출력:", cleanFormatted);
+						} else {
+						  dateLabel.textContent = "기간을 설정해주세요";
+						  dateLabel.title = "마감일이 지정되지 않았습니다.";
+						}
+						
+						// 4. 붙이기
+						taskItem.querySelector(".obj-task-left").appendChild(dateLabel);
+						
+						// 5. 최종 task DOM에 추가
+						taskList.appendChild(taskItem);
+						
+                        console.log("📦 taskItem.innerHTML 확인:", taskItem.innerHTML);
+                         
                         
-                        const testSdate = task.obj_sdate;
-
-                        const dateLabel = taskItem.querySelector(".obj-created-date");
+                        console.log("📌 dateLabel 존재 여부:", !!dateLabel, dateLabel);
+                        //디버깅 로그
                         console.log("📦 edate 디버깅 전체 확인:", {
                       	  value: edate,
                       	  stringified: JSON.stringify(edate),
                       	  charCodes: [...edate].map(c => c.charCodeAt(0)),
                       	  length: edate.length
                       	});
-                     
-                        if (sdate && sdate.trim() !== "" && edate && edate.trim() !== "") {
-                        	const cleanFormated = `${sdate} ~ ${edate}`;
-                        	dateLabel.textContent = cleanFormated;
-                        	dateLabel.title = `마감일: ${cleanFormated}`;
-                        	console.log("✅ cleanFormatted:", cleanFormated);
-                        } else {
-                            dateLabel.textContent = "기간을 설정해주세요";
-                            dateLabel.title = "마감일이 지정되지 않았습니다.";
-                            console.warn("⚠️ 시작일 또는 마감일 누락됨 → 기본 메시지 출력");
-                        }
-						
-                        
-                        
-                        taskList.appendChild(taskItem);
 
-                        const titleInput = taskItem.querySelector("input[type='text']");
-                        titleInput.value = task.obj_title || "";
-
+                      //체크박스
                         const checkbox = taskItem.querySelector(".task-check");
                         checkbox.checked = task.obj_check === 1;
+
+						
                         checkbox.addEventListener("change", () => {
                             const checked = checkbox.checked ? 1 : 0;
                             const objId = taskItem.dataset.objId;
@@ -924,146 +955,7 @@ confirmDateBtn.addEventListener('click', () => {
             }
 
   		    
-/*     function renderTasksForCurrentList(objgroup_id) {
-    const taskList = document.getElementById("obj-taskList");
-    taskList.innerHTML = "";
 
-    const selectedId = localStorage.getItem("currentList"); // 또는 직접 값
-    console.log("✔️ 선택된 objgroup_id:", selectedId);  // ← 이게 null이면 문제 발생
-
-    fetch("objCurrentGroupSetServlet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ objgroup_id: parseInt(selectedId) })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "success") {
-            // 2️⃣ 세션 저장 성공 후 과제 불러오기
-           return fetch("objListServlet");
-        } else {
-            throw new Error("그룹 설정 실패");
-        }
-    })
-    .then(res => res.json())
-    .then(tasks => {
-        // ✅ 목록 렌더링 그대로 유지
-        console.log("🧾 응답 내용:", tasks);
-        tasks.forEach(task => {
-        	const sdate = task.obj_sdate;
-            const edate = task.obj_edate;
-            const taskItem = document.createElement("div");
-            taskItem.className = "obj-task-item";
-            taskItem.dataset.objId = task.obj_id;
-           
-            const safeTitle = escapeHtml(task.obj_title || "");
-            
-            
-            taskItem.innerHTML = `
-              <div class="obj-task-left">
-                <input type="checkbox" class="task-check">
-                <input type="text" class="pf-font" placeholder="과제 제목 입력" value="${safeTitle}">
-              	<span class="obj-created-date"></span>
-                </div>
-              <div class="obj-task-buttons">
-                <button class="calendar-btn">📅</button>
-                <button class="delete-task">X</button>
-              </div>
-            `;
-            
-			 	const dateLabel = taskItem.querySelector(".obj-created-date");
-
-		    	console.log("🌱 원본 시작일:", `'${task.obj_sdate}'`);
-		    	console.log("🌾 원본 마감일:", `'${task.obj_edate}'`);
-		    	console.log("🧪 typeof sdate:", typeof task.obj_sdate);
-		    	console.log("🧪 typeof edate:", typeof task.obj_edate);
-
-		    	if (task.obj_sdate && task.obj_edate) {
-		    	    const formatted = `${task.obj_sdate} ~ ${task.obj_edate}`;
-		    	    console.log("✅ formatted 값 확인:", `'${formatted}'`, "길이:", formatted.length);
-		    	    
-		    	    dateLabel.textContent = formatted;
-		    	    dateLabel.title = `마감일: ${formatted}`;
-		    	    console.log("👁️ 화면에 보여질 값:", dateLabel.textContent);
-		    	} else {
-		    	    dateLabel.textContent = "기간을 설정해주세요";
-		    	    dateLabel.title = "마감일이 지정되지 않았습니다.";
-		    	    console.warn("⚠️ 시작일 또는 마감일 누락됨 → 기본 메시지 출력");
-		    	}
-		    	
-		            taskList.appendChild(taskItem); 
-					const titleInput = taskItem.querySelector("input[type='text']");
-						titleInput.value = task.obj_title || "";
-		            const computed = window.getComputedStyle(titleInput);
-		 		
-		            const checkbox = taskItem.querySelector(".task-check");
-		            checkbox.checked = task.obj_check === 1;
-		            checkbox.addEventListener("change", () => {
-		                const checked = checkbox.checked ? 1 : 0;
-		                const objId = taskItem.dataset.objId;
-
-		                fetch("objCheckUpdateServlet", {  
-		                    method: "POST",
-		                    headers: { "Content-Type": "application/json" },
-		                    body: JSON.stringify({
-		                        obj_id: objId,
-		                        obj_check: checked
-		                    })
-		                })
-		                .then(res => res.json())
-		                .then(data => {
-		                    console.log("✅ 체크 상태 업데이트 성공:", data);
-		                })
-		                .catch(err => {
-		                    console.error("❌ 체크 상태 업데이트 실패:", err);
-		                });
-
-		                updateCompleteCount();
-		            });
-
-           
-            titleInput.addEventListener("input", debounce(() => {
-                const updatedTitle = titleInput.value.trim();
-                if (!updatedTitle) return;
-                
-                const objId = taskItem.dataset.objId;
-                const startDateVal = document.getElementById("startDatePicker").value || "";
-                const endDateVal = document.getElementById("endDatePicker").value || "";
-                const checkbox = taskItem.querySelector(".task-check");
-                const checked = checkbox && checkbox.checked ? 1 : 0;
-                
-                fetch("objUpdateServlet", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                    	obj_id: objId,
-                   	 	obj_title: titleInput.value,
-                   	 	obj_sdate: startDateVal,   
-                     	obj_edate: endDateVal,
-                    	 obj_check: checked 
-                    })
-                });
-            }, 100));
-			
-            attachDeleteListener(taskItem, task.obj_id, titleInput);
-            
-            taskItem.querySelector(".calendar-btn").addEventListener("click", () => {
-                currentTargetTask = taskItem;
-                calendarTitle.textContent = `기간 설정: ${titleInput.value}`;
-                calendarModal.style.display = "block";
-                cardWrapper.style.display = "none";
-            });
-            
-        });
-        
-        updateCompleteCount();
-    	
-    })
-    .catch(err => {
-        console.error("❌ 과제 목록 불러오기 실패:", err);
-    }); 
-    
-}*/
     </script>
 </body>
 </html>
