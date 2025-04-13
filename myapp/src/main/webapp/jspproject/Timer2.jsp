@@ -9,11 +9,8 @@
 <title>네모 타이머</title>
 <style>
     body {
-      margin: 0;
-      background: #f1f4fa;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
       overflow: hidden;
+      margin: 0;
     }
 
     .timer2-card {
