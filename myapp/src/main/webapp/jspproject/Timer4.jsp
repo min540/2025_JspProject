@@ -132,165 +132,159 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-	const userId = "<%= user_id %>";
-	let sessionDuration = <%= sessionTime %>;
-	let breakDuration = <%= breakTime %>;
-	let timeLeft = sessionDuration;
-	let isSession = true;
-	let isRunning = false;
-	let interval = null;
+  const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
+  const userId = "<%= user_id %>";
+  let sessionDuration = <%= sessionTime %>;
+  let breakDuration = <%= breakTime %>;
+  let timeLeft = sessionDuration;
+  let isSession = true;
+  let isRunning = false;
+  let interval = null;
 
-	const RADIUS = 100;
-	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer4-drag-handle");
+  const timeDisplay = document.getElementById("timeDisplay");
+  const progressCircle = document.getElementById("progress");
+  const sessionTimeEl = document.getElementById("sessionTime");
+  const breakTimeEl = document.getElementById("breakTime");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const btnReset = document.getElementById("btnReset");
+  const timerInfo = document.getElementById("timerInfo");
 
-	const timer = document.getElementById("timerContainer");
-	const dragHandle = document.querySelector(".timer4-drag-handle");
-	const timeDisplay = document.getElementById("timeDisplay");
-	const progressCircle = document.getElementById("progress");
-	const sessionTimeEl = document.getElementById("sessionTime");
-	const breakTimeEl = document.getElementById("breakTime");
-	const toggleBtn = document.getElementById("toggleBtn");
-	const btnReset = document.getElementById("btnReset");
-	const timerInfo = document.getElementById("timerInfo");
+  const RADIUS = 100;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
-	progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ":" + String(s).padStart(2, '0');
+  };
 
-	const formatTime = (sec) => {
-		const m = Math.floor(sec / 60);
-		const s = sec % 60;
-		return m + ":" + String(s).padStart(2, '0');
-	};
+  const updateProgress = () => {
+    const duration = isSession ? sessionDuration : breakDuration;
+    const percent = timeLeft / duration;
+    progressCircle.style.strokeDashoffset = CIRCUMFERENCE * (1 - percent);
+    progressCircle.style.stroke = isSession ? "#E53935" : "#3f8efc";
+    timeDisplay.textContent = formatTime(timeLeft);
+  };
 
-	const updateProgress = () => {
-		const duration = isSession ? sessionDuration : breakDuration;
-		const percent = timeLeft / duration;
-		const offset = CIRCUMFERENCE * (1 - percent);
-		progressCircle.style.stroke = isSession ? "#E53935" : "#3f8efc";
-		progressCircle.style.strokeDashoffset = offset;
-		timeDisplay.textContent = formatTime(timeLeft);
-	};
+  const resetTimer = () => {
+    clearInterval(interval);
+    isRunning = false;
+    isSession = true;
+    timeLeft = sessionDuration;
+    toggleBtn.textContent = "▶️";
+    updateProgress();
+    timerInfo.style.display = "block";
+  };
 
-	// 처음 세팅
-	sessionTimeEl.textContent = formatTime(sessionDuration);
-	breakTimeEl.textContent = formatTime(breakDuration);
-	timeDisplay.textContent = formatTime(sessionDuration);
-	updateProgress();
+  const updateTimerSettingToDB = () => {
+    fetch("UpdateTimerSessionProc.jsp", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
+    }).then(res => res.text())
+      .then(data => console.log("시간 업데이트 결과: ", data));
+  };
 
-	const resetTimer = () => {
-		clearInterval(interval);
-		isRunning = false;
-		isSession = true;
-		timeLeft = sessionDuration;
-		toggleBtn.textContent = "▶️";
-		updateProgress();
-		timerInfo.style.display = "block";
-	};
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  timeDisplay.textContent = formatTime(sessionDuration);
+  updateProgress();
 
-	const updateTimerSettingToDB = () => {
-		fetch("UpdateTimerSessionProc.jsp", {
-			method: "POST",
-			headers: { "Content-Type": "application/x-www-form-urlencoded" },
-			body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
-		}).then(res => res.text())
-		  .then(data => console.log("Timer4 시간 저장 결과 : ", data));
-	};
+  btnReset.addEventListener("click", resetTimer);
 
-	btnReset.addEventListener("click", resetTimer);
+  toggleBtn.addEventListener("click", () => {
+    if (isRunning) {
+      clearInterval(interval);
+      isRunning = false;
+      toggleBtn.textContent = "▶️";
+      timerInfo.style.display = "block";
+    } else {
+      interval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateProgress();
+        } else {
+          isSession = !isSession;
+          timeLeft = isSession ? sessionDuration : breakDuration;
+          updateProgress();
+        }
+      }, 1000);
+      isRunning = true;
+      toggleBtn.textContent = "⏸";
+      timerInfo.style.display = "none";
+    }
+  });
 
-	toggleBtn.addEventListener("click", () => {
-		if (isRunning) {
-			clearInterval(interval);
-			isRunning = false;
-			toggleBtn.textContent = "▶️";
-			timerInfo.style.display = "block";
-		} else {
-			interval = setInterval(() => {
-				if (timeLeft > 0) {
-					timeLeft--;
-					updateProgress();
-				} else {
-					isSession = !isSession;
-					timeLeft = isSession ? sessionDuration : breakDuration;
-					updateProgress();
-				}
-			}, 1000);
-			isRunning = true;
-			toggleBtn.textContent = "⏸";
-			timerInfo.style.display = "none";
-		}
-	});
+  const makeEditable = (el, type) => {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.className = "timer4-input";
+    input.value = type === "session" ? sessionDuration : breakDuration;
 
-	const makeEditable = (el, type) => {
-		const input = document.createElement("input");
-		input.type = "number";
-		input.className = "timer4-input";
-		input.value = type === "session" ? sessionDuration : breakDuration;
+    const confirm = () => {
+      let val = parseInt(input.value);
+      if (isNaN(val) || val < 10) val = 10;
+      if (val > 3600) val = 3600;
+      if (type === "session") {
+        sessionDuration = val;
+        sessionTimeEl.textContent = formatTime(sessionDuration);
+      } else {
+        breakDuration = val;
+        breakTimeEl.textContent = formatTime(breakDuration);
+      }
+      input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
+      updateTimerSettingToDB();
+      resetTimer();
+    };
 
-		const confirm = () => {
-			let val = parseInt(input.value);
-			if (isNaN(val) || val < 10) val = 10;
-			if (val > 3600) val = 3600;
+    input.addEventListener("blur", confirm);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+    el.replaceWith(input);
+    input.focus();
+  };
 
-			if (type === "session") {
-				sessionDuration = val;
-				sessionTimeEl.textContent = formatTime(sessionDuration);
-			} else {
-				breakDuration = val;
-				breakTimeEl.textContent = formatTime(breakDuration);
-			}
+  sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
+  breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-			input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
-			updateTimerSettingToDB();
-			resetTimer();
-		};
+  if (!isPreview) {
+    let isDragging = false;
+    let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-		input.addEventListener("blur", confirm);
-		input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
-		el.replaceWith(input);
-		input.focus();
-	};
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      offsetX = timer.offsetLeft;
+      offsetY = timer.offsetTop;
+      document.body.style.cursor = "grabbing";
+    });
 
-	sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
-	breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timer.style.left = (offsetX + e.clientX - startX) + "px";
+      timer.style.top = (offsetY + e.clientY - startY) + "px";
+    });
 
-	let isDragging = false;
-	let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
-
-	dragHandle.addEventListener("mousedown", (e) => {
-		e.preventDefault();
-		isDragging = true;
-		startX = e.clientX;
-		startY = e.clientY;
-		offsetX = timer.offsetLeft;
-		offsetY = timer.offsetTop;
-		document.body.style.cursor = "grabbing";
-	});
-
-	document.addEventListener("mousemove", (e) => {
-		if (!isDragging) return;
-		timer.style.left = (offsetX + e.clientX - startX) + "px";
-		timer.style.top = (offsetY + e.clientY - startY) + "px";
-	});
-
-	document.addEventListener("mouseup", () => {
-		if (isDragging) {
-			isDragging = false;
-			document.body.style.cursor = "default";
-			let x = parseInt(timer.style.left);
-			let y = parseInt(timer.style.top);
-			if (x < 10) x = 10;
-			if (y < 10) y = 10;
-			fetch("UpdateTimerSessionProc.jsp", {
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-			}).then(res => res.text())
-			  .then(data => console.log("Timer4 위치 저장 결과 : ", data));
-		}
-	});
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log("위치 저장 결과: ", data));
+      }
+    });
+  }
 });
 </script>
-
-
 </body>
 </html>
