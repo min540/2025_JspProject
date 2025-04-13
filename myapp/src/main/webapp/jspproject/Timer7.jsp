@@ -162,7 +162,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
   const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
 
   const userId = "<%= user_id %>";
@@ -195,13 +194,13 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const updateProgress = () => {
-	  const duration = isSession ? sessionDuration : breakDuration;
-	  const percent = timeLeft / duration;
-	  const offset = CIRCUMFERENCE * (1 - percent);
-	  progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb"; // 흰색 / 연청록
-	  progressCircle.style.strokeDashoffset = offset;
-	  timeDisplay.textContent = formatTime(timeLeft);
-	};
+    const duration = isSession ? sessionDuration : breakDuration;
+    const percent = timeLeft / duration;
+    const offset = CIRCUMFERENCE * (1 - percent);
+    progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb";
+    progressCircle.style.strokeDashoffset = offset;
+    timeDisplay.textContent = formatTime(timeLeft);
+  };
 
   const startInterval = () => {
     interval = setInterval(() => {
@@ -234,6 +233,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }).then(res => res.text())
       .then(data => console.log("세션/브레이크 업데이트 결과 : ", data));
   };
+
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  timeLeft = sessionDuration;
+  timeDisplay.textContent = formatTime(sessionDuration);
+  updateProgress();
 
   btnReset.addEventListener("click", resetTimer);
 
@@ -277,7 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     input.addEventListener("blur", confirm);
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
-
     el.replaceWith(input);
     input.focus();
   };
@@ -285,56 +289,51 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  // 처음 출력 처리!
-  sessionTimeEl.textContent = formatTime(sessionDuration);
-  breakTimeEl.textContent = formatTime(breakDuration);
-  timeDisplay.textContent = formatTime(sessionDuration);
-  updateProgress();
-
-  if(isPreview){
-	  updateProgress();  // 처음 화면 그리기
-	  progressCircle.style.animation = "dash 3s linear infinite"; // css 애니메이션 효과 (선이 계속 돌게)
-	}
-
-  // 드래그
+  // 드래그 기능 - 미리보기 모드 아닐때만 가능
   let isDragging = false;
   let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-  dragHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    startX = e.clientX;
-    startY = e.clientY;
-    offsetX = timer.offsetLeft;
-    offsetY = timer.offsetTop;
-    isDragging = true;
-    document.body.style.cursor = "grabbing";
-  });
+  if (!isPreview) {
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      startX = e.clientX;
+      startY = e.clientY;
+      offsetX = timer.offsetLeft;
+      offsetY = timer.offsetTop;
+      isDragging = true;
+      document.body.style.cursor = "grabbing";
+    });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    timer.style.left = (offsetX + e.clientX - startX) + "px";
-    timer.style.top = (offsetY + e.clientY - startY) + "px";
-  });
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timer.style.left = (offsetX + e.clientX - startX) + "px";
+      timer.style.top = (offsetY + e.clientY - startY) + "px";
+    });
 
-  document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
 
-      const x = parseInt(timer.style.left);
-      const y = parseInt(timer.style.top);
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
 
-      fetch("UpdateTimerSessionProc.jsp", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-      }).then(res => res.text())
-        .then(data => console.log("타이머 위치 저장 결과 : ", data));
-    }
-  });
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log("Timer7 위치 저장 결과 : ", data));
+      }
+    });
+  } else {
+    // 미리보기 모드면 점6개만 보이고 드래그 불가능
+    dragHandle.style.cursor = "default";
+    dragHandle.style.userSelect = "none";
+    dragHandle.addEventListener("mousedown", (e) => e.preventDefault());
+  }
+
 });
 </script>
-
-
 </body>
 </html>
