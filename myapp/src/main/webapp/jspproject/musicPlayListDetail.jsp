@@ -1167,6 +1167,10 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	window.currentBgmList = [];  // 음악 목록
 	window.currentBgmIndex = -1; // 현재 곡의 인덱스
 
+	// ✅ 전역 변수
+	window.currentBgmList = [];  // 음악 목록
+	window.currentBgmIndex = -1; // 현재 곡의 인덱스
+
 	// ✅ 다음곡 재생
 	function playNextMusicInPlaylist() {
 	  if (window.currentBgmIndex === -1 || window.currentBgmIndex + 1 >= window.currentBgmList.length) {
@@ -1177,7 +1181,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	  // 현재 음악 종료 처리
 	  const currentId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
 	  
-	  // bgm_onoff = 0으로 업데이트
+	  // bgm_onoff = 0으로 업데이트 (현재 곡 종료)
 	  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
 	    method: 'POST',
 	    headers: { 'Content-Type': 'application/json' },
@@ -1194,15 +1198,29 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	    const nextAudio = document.getElementById("playListAudioPlayer");
 	    const nextBtn = document.getElementById("playToggleBtn2");
 	    if (nextAudio && nextBtn) {
-	      nextAudio.play();
-	      nextBtn.src = "icon/아이콘_일시정지_1.png";
-	      nextBtn.setAttribute("data-state", "playing");
-
-	      // 다음 곡이 재생되기 전에 bgm_onoff와 playlist_onoff 상태 업데이트
-	      updateOnOffStates(nextId, document.getElementById("hiddenMplistId_detail").value);
+	      // 먼저 bgm_onoff = 1로 설정
+	      fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/json' },
+	        body: JSON.stringify({ bgm_id: parseInt(nextId), bgm_onoff: 1 })
+	      }).then(response => response.json())
+	        .then(data => {
+	          if (!data.success) {
+	            console.error("bgm_onoff 갱신 실패", data.message);
+	          } else {
+	            // bgm_onoff 상태가 1로 갱신된 후 자동으로 음악 재생
+	            nextAudio.play();
+	            nextBtn.src = "icon/아이콘_일시정지_1.png";
+	            nextBtn.setAttribute("data-state", "playing");
+	          }
+	        })
+	        .catch(err => {
+	          console.error("bgm_onoff 갱신 요청 실패", err);
+	        });
 	    }
-	  }, 500);
+	  }, 500); // 500ms 후에 자동 재생
 	}
+
 
 	// ✅ 이전곡 재생
 	function playPrevMusicInPlaylist() {
