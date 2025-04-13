@@ -49,9 +49,6 @@ public class ObjListServlet extends HttpServlet {
 				obj.put("obj_check", bean.getObj_check());
 				obj.put("obj_sdate", bean.getObj_sdate());
 				obj.put("obj_edate", bean.getObj_edate());
-				System.out.println("📤 JSON 전달 전 sdate: " + bean.getObj_sdate());
-				System.out.println("📤 JSON 전달 전 edate: " + bean.getObj_edate());
-
 				jsonArray.put(obj);
 			}
 			
