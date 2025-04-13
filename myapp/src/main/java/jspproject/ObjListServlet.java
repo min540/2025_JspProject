@@ -30,7 +30,7 @@ public class ObjListServlet extends HttpServlet {
 
 		Integer objgroup_id = (Integer) session.getAttribute("currentObjGroup");
 		String user_id = (String)session.getAttribute("user_id");
-
+		//이게 널체크인데 
 		if (objgroup_id == null) {
 			System.err.println("⚠️ [objListServlet] 세션에서 objgroup_id를 찾을 수 없습니다.");
 			response.getWriter().write("[]"); // 빈 배열 반환
@@ -47,10 +47,11 @@ public class ObjListServlet extends HttpServlet {
 				obj.put("obj_id", bean.getObj_id());
 				obj.put("obj_title", bean.getObj_title());
 				obj.put("obj_check", bean.getObj_check());
-				obj.put("obj_edate", bean.getObj_edate());
+				obj.put("obj_sdate", bean.getObj_sdate() != null && !bean.getObj_sdate().trim().isEmpty() ? bean.getObj_sdate() : "");
+				obj.put("obj_edate", bean.getObj_edate() != null && !bean.getObj_edate().trim().isEmpty() ? bean.getObj_edate() : "");
 				jsonArray.put(obj);
 			}
-
+			
 			response.getWriter().write(jsonArray.toString());
 
 		} catch (Exception e) {

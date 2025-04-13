@@ -1,6 +1,19 @@
+
 	<!-- mainScreen.jsp -->
 	<%@page import="jspproject.TemaBean"%>
 <%@page import="jspproject.TemaMgr"%>
+
+<!-- mainScreen.jsp -->
+<%@page import="jspproject.DBConnectionMgr"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="jspproject.NotifiMgr"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
+
 <%@ page  contentType="text/html; charset=UTF-8"%>
 	<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
 	<%@ page import="jspproject.UserBean" %>
@@ -22,9 +35,212 @@
     // 클래스 및 경로 계산
     String bgClass = "bg-" + imgName.substring(0, imgName.lastIndexOf(".")).toLowerCase();
     String imgPath = path + "/jspproject/backgroundImg/" + imgName;
+
+		String pathString = request.getContextPath();
+// 세션에서 사용자 ID 가져오기
+String user_id = (String) session.getAttribute("user_id");
+
+if (user_id != null && !user_id.trim().equals("")) {
+    // 현재 날짜 가져오기
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    String currentDate = sdf.format(new Date());
+    
+    // NotifiMgr의 objEnd 메소드 호출
+    NotifiMgr notifiMgr = new NotifiMgr();
+    notifiMgr.objEnd(user_id, currentDate);
+    
+    // 알림 메시지 가져오기
+    List<String> alertMessages = new ArrayList<>();
+    
+    Connection con = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    DBConnectionMgr pool = DBConnectionMgr.getInstance();
+    
+    try {
+        con = pool.getConnection();
+        
+        String sql = "SELECT o.obj_id, o.obj_title, o.obj_edate " +
+                 "FROM obj o " +
+                 "WHERE o.user_id = ? AND o.obj_check = 0 " +
+                 "AND (DATE(o.obj_edate) = CURDATE() OR DATE(o.obj_edate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
+    
+        pstmt = con.prepareStatement(sql);
+        pstmt.setString(1, user_id);
+        rs = pstmt.executeQuery();
+        
+        while (rs.next()) {
+            String title = rs.getString("obj_title");
+            Date edate = rs.getDate("obj_edate");
+            
+            String formattedDate = sdf.format(edate);
+            
+            if (formattedDate.equals(currentDate)) {
+                alertMessages.add("작업 목표 마감일 알림: '" + title + "'의 마감일이 오늘입니다.");
+            } else {
+                alertMessages.add("작업 목표 마감일 지남 알림: '" + title + "'의 마감일이 지났습니다.");
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
+        if (con != null) pool.freeConnection(con);
+    }
+    
+    // 알림이 있으면 세션에 저장
+    if (!alertMessages.isEmpty()) {
+        session.setAttribute("alertMessages", alertMessages);
+    }
+}
+//세션에서 알림 메시지 가져오기
+List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
+if (alertMessages != null && !alertMessages.isEmpty()) {
+    // 알림 메시지가 있으면 모달 표시
+    session.removeAttribute("alertMessages"); // 일회성으로 사용하고 제거
+
 %>
+
 <body style="background-image: url('<%= imgPath %>'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 	<!-- 프로필 아이콘 -->
+
+
+<div class="modal-container" id="notificationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">작업 목표 마감일 알림</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <% for (String message : alertMessages) { %>
+                <div class="notification-item"><%= message %></div>
+            <% } %>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal()">확인</button>
+        </div>
+    </div>
+</div>
+<!-- 프로필 아이콘 -->
+
+<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
+
+<!-- 오른쪽 상단 아이콘들-->
+<div class="icon-container">
+    <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
+    <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
+    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
+    <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
+    <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
+    <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃" onclick="logout()">
+</div>
+
+<!-- 음악 설정 쪽 아이콘-->
+<div class="iconMusic-container">
+	<span>
+		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
+	</span>
+	<audio id="mainAudioPlayer" src="music/music1.mp3"></audio>
+	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
+	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
+	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
+	<img class="iconMusic" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > 
+	<img id="volumeMuteBtn" class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거">
+</div>
+
+<!-- 음악 볼륨바 표시-->
+<div class="iconMusicVolumbar-container" id="volumeBar">
+    <% for (int i = 1; i <= 10; i++) { %>
+        <img class="iconMusicVolum" 
+             src="icon/아이콘_볼륨바_2.png" 
+             border="0" 
+             alt="볼륨 조절<%=i%>" 
+             data-index="<%=i%>">
+    <% } %>
+</div>
+
+<!-- 노래 제목 표시-->
+<b class = "musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
+
+<!-- 오른쪽 하단 아이콘들 -->
+<div class = "icon-container2">
+	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
+	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
+	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
+	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
+	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
+</div>
+
+<!-- 일지 설정 영역 (처음엔 숨김) -->
+<div id="journalWrapper" style="display:none;">
+    <jsp:include page="journal.jsp" />
+</div>
+
+
+
+<!-- 통계 설정 영역 (처음엔 숨김) -->
+<div id="GraphWrapper" style="display:none;">
+    <div id="graph-spark-week" style="display:none;"><jsp:include page="objTotalGraphSpark.jsp" /></div>
+    <div id="graph-bar-week" style="display:none;"><jsp:include page="objTotalGraphBar.jsp" /></div>
+    <div id="graph-spark-month" style="display:none;"><jsp:include page="objTotalGraphSparkMonth.jsp" /></div>
+    <div id="graph-bar-month" style="display:none;"><jsp:include page="objTotalGraphBarMonth.jsp" /></div>
+</div>
+
+<!-- 작업 목표 영역 -->
+<div id="objWrapper" style="display:none;">
+    <jsp:include page="Objective.jsp" />
+</div>
+
+<!-- 새로운 리스트 추가 영역 -->
+<div id="listCardWrapper" style="display:none;">
+    <jsp:include page="List.jsp" />
+</div>
+
+<!-- 배경 설정 영역 -->
+<div id="backgroundWrapper" style="display:none;">
+    <jsp:include page="Background.jsp" />
+</div>
+
+<!-- 프로필 -->
+<div id="profileWrapper" style="display:none; position: absolute; left: 0; top: 0; height: 100vh; z-index: 9999;">
+    <jsp:include page="profile.jsp" />
+</div>
+
+<!-- 공지사항 -->
+<div id="ancWrapper" style="display: none; position: absolute; left: 1400px; top: 75px; z-index: 9999;">
+    <jsp:include page="ancList.jsp" />
+</div>
+
+<!-- 타이머 -->
+<div id="timerWrapper" style="display: none;">
+    <jsp:include page="Timer1.jsp" />
+</div>
+
+<!-- 음악 리스트 -->
+<div id="musicListWrapper" style="display:none;">
+    <jsp:include page="musicList.jsp" />
+</div>
+
+<style>
+    .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background-color: #3c1e5c; color: white; border-radius: 10px; padding: 20px; max-width: 500px; width: 80%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .modal-title { margin: 0; font-size: 18px; }
+    .modal-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    .modal-body { margin-bottom: 20px; }
+    .modal-footer { text-align: right; }
+    .btn { background-color: rgba(255, 255, 255, 0.2); border: 1px solid white; border-radius: 5px; color: white; padding: 8px 15px; cursor: pointer; transition: background-color 0.3s; }
+    .btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+    .notification-item { border-left: 3px solid #8e44ad; padding: 10px; margin-bottom: 10px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; }
+</style>
+
+<!-- JavaScript 함수 -->
+<script>
+	let uiVisible = true;
+	function toggleUI() { /* UI 껐다 키는 기능 */
+	    // 숨기고 싶은 UI 요소들을 선택
+	    const uiElements = document.querySelectorAll('.iconLeftUp, .iconRightUp:not(.uioff), .iconMusic, .iconMusicVolumbar-container, .musicTitle, .iconRightDown, .icon-container2');
 	
 	<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = ""> 
 	<img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
@@ -63,8 +279,13 @@
 	    <% } %>
 	</div>
 	
+
 	<!-- 노래 제목 표시-->
 	<b class = "musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
+
+	function logout() {
+		window.location.href = "<%= request.getContextPath() %>/jspproject/logout";
+	}
 	
 	<!-- 오른쪽 하단 아이콘들 -->
 	<div class = "icon-container2">
@@ -230,6 +451,7 @@
 		            const labels = ['일', '월', '화', '수', '목', '금', '토'];
 		            const values = data.weeklyComplete;
 	
+
 		            const ctx = document.getElementById('myChart')?.getContext('2d');
 		            if (!ctx) return;
 		            if (lineChart) lineChart.destroy();
@@ -625,4 +847,12 @@
 		    }
 		});
 		
+		function closeModal() {
+	        document.getElementById('notificationModal').style.display = 'none';
+	    }
 	</script>
+
+<%
+    }
+%>
+

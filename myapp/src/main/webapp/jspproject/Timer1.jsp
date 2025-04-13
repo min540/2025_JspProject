@@ -1,10 +1,13 @@
+<!-- Timer1.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="TimerInfo.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>타이머</title>
-  <style>
+<meta charset="UTF-8">
+<title>기본 타이머</title>
+<style>
     body {
       overflow: hidden;
       margin: 0;
@@ -131,20 +134,21 @@
 </head>
 <body>
 
-<div class="timer1-timer-container" id="timerContainer">
+<div class="timer1-timer-container" id="timerContainer"
+     style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer1-drag-handle">:::</div>
 
   <svg class="timer1-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12"
-            fill="none" stroke-linecap="butt" stroke-dasharray="628" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12" fill="none"
+      stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
   <div class="timer1-center">
-    <div class="timer1-time" id="timeDisplay">10:00</div>
+    <div class="timer1-time" id="timeDisplay">00:00</div>
     <div class="timer1-info" id="timerInfo">
-      <strong id="sessionTime">10:00</strong> 세션<br>
-      과 <strong id="breakTime">05:00</strong> 휴식
+      <strong id="sessionTime">00:00</strong> 세션<br>
+      과 <strong id="breakTime">00:00</strong> 휴식
     </div>
   </div>
 
@@ -158,8 +162,12 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  let sessionDuration = 600;
-  let breakDuration = 300;
+
+  const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
+
+  const userId = "<%= user_id %>";
+  let sessionDuration = <%= sessionTime %>;
+  let breakDuration = <%= breakTime %>;
   let timeLeft = sessionDuration;
   let isSession = true;
   let isRunning = false;
@@ -168,52 +176,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const RADIUS = 100;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer1-drag-handle");
   const timeDisplay = document.getElementById("timeDisplay");
   const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
   const breakTimeEl = document.getElementById("breakTime");
-  const toggleBtn = document.getElementById("toggleBtn");
   const toggleIcon = document.getElementById("toggleIcon");
   const btnReset = document.getElementById("btnReset");
-  const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer1-drag-handle");
   const timerInfo = document.getElementById("timerInfo");
 
   progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
-  // 알림 표시 함수
-  const showNotification = (message) => {
-    // 이미 존재하는 알림 제거
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-      document.body.removeChild(existingNotification);
-    }
-    
-    // 새 알림 생성
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    // 알림 표시
-    setTimeout(() => {
-      notification.classList.add('show');
-    }, 10);
-    
-    // 3초 후 알림 사라짐
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => {
-        if (notification.parentNode) {
-          document.body.removeChild(notification);
-        }
-      }, 300);
-    }, 3000);
-  };
-
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
     return m + ":" + String(s).padStart(2, '0');
   };
 
@@ -232,33 +209,9 @@ document.addEventListener("DOMContentLoaded", function () {
         timeLeft--;
         updateProgress();
       } else {
-        clearInterval(interval);
-        
-        if (isSession) {
-          // 작업 세션이 끝났음을 알림과 동시에 휴식 세션 시작
-          showNotification("작업 시간이 끝났습니다!");
-          
-          // 휴식 세션으로 전환 및 자동 시작
-          isSession = false;
-          timeLeft = breakDuration;
-          updateProgress();
-          startInterval();
-          isRunning = true;
-          toggleIcon.src = "icon/아이콘_일시정지_1.png";
-          timerInfo.style.display = "none";
-        } else {
-          // 휴식 세션이 끝났음을 알림
-          showNotification("휴식 시간이 끝났습니다! 작업을 시작해주세요.");
-          
-          // 작업 세션으로 전환 및 자동 시작
-          isSession = true;
-          timeLeft = sessionDuration;
-          updateProgress();
-          startInterval();
-          isRunning = true;
-          toggleIcon.src = "icon/아이콘_일시정지_1.png";
-          timerInfo.style.display = "none";
-        }
+        isSession = !isSession;
+        timeLeft = isSession ? sessionDuration : breakDuration;
+        updateProgress();
       }
     }, 1000);
   };
@@ -271,6 +224,15 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleIcon.src = "icon/아이콘_재생_1.png";
     updateProgress();
     timerInfo.style.display = "block";
+  };
+
+  const updateTimerSettingToDB = () => {
+    fetch("UpdateTimerSessionProc.jsp", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
+    }).then(res => res.text())
+      .then(data => console.log("세션/브레이크 업데이트 결과 : ", data));
   };
 
   btnReset.addEventListener("click", resetTimer);
@@ -309,13 +271,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
+      updateTimerSettingToDB();
       resetTimer();
     };
 
     input.addEventListener("blur", confirm);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") confirm();
-    });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
 
     el.replaceWith(input);
     input.focus();
@@ -324,44 +285,58 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
+  // 처음 출력 처리!
   sessionTimeEl.textContent = formatTime(sessionDuration);
   breakTimeEl.textContent = formatTime(breakDuration);
+  timeDisplay.textContent = formatTime(sessionDuration);
   updateProgress();
 
-  // 드래그 기능
+  if(isPreview){
+	  updateProgress();  // 처음 화면 그리기
+	  progressCircle.style.animation = "dash 3s linear infinite"; // css 애니메이션 효과 (선이 계속 돌게)
+	}
+
+  // 드래그
   let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
   dragHandle.addEventListener("mousedown", (e) => {
     e.preventDefault();
-    const rect = timer.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
+    startX = e.clientX;
+    startY = e.clientY;
+    offsetX = timer.offsetLeft;
+    offsetY = timer.offsetTop;
     isDragging = true;
     document.body.style.cursor = "grabbing";
-
-    timer.style.transform = "none";
-    timer.style.left = rect.left + "px";
-    timer.style.top = rect.top + "px";
   });
 
   document.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
-    const x = e.clientX - offsetX;
-    const y = e.clientY - offsetY;
-    timer.style.left = x + "px";
-    timer.style.top = y + "px";
+    timer.style.left = (offsetX + e.clientX - startX) + "px";
+    timer.style.top = (offsetY + e.clientY - startY) + "px";
   });
 
   document.addEventListener("mouseup", () => {
     if (isDragging) {
       isDragging = false;
       document.body.style.cursor = "default";
+
+      const x = parseInt(timer.style.left);
+      const y = parseInt(timer.style.top);
+
+      fetch("UpdateTimerSessionProc.jsp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+      }).then(res => res.text())
+        .then(data => console.log("타이머 위치 저장 결과 : ", data));
     }
+    
+
   });
 });
 </script>
+
 
 </body>
 </html>

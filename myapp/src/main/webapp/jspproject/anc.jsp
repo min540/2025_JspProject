@@ -30,10 +30,19 @@ header{
   	margin-bottom: 20px;
   	padding-right: 370px; 
 }
-header h3, header h4 {
+header h3 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 25px;
+}
+header h4 {
+	color: white;
+	margin: 0 12px; /* 좌우 여백만 */
+	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 18px;
 }
 .image-wrapper {
   position: relative;
@@ -96,12 +105,19 @@ header h3, header h4 {
 }
 
 .box2{
- width:415px;
- height:auto;
- background-color: #5C4B85;
- margin-bottom: 20px;
- padding: 0 0 40px 0;
+ 	width: 415px;
+    height: auto;
+    background-color: #5C4B85;
+    margin-bottom: 20px;
+    padding: 0 0 10px 0;
+    white-space: pre-line;
+  	font-size: 14px;
 }
+
+.box2 * {
+  color: white !important;
+}
+
 .box3 {
   width: 415px;
   height: auto; /* 고정 높이 대신 자동 조정 */
@@ -111,6 +127,14 @@ header h3, header h4 {
   position: relative; /* 내부 요소 배치를 위한 기준점 */
   padding-bottom: 50px; /* 하단 여백 추가 */
 }
+
+@font-face {
+    font-family: 'PFStarDust';
+    src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 input[type="checkbox"] {
   appearance: none;      
   width: 15px;
@@ -137,17 +161,16 @@ input[type="checkbox"]:checked::after {
 	width: 70px;
     height: 30px;
     border-radius: 10px;
-    margin-top: 10;
     margin-left: 140px;
     font-size: 16px;
     border: 0.8px solid #ffffff;
     background-color: #32225B;
     color: white;
+    font-family: 'PFStarDust', sans-serif;
 }
 .new{
 	margin-left: auto;
     margin-right: 80px;
-    margin-top: 70px;
     color: white;
     font-weight: bold;
     line-height: 2;
@@ -233,6 +256,7 @@ input[type="checkbox"]:checked::after {
     margin-right: 7px;
     cursor: pointer;
 }
+
  a {
   color: white;           
   text-decoration: none; 
@@ -241,6 +265,21 @@ a:hover {
   color: #32225B;        
   text-decoration: underline; /* 또는 none 유지 가능 */
 }
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+ol {
+  /* list-style-position: inside; 로 하면 숫자 앞 공백이 줄어듭니다. */
+  list-style-position: inside; 
+  /* 혹은 필요에 따라 padding-left 값을 직접 0 또는 적게 조정하기 */
+  padding-left: 0;
+  margin-left: 0;
+}
+
 </style>
 <script>
 function allChk() {
@@ -256,6 +295,12 @@ function confirmDelete() {
 	}
 	return confirm("정말 삭제하시겠습니까?");
 }
+document.addEventListener('DOMContentLoaded', function(){
+	 const ancElements = document.querySelectorAll('.box2 *');
+	 ancElements.forEach(el => {
+	   el.removeAttribute('style');
+	 });
+});
 </script>
 </head> 
 <body>
@@ -285,8 +330,9 @@ function confirmDelete() {
 			<% if (recent.getAnc_img() != null) { %>
 				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= recent.getAnc_img() %>" width="415" height="200">
 			<% } %>
+			<br>
 			<% if (recent.getAnc_cnt() != null) { %>
-			<%=recent.getAnc_cnt()%>
+			<%= recent.getAnc_cnt().trim() %>
 			<% }else{ %>
 			<h3>최신 공지가 없습니다.</h3>
 			<% } %>

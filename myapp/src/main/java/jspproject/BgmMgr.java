@@ -87,6 +87,38 @@ public class BgmMgr {
         }
         return vlist;
     }
+    
+    // 검색용이 아닌 재생목록 안에 있는 음악 정보 받아오는 거
+    public Vector<BgmBean> searchMplistBgm(int bgm_id) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = null;
+        Vector<BgmBean> vlist = new Vector<BgmBean>();
+        try {
+            con = pool.getConnection();
+            sql = "SELECT * FROM bgm WHERE bgm_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, bgm_id);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                BgmBean bean = new BgmBean();
+                bean.setBgm_id(rs.getInt("bgm_id"));
+                bean.setUser_id(rs.getString("user_id"));
+                bean.setBgm_name(rs.getString("bgm_name"));
+                bean.setBgm_cnt(rs.getString("bgm_cnt"));
+                bean.setBgm_music(rs.getString("bgm_music"));
+                bean.setBgm_onoff(rs.getInt("bgm_onoff"));
+                bean.setBgm_image(rs.getString("bgm_image"));
+                vlist.add(bean);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+        return vlist;
+    }
 
     public Vector<BgmBean> sortBgm() {
         Connection con = null;
@@ -155,8 +187,8 @@ public class BgmMgr {
         PreparedStatement pstmt = null;
         MultipartRequest multi = null;
 
-        String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/img";
-        String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
+        String imagePath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/musicImg";
+        String musicPath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/music";
         int maxSize = 10 * 1024 * 1024;
 
         try {

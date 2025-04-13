@@ -29,6 +29,8 @@ public class ObjInsertServlet extends HttpServlet {
 		task.setUser_id(json.getString("user_id"));
 		task.setObj_title(json.getString("obj_title"));
 		task.setObj_check(json.getInt("obj_check"));
+		task.setObjgroup_id(json.getInt("objgroup_id"));
+		task.setObj_sdate(json.optString("obj_sdate", null)); 
 		
 		//마감처리
 		String edate = json.optString("obj_edate", null);
@@ -36,8 +38,6 @@ public class ObjInsertServlet extends HttpServlet {
 			edate = null;
 		}
 		task.setObj_edate(edate);
-
-		task.setObjgroup_id(json.getInt("objgroup_id"));
 		
 		//DB 연동
 		ObjMgr mgr = new ObjMgr();

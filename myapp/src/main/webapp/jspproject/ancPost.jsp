@@ -127,29 +127,39 @@ header h3, header h4 {
 }
 
 .box4{
- width:415px;
- min-height: 100px;
- height: auto;
- background-color: white;
- margin-left: 90px;
- border-radius: 10px; 
+ 	width: 415px;
+    min-height: 100px;
+    height: auto;
+    background-color: white;
+    margin-left: 90px;
+    border-radius: 10px;
 }
 
 .container-box {
   	display: flex;
   	position: relative;
 }
-.Ititle1{
+.Ititle1 {
 color: white;
-	 margin-left: 90px;
-	 padding-top: 30px;
+	color: white;
+    margin-left: 90px;
+    padding-top: 30px;
+    margin-bottom: 10px;
 }
 
-.Ititle{
+.Ititle2 {
 	 color: white;
+    margin-left: 90px;
+    padding-top: 30px;
+    margin-bottom: 10px;
+    margin-top: 2px;
+}
+
+.Ititle3 {
+	color: white;
 	 margin-left: 90px;
 	 padding-top: 30px;
-	 margin-top:0px;
+	 margin-top: -1px;
 }
 
 .custom-upload-button {
@@ -160,8 +170,8 @@ color: white;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  margin-top: 40px;
   margin-right: 100px;
+  margin-top: 15px;
 }
 
 .upload-header {
@@ -219,12 +229,12 @@ function showFileName(input) {
 		<h2 class="Ititle1" >제목</h2>
 			 <input type="text" name="title" placeholder="제목을 입력하세요" class="box2">
 		<div>
-		<h2 class="Ititle" >내용</h2>
+		<h2 class="Ititle2" >내용</h2>
   			<textarea name="content" placeholder="공지 내용을 입력하세요" class="box3"></textarea>
 		</div>
   				<input type="file" id="uploadFile" name="uploadFile" style="display: none;" onchange="showFileName(this)">
  				<div class= "upload-header">
- 				<h2 class="Ititle">첨부파일</h2>
+ 				<h2 class="Ititle3">첨부파일</h2>
  				<label for="uploadFile" class="custom-upload-button">파일 선택</label>
  				</div>
   				<div class="box4">
