@@ -9,17 +9,18 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet("/jspproject/bgmOnOff")
-public class BgmOnOffServlet extends HttpServlet {
+@WebServlet("/jspproject/mplistOnOff")
+public class MplistOnOffServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JSONObject body = new JSONObject(request.getReader().lines().collect(Collectors.joining()));
-        int bgm_id = body.getInt("bgm_id");
-        int bgm_onoff = body.getInt("bgm_onoff");
+        int mplist_id = body.getInt("mplist_id");
+        int mplist_onoff = body.getInt("mplist_onoff");
 
-        BgmMgr mgr = new BgmMgr();
-        mgr.updateBgmOnOff(bgm_id, bgm_onoff);
+        MplistMgr mgr = new MplistMgr();
+        mgr.updateMplistOnOff(mplist_id, mplist_onoff);
 
         response.setContentType("application/json");
         response.getWriter().write("{\"success\": true}");
     }
 }
+

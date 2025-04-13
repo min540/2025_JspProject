@@ -230,4 +230,23 @@ public class MplistMgr {
         }
         return result;
     }
+    
+    // 재생목록의 onoff 상태 업데이트
+    public void updateMplistOnOff(int mplist_id, int mplist_onoff) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        String sql = "UPDATE mplist SET mplist_onoff = ? WHERE mplist_id = ?";
+        
+        try {
+            con = pool.getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, mplist_onoff);
+            pstmt.setInt(2, mplist_id);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
 }
