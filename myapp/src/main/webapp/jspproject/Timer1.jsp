@@ -285,58 +285,51 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  // 처음 출력 처리!
   sessionTimeEl.textContent = formatTime(sessionDuration);
   breakTimeEl.textContent = formatTime(breakDuration);
   timeDisplay.textContent = formatTime(sessionDuration);
   updateProgress();
 
-  if(isPreview){
-	  updateProgress();  // 처음 화면 그리기
-	  progressCircle.style.animation = "dash 3s linear infinite"; // css 애니메이션 효과 (선이 계속 돌게)
-	}
+  // 드래그 - 미리보기 아닐 때만 가능
+  if (!isPreview) {
+    let isDragging = false;
+    let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-  // 드래그
-  let isDragging = false;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      startX = e.clientX;
+      startY = e.clientY;
+      offsetX = timer.offsetLeft;
+      offsetY = timer.offsetTop;
+      isDragging = true;
+      document.body.style.cursor = "grabbing";
+    });
 
-  dragHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    startX = e.clientX;
-    startY = e.clientY;
-    offsetX = timer.offsetLeft;
-    offsetY = timer.offsetTop;
-    isDragging = true;
-    document.body.style.cursor = "grabbing";
-  });
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timer.style.left = (offsetX + e.clientX - startX) + "px";
+      timer.style.top = (offsetY + e.clientY - startY) + "px";
+    });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    timer.style.left = (offsetX + e.clientX - startX) + "px";
-    timer.style.top = (offsetY + e.clientY - startY) + "px";
-  });
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
 
-  document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
 
-      const x = parseInt(timer.style.left);
-      const y = parseInt(timer.style.top);
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log("타이머 위치 저장 결과 : ", data));
+      }
+    });
+  }
 
-      fetch("UpdateTimerSessionProc.jsp", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-      }).then(res => res.text())
-        .then(data => console.log("타이머 위치 저장 결과 : ", data));
-    }
-    
-
-  });
 });
 </script>
-
-
 </body>
 </html>

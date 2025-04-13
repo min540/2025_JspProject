@@ -118,6 +118,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+  const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
   const userId = "<%= user_id %>";
   let sessionDuration = <%= sessionTime %>;
   let breakDuration = <%= breakTime %>;
@@ -160,15 +161,17 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => console.log(data));
   };
 
-  updateProgress();
-
-  btnReset.addEventListener("click", () => {
+  const resetTimer = () => {
     clearInterval(interval);
     isRunning = false;
     timeLeft = breakDuration;
     toggleIcon.src = "icon/아이콘_재생_1.png";
     updateProgress();
-  });
+  };
+
+  updateProgress();
+
+  btnReset.addEventListener("click", resetTimer);
 
   toggleBtn.addEventListener("click", () => {
     if (isRunning) {
@@ -217,49 +220,48 @@ document.addEventListener("DOMContentLoaded", function () {
     input.focus();
   });
 
-  // Drag
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+  if (!isPreview) {
+    // Drag 기능 (미리보기에서는 안됨)
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
 
-  dragHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    const rect = timer.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    isDragging = true;
-    document.body.style.cursor = "grabbing";
-    timer.style.transform = "none";
-    timer.style.left = rect.left + "px";
-    timer.style.top = rect.top + "px";
-  });
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      const rect = timer.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      isDragging = true;
+      document.body.style.cursor = "grabbing";
+      timer.style.transform = "none";
+      timer.style.left = rect.left + "px";
+      timer.style.top = rect.top + "px";
+    });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    timer.style.left = (e.clientX - offsetX) + "px";
-    timer.style.top = (e.clientY - offsetY) + "px";
-  });
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timer.style.left = (e.clientX - offsetX) + "px";
+      timer.style.top = (e.clientY - offsetY) + "px";
+    });
 
-  document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
 
-      const x = parseInt(timer.style.left);
-      const y = parseInt(timer.style.top);
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
 
-      fetch("UpdateTimerSessionProc.jsp", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-      })
-      .then(res => res.text())
-      .then(data => console.log("Timer5 위치 저장 결과 : ", data));
-    }
-  });
-
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log("Timer5 위치 저장 결과 : ", data));
+      }
+    });
+  }
 });
 </script>
-
 </body>
 </html>

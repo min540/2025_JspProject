@@ -23,10 +23,10 @@
 
 <body>
 
-<div class="timer-container">
+<div class="timer-container" id="timerContainer">
   <div class="timer-left">
     <div class="timer-tab">
-      <button class="tab-btn" onclick="location.href='Background.jsp'">배경화면</button>
+      <button class="tab-btn" onclick="switchToBackground()">배경화면</button>
       <button class="tab-btn active">타이머</button>
     </div>
 
@@ -52,15 +52,14 @@
     <div class="timer-description">
       <textarea id="timerDescription" placeholder="타이머 설명을 입력하세요." readonly></textarea>
     </div>
-    <div class="timer-cancel-button">
-      <button class="btn-purple">타이머 취소</button>
-    </div>
+<div class="timer-cancel-button">
+  <button class="btn-purple" id="btnCancel">타이머 취소</button>
+</div>
     <div class="timer-right-buttons">
       <button class="btn-purple" id="btnSave">적용</button>
     </div>
   </div>
 </div>
-
 <script>
 const contextPath = "<%= request.getContextPath() %>";
 const timerData = [
@@ -114,8 +113,10 @@ function selectTimer(type, label, description, session, rest) {
   const iframe = document.createElement("iframe");
   iframe.src = "Timer" + type + ".jsp?session=" + session + "&break=" + rest + "&preview=true&t=" + new Date().getTime();
   Object.assign(iframe.style, {
-    width: "100%", height: "100%",
-    border: "none", borderRadius: "12px"
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "12px"
   });
   previewBox.appendChild(iframe);
 }
@@ -124,7 +125,7 @@ function getFilteredAndSortedTimers() {
   const keyword = document.querySelector(".timer-search").value.trim().toLowerCase();
   let filtered = timerData.filter(timer => timer.label.toLowerCase().includes(keyword));
 
-  const basic = filtered.find(t => t.type === 1);  // Timer1.jsp 고정
+  const basic = filtered.find(t => t.type === 1);
   let others = filtered.filter(t => t.type !== 1);
 
   if(isAlphaSort){
@@ -157,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// 적용 버튼 -> DB 저장
 document.getElementById("btnSave").addEventListener("click", function(){
   if(!selectedTimer){
     alert("타이머를 선택해주세요.");
@@ -176,7 +178,38 @@ document.getElementById("btnSave").addEventListener("click", function(){
     }
   });
 });
-</script>
 
+//취소 버튼 -> Timer1.jsp 리셋 + DB에도 timer_id=1 저장
+document.getElementById("btnCancel").addEventListener("click", function(){
+
+  selectedTimer = 1;  // 무조건 Timer1 고정
+  const first = timerData.find(t => t.type === 1);
+  if(!first) return;
+
+  // 미리보기 다시 Timer1.jsp 로 변경
+  selectTimer(first.type, first.label, first.description, first.session, first.rest);
+
+  // DB에도 Timer1로 변경
+  fetch("UpdateTimerIdProc.jsp", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "user_id=<%= user_id %>&timer_id=1"
+  }).then(res => res.text())
+	   .then(result => {
+	  if(result.trim() !== "ok"){
+	    alert("DB 업데이트 실패 : " + result);
+	  }
+	});
+});
+
+function switchToBackground() {
+    const timerWrapper = document.getElementById("timerWrapper1");
+    if (timerWrapper) timerWrapper.style.display = "none";
+
+    const backgroundWrapper = document.getElementById("backgroundWrapper");
+    if (backgroundWrapper) backgroundWrapper.style.display = "flex";
+}
+
+</script>
 </body>
 </html>

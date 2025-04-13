@@ -366,14 +366,6 @@
 	cursor: pointer;
 	}
 	
-	/* 검색창 크기 조절 */
-	.background-search {
-	    padding: 4px 8px;
-	    font-size: 13px;
-	    border-radius: 4px;
-	    border: none;
-	}
-	
 	/* 오른쪽 상단 고정 */
 	.preview-icons {
 	    position: absolute;
@@ -405,13 +397,13 @@
 	
 </style>
 
-<div class="background-container">
+<div class="background-container" id="backgroundContainer">
     <!-- 왼쪽 영역 -->
     <div class="background-left">
-    	<!-- 🎵 음악 목록 / 재생 목록 탭 -->
+    	<!-- 배경설정  / 타이머 탭 -->
 		<div class="background-tab">
 	    	<button class="tab-btn active">배경화면</button>
-	    	<button class="tab-btn" onclick="switchToPlayList()">타이머</button>
+	    	<button class="tab-btn" onclick="switchToTimer()">타이머</button>
 		</div>
     
         <div class="background-header">
@@ -424,6 +416,15 @@
 		    </div>
 		</div>
 
+		<%
+	    String contextPath = request.getContextPath();
+		%>
+		<script>
+		    const defaultImage = "<%= contextPath %>/jspproject/backgroundImg/tema1.jpg";
+		    const defaultTitle = "기본 배경";
+		    const defaultDescription = "기본 배경 설명";
+		</script>
+
 	<div class="background-list" id="backgroundList">
 	
 			<%
@@ -432,7 +433,19 @@
 			
 			    // 현재 적용 중인 테마 가져오기
 			    TemaBean currentTema = mgr.getOnTema(user_id);
-			    String currentImgName = currentTema != null ? currentTema.getTema_img() : "";
+			    String currentImgName = (currentTema != null && currentTema.getTema_img() != null)
+			    	    ? currentTema.getTema_img()
+			    	    : "tema1.jpg";
+			    
+			    String appliedImage = currentImgName;
+			    
+			    String currentTitle = (currentTema != null && currentTema.getTema_title() != null)
+			            ? currentTema.getTema_title()
+			            : "기본 배경";
+
+			        String currentDesc = (currentTema != null && currentTema.getTema_cnt() != null)
+			            ? currentTema.getTema_cnt()
+			            : "기본 배경 설명";
 			
 			    Vector<TemaBean> vlist = mgr.listTema(user_id); // 테마 리스트 가져오기
 			
@@ -463,6 +476,7 @@
 		<%}%>
 			<script>
 			    const currentBackgroundImage = "<%= currentImgName %>";
+			    let currentAppliedImage = "<%= appliedImage %>";
 			</script>
 		<form id="updateTemaForm" action="updateTema.jsp" method="post" enctype="multipart/form-data" style="display:none;">
 		    <input type="hidden" name="tema_id" id="updateTemaId">
@@ -503,14 +517,19 @@
 		</div>
 		
 			<div class="background-preview">
-			    <img class="backgroundImg"src="<%= request.getContextPath() %>/jspproject/backgroundImg/background1.gif"alt="배경 이미지">
-			    <input id="backgroundTitleInput" type="text" value="배경 제목" disabled
-			        style="text-align:center; font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
+			    <img class="backgroundImg"
+			         src="<%= request.getContextPath() %>/jspproject/backgroundImg/<%= currentImgName %>"
+			         alt="배경 이미지">
+			    <input id="backgroundTitleInput"
+			           type="text"
+			           value="<%= currentTitle %>"
+			           disabled
+			           style="text-align:center; font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
 			</div>
-
-	 	 <div class="background-description">
-		    <textarea id="backgroundDescription" readonly>배경 설명</textarea>
-		</div>
+			
+			<div class="background-description">
+			    <textarea id="backgroundDescription" readonly><%= currentDesc %></textarea>
+			</div>
 
 
         <!-- 가운데 위 버튼 -->
@@ -676,14 +695,13 @@ function cancelBackground() {
             if (result.trim() === "ok") {
                 alert("기본 배경으로 설정되었습니다.");
 
-                const imgPath = "<%= request.getContextPath() %>/jspproject/backgroundImg/tema1.jpg";
-                document.querySelector(".backgroundImg").src = imgPath;
-                document.getElementById("backgroundTitleInput").value = "기본 배경";
-                document.getElementById("backgroundDescription").value = "기본 배경 설명";
+                // ✅ 미리 정의한 상수 사용
+                document.querySelector(".backgroundImg").src = defaultImage;
+                document.getElementById("backgroundTitleInput").value = defaultTitle;
+                document.getElementById("backgroundDescription").value = defaultDescription;
 
-                document.body.style.backgroundImage = `url('${imgPath}')`;
+                document.body.style.backgroundImage = `url('${defaultImage}')`;
 
-                // 버튼 비활성화
                 updateCancelButtonState("tema1.jpg");
             } else {
                 alert("실패: " + result);
@@ -694,13 +712,16 @@ function cancelBackground() {
         });
 }
 //현재 배경이미지만 배경취소 활성화
-function updateCancelButtonState(currentImgName) {
+function updateCancelButtonState(selectedImgName) {
     const cancelBtn = document.getElementById("cancelBackgroundBtn");
 
     if (!cancelBtn) return;
 
-    // 기본 배경이면 비활성화
-    if (currentImgName.toLowerCase() === "tema1.jpg") {
+    // 소문자로 비교
+    const isDefault = selectedImgName.toLowerCase() === "tema1.jpg";
+    const isApplied = selectedImgName.toLowerCase() === currentAppliedImage.toLowerCase();
+
+    if (isDefault || !isApplied) {
         cancelBtn.disabled = true;
         cancelBtn.style.opacity = 0.5;
         cancelBtn.style.cursor = "not-allowed";
@@ -710,6 +731,7 @@ function updateCancelButtonState(currentImgName) {
         cancelBtn.style.cursor = "pointer";
     }
 }
+
 
 function addbackgroundItem() {
     document.getElementById("uploadModal").style.display = "flex";  
@@ -745,6 +767,7 @@ function selectBackground(button) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
+	updateCancelButtonState("<%= currentImgName %>");
     const searchInput = document.querySelector(".background-search");
     const searchButton = document.getElementById("searchButton");
 
@@ -904,6 +927,9 @@ function applyBackground() {
         .then(result => {
             if (result.trim() === "ok") {
                 alert("배경이 적용되었습니다!");
+                
+                currentAppliedImage = fileName;
+                updateCancelButtonState(fileName);
                 // 메인 화면 배경도 변경되도록 처리
                 document.body.style.backgroundImage = `url('jspproject/backgroundImg/${fileName}')`;
             } else {
@@ -914,6 +940,42 @@ function applyBackground() {
             console.error("에러:", err);
             alert("에러 발생: " + err);
         });
+}
+
+function switchToTimer() {
+    const backgroundWrapper = document.getElementById("backgroundWrapper");
+    const timerWrapper = document.getElementById("timerWrapper");
+
+    // 배경 설정 감추기
+    if (backgroundWrapper) backgroundWrapper.style.display = "none";
+
+    // 이미 로드돼 있다면 다시 보이기만
+    if (timerWrapper && timerWrapper.innerHTML.trim() !== "") {
+        timerWrapper.style.display = "flex";
+        return;
+    }
+
+    // 타이머 디자인 fetch로 불러오기
+    fetch("TimerDesign.jsp")
+        .then(res => res.text())
+        .then(html => {
+            timerWrapper.innerHTML = html;
+            timerWrapper.style.display = "flex";
+        })
+        .catch(err => {
+            console.error("타이머 로드 실패:", err);
+            alert("타이머 로딩 중 오류 발생");
+        });
+}
+
+function switchToTimer() {
+    // 배경 설정 숨기기
+    const backgroundWrapper = document.getElementById("backgroundWrapper");
+    if (backgroundWrapper) backgroundWrapper.style.display = "none";
+
+    // 타이머 설정 보이기
+    const timerWrapper = document.getElementById("timerWrapper1");
+    if (timerWrapper) timerWrapper.style.display = "flex";
 }
 
 </script>
