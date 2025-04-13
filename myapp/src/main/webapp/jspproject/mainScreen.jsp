@@ -103,6 +103,13 @@
         </div>
     </div>
 </div>
+
+	<!-- 알림 소리 플레이어 -->
+	<audio id="notifiaudio">
+		<source src="sound/alarm.mp3" type="audio/mp3">
+		<!--  Your browser does not support the audio element.-->
+	</audio>
+
    <% } %>
    <body style="background-image: url('<%= appliedBackground %>'); background-size: cover;">
 <!-- 프로필 아이콘 -->
@@ -735,8 +742,23 @@
 	    }
 	});
 	
+	//모달이 보이면 알림 소리 재생
+	document.addEventListener('DOMContentLoaded', function() {
+        var audio = document.getElementById('notifiaudio');
+        if (audio) {
+            // 소리 재생 (브라우저에 따라 자동 재생이 제한될 수 있음)
+            audio.play().catch(function(error) {
+                console.log("알림 소리 자동 재생 실패:", error);
+            });
+        }
+    });
+	
 	function closeModal() {
         document.getElementById('notificationModal').style.display = 'none';
     }
+
 </script>
+
+
+	
 
