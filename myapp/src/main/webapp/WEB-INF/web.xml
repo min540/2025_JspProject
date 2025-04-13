@@ -38,4 +38,14 @@
 		<welcome-file>main.jsp</welcome-file>
 	</welcome-file-list>
 
+	<servlet>
+	    <servlet-name>DeleteMplistBgm</servlet-name>
+	    <servlet-class>jspproject.DeleteMplistBgmServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>DeleteMplistBgm</servlet-name>
+	    <url-pattern>/jspproject/deleteMplistBgm</url-pattern>
+	</servlet-mapping>
+
 </web-app>

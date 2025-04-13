@@ -286,6 +286,8 @@ public class ObjMgr {
 	            bean.setObj_check(rs.getInt("obj_check"));
 	            bean.setObj_sdate(rs.getString("obj_sdate"));
 	            System.out.println("✅ DB sdate: " + rs.getString("obj_sdate"));
+	            System.out.println("✅ DB edate: " + rs.getString("obj_edate"));
+	            System.out.println("📦 Bean sdate 저장 후: " + bean.getObj_sdate());
 	            bean.setObj_edate(rs.getString("obj_edate"));  // 형식 변환 필요 시 여기도 SDF_DATE 가능
 	            vlist.add(bean);
 	        }
