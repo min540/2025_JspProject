@@ -302,5 +302,27 @@ public class BgmMgr {
         }
         return result;
     }
+    
+    public boolean updateBgmOnOff(int bgm_id, int bgm_onoff) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        boolean result = false;
+
+        try {
+            con = pool.getConnection();
+            String sql = "UPDATE bgm SET bgm_onoff = ? WHERE bgm_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, bgm_onoff);
+            pstmt.setInt(2, bgm_id);
+            result = pstmt.executeUpdate() > 0; // ✅ 성공 여부 확인
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+
+        return result;
+    }
+
 
 }
