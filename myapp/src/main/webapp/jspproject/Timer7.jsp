@@ -6,14 +6,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>기본 타이머</title>
+<title>흰색 타이머</title>
 <style>
     body {
       overflow: hidden;
       margin: 0;
     }
 
-    .timer1-timer-container {
+    .timer7-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -27,14 +27,14 @@
       cursor: default;
     }
 
-    .timer1-svg {
+    .timer7-svg {
       position: absolute;
       top: 0;
       left: 0;
       transform: rotate(90deg) scaleX(-1);
     }
 
-    .timer1-drag-handle {
+    .timer7-drag-handle {
       position: absolute;
       top: 30px;
       left: 50%;
@@ -48,7 +48,7 @@
       line-height: 1;
     }
 
-    .timer1-center {
+    .timer7-center {
       position: absolute;
       top: 47%;
       left: 50%;
@@ -56,24 +56,24 @@
       text-align: center;
     }
 
-    .timer1-time {
+    .timer7-time {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 6px;
       color: white;
     }
 
-    .timer1-info {
+    .timer7-info {
       font-size: 14px;
       line-height: 1.3;
       color: white;
     }
 
-    .timer1-info strong {
+    .timer7-info strong {
       cursor: pointer;
     }
 
-    input.timer1-input {
+    input.timer7-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
@@ -83,7 +83,7 @@
       outline: none;
     }
 
-    .timer1-bottom-controls {
+    .timer7-bottom-controls {
       position: absolute;
       bottom: 50px;
       left: 50%;
@@ -92,7 +92,7 @@
       gap: 24px;
     }
 
-    .timer1-btn {
+    .timer7-btn {
       font-size: 20px;
       background: none;
       border: none;
@@ -101,11 +101,11 @@
       transition: 0.2s;
     }
 
-    .timer1-btn:hover img {
+    .timer7-btn:hover img {
       filter: brightness(1.2);
     }
 
-    .timer1-btn img {
+    .timer7-btn img {
       width: 24px;
       height: 24px;
       vertical-align: middle;
@@ -134,27 +134,27 @@
 </head>
 <body>
 
-<div class="timer1-timer-container" id="timerContainer"
+<div class="timer7-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
-  <div class="timer1-drag-handle">:::</div>
+  <div class="timer7-drag-handle">:::</div>
 
-  <svg class="timer1-svg" width="240" height="240">
+  <svg class="timer7-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12" fill="none"
-      stroke-linecap="butt" stroke-dasharray="628" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#ffffff" stroke-width="12" fill="none"
+		stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
-  <div class="timer1-center">
-    <div class="timer1-time" id="timeDisplay">00:00</div>
-    <div class="timer1-info" id="timerInfo">
+  <div class="timer7-center">
+    <div class="timer7-time" id="timeDisplay">00:00</div>
+    <div class="timer7-info" id="timerInfo">
       <strong id="sessionTime">00:00</strong> 세션<br>
       과 <strong id="breakTime">00:00</strong> 휴식
     </div>
   </div>
 
-  <div class="timer1-bottom-controls">
-    <button class="timer1-btn" id="btnReset">⟲</button>
-    <button class="timer1-btn" id="toggleBtn">
+  <div class="timer7-bottom-controls">
+    <button class="timer7-btn" id="btnReset">⟲</button>
+    <button class="timer7-btn" id="toggleBtn">
       <img id="toggleIcon" src="icon/아이콘_재생_1.png" alt="toggle" />
     </button>
   </div>
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
   const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer1-drag-handle");
+  const dragHandle = document.querySelector(".timer7-drag-handle");
   const timeDisplay = document.getElementById("timeDisplay");
   const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
@@ -195,13 +195,13 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const updateProgress = () => {
-    const duration = isSession ? sessionDuration : breakDuration;
-    const percent = timeLeft / duration;
-    const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#3f8efc" : "#4caf50";
-    progressCircle.style.strokeDashoffset = offset;
-    timeDisplay.textContent = formatTime(timeLeft);
-  };
+	  const duration = isSession ? sessionDuration : breakDuration;
+	  const percent = timeLeft / duration;
+	  const offset = CIRCUMFERENCE * (1 - percent);
+	  progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb"; // 흰색 / 연청록
+	  progressCircle.style.strokeDashoffset = offset;
+	  timeDisplay.textContent = formatTime(timeLeft);
+	};
 
   const startInterval = () => {
     interval = setInterval(() => {
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer1-input";
+    input.className = "timer7-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {
@@ -331,8 +331,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }).then(res => res.text())
         .then(data => console.log("타이머 위치 저장 결과 : ", data));
     }
-    
-
   });
 });
 </script>

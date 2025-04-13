@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="TimerInfo.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -122,14 +123,14 @@
   </style>
 </head>
 <body>
-<div class="timer6-container" id="timerContainer">
+<div class="timer6-container" id="timerContainer" style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="fill-effect" id="fillEffect"></div> <!-- 차오르는 효과 -->
   <div class="timer6-header" id="dragHandle">
     <div class="drag-dots">⋮⋮⋮</div>
   </div>
   <div class="timer6-body">
     <div class="timer6-time" id="timeDisplay">
-      <strong id="editableTime">10:00</strong>
+      <strong id="editableTime">00:00</strong>
     </div>
     <div class="timer6-controls">
       <button class="timer6-btn reset" id="btnReset">
@@ -144,7 +145,9 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  let breakDuration = parseInt(new URLSearchParams(location.search).get("break")) || 600;
+  const userId = "<%= user_id %>";
+  let sessionDuration = <%= sessionTime %>; // DB 세션시간
+  let breakDuration = <%= breakTime %>;     // DB 휴식시간
   let timeLeft = breakDuration;
   let isRunning = false;
   let interval = null;
@@ -169,19 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fillEffect.style.height = percent + "%";
   };
 
-  const startInterval = () => {
-    interval = setInterval(() => {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updateDisplay();
-      } else {
-        clearInterval(interval);
-        isRunning = false;
-        toggleIcon.src = "icon/아이콘_재생_1.png";
-      }
-    }, 1000);
-  };
-
   const resetTimer = () => {
     clearInterval(interval);
     isRunning = false;
@@ -190,13 +180,31 @@ document.addEventListener("DOMContentLoaded", function () {
     updateDisplay();
   };
 
+  const updateTimerSettingToDB = () => {
+    fetch("UpdateTimerSessionProc.jsp", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
+    }).then(res => res.text())
+      .then(data => console.log("Timer6 시간 저장 결과 : ", data));
+  };
+
   toggleBtn.addEventListener("click", () => {
     if (isRunning) {
       clearInterval(interval);
       isRunning = false;
       toggleIcon.src = "icon/아이콘_재생_1.png";
     } else {
-      startInterval();
+      interval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(interval);
+          isRunning = false;
+          toggleIcon.src = "icon/아이콘_재생_1.png";
+        }
+      }, 1000);
       isRunning = true;
       toggleIcon.src = "icon/아이콘_일시정지_1.png";
     }
@@ -208,54 +216,45 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.createElement("input");
     input.type = "number";
     input.className = "timer6-input";
-    input.value = timeLeft;
+    input.value = Math.floor(breakDuration / 60);
 
     const confirm = () => {
       let val = parseInt(input.value);
       if (isNaN(val) || val < 1) val = 1;
-      if (val > 86400) val = 86400;
-      timeLeft = val;
-      breakDuration = timeLeft;
+      if (val > 3600) val = 3600;
+      breakDuration = val * 60;
+      timeLeft = breakDuration;
       updateDisplay();
+      updateTimerSettingToDB();
       input.replaceWith(editableTime);
     };
 
     input.addEventListener("blur", confirm);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") confirm();
-    });
-
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
     editableTime.replaceWith(input);
     input.focus();
   });
 
   updateDisplay();
 
-  // ✅ 드래그 기능
+  // 드래그
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
 
   dragHandle.addEventListener("mousedown", (e) => {
-	  e.preventDefault();
+    e.preventDefault();
+    const rect = timer.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    isDragging = true;
+    document.body.style.cursor = "grabbing";
 
-	  // 1. 현재 위치 계산 (중앙 정렬 제거를 위한 준비)
-	  const rect = timer.getBoundingClientRect();
-	  const scrollX = window.scrollX || window.pageXOffset;
-	  const scrollY = window.scrollY || window.pageYOffset;
+    timer.style.left = rect.left + window.scrollX + "px";
+    timer.style.top = rect.top + window.scrollY + "px";
+    timer.style.transform = "none";
+  });
 
-	  // 2. transform 제거 전, 정확한 위치를 style로 지정해 고정
-	  timer.style.left = rect.left + scrollX + "px";
-	  timer.style.top = rect.top + scrollY + "px";
-	  timer.style.transform = "none";  // translate 제거
-
-	  // 3. 드래그 오프셋 계산
-	  offsetX = e.clientX - rect.left;
-	  offsetY = e.clientY - rect.top;
-
-	  isDragging = true;
-	  document.body.style.cursor = "grabbing";
-	});
   document.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
     timer.style.left = (e.clientX - offsetX) + "px";
@@ -263,10 +262,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.addEventListener("mouseup", () => {
-    isDragging = false;
-    document.body.style.cursor = "default";
+    if (isDragging) {
+      isDragging = false;
+      document.body.style.cursor = "default";
+      const x = parseInt(timer.style.left);
+      const y = parseInt(timer.style.top);
+
+      fetch("UpdateTimerSessionProc.jsp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+      }).then(res => res.text())
+        .then(data => console.log("Timer6 위치 저장 결과 : ", data));
+    }
   });
 });
 </script>
+
 </body>
 </html>

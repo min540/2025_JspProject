@@ -1,5 +1,6 @@
 <!-- 빨간색 원형 타이머 -->
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="TimerInfo.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -11,7 +12,7 @@
       margin: 0;
     }
 
-    .timer3-timer-container {
+    .timer4-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -25,14 +26,14 @@
       cursor: default;
     }
 
-    .timer3-svg {
+    .timer4-svg {
       position: absolute;
       top: 0;
       left: 0;
       transform: rotate(90deg) scaleX(-1);
     }
 
-    .timer3-drag-handle {
+    .timer4-drag-handle {
       position: absolute;
       top: 30px;
       left: 50%;
@@ -46,7 +47,7 @@
       line-height: 1;
     }
 
-    .timer3-center {
+    .timer4-center {
       position: absolute;
       top: 47%;
       left: 50%;
@@ -54,24 +55,24 @@
       text-align: center;
     }
 
-    .timer3-time {
+    .timer4-time {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 6px;
       color: white;
     }
 
-    .timer3-info {
+    .timer4-info {
       font-size: 14px;
       line-height: 1.3;
       color: white;
     }
 
-    .timer3-info strong {
+    .timer4-info strong {
       cursor: pointer;
     }
 
-    input.timer3-input {
+    input.timer4-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
@@ -81,7 +82,7 @@
       outline: none;
     }
 
-    .timer3-bottom-controls {
+    .timer4-bottom-controls {
       position: absolute;
       bottom: 50px;
       left: 50%;
@@ -90,7 +91,7 @@
       gap: 24px;
     }
 
-    .timer3-btn {
+    .timer4-btn {
       font-size: 20px;
       background: none;
       border: none;
@@ -99,15 +100,15 @@
       transition: 0.2s;
     }
 
-    .timer3-btn:hover {
+    .timer4-btn:hover {
       color: #E53935;
     }
   </style>
 </head>
 <body>
 
-<div class="timer3-timer-container" id="timerContainer">
-  <div class="timer3-drag-handle">:::</div>
+<div class="timer4-timer-container" id="timerContainer" style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
+  <div class="timer4-drag-handle">:::</div>
 
   <svg class="timer3-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
@@ -115,174 +116,181 @@
             fill="none" stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
-  <div class="timer3-center">
-    <div class="timer3-time" id="timeDisplay">10:00</div>
-    <div class="timer3-info" id="timerInfo">
+  <div class="timer4-center">
+    <div class="timer4-time" id="timeDisplay">10:00</div>
+    <div class="timer4-info" id="timerInfo">
       <strong id="sessionTime">10:00</strong> 세션<br>
       과 <strong id="breakTime">05:00</strong> 휴식
     </div>
   </div>
 
-  <div class="timer3-bottom-controls">
-    <button class="timer3-btn" id="btnReset">⟲</button>
-    <button class="timer3-btn" id="toggleBtn">▶️</button>
+  <div class="timer4-bottom-controls">
+    <button class="timer4-btn" id="btnReset">⟲</button>
+    <button class="timer4-btn" id="toggleBtn">▶️</button>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  let sessionDuration = parseInt(new URLSearchParams(window.location.search).get("session")) || 600;
-  let breakDuration = parseInt(new URLSearchParams(window.location.search).get("break")) || 300;
-  let timeLeft = sessionDuration;
-  let isSession = true;
-  let isRunning = false;
-  let interval = null;
+	const userId = "<%= user_id %>";
+	let sessionDuration = <%= sessionTime %>;
+	let breakDuration = <%= breakTime %>;
+	let timeLeft = sessionDuration;
+	let isSession = true;
+	let isRunning = false;
+	let interval = null;
 
-  const RADIUS = 100;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+	const RADIUS = 100;
+	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-  const timeDisplay = document.getElementById("timeDisplay");
-  const progressCircle = document.getElementById("progress");
-  const sessionTimeEl = document.getElementById("sessionTime");
-  const breakTimeEl = document.getElementById("breakTime");
-  const toggleBtn = document.getElementById("toggleBtn");
-  const btnReset = document.getElementById("btnReset");
-  const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer3-drag-handle");
-  const timerInfo = document.getElementById("timerInfo");
+	const timer = document.getElementById("timerContainer");
+	const dragHandle = document.querySelector(".timer4-drag-handle");
+	const timeDisplay = document.getElementById("timeDisplay");
+	const progressCircle = document.getElementById("progress");
+	const sessionTimeEl = document.getElementById("sessionTime");
+	const breakTimeEl = document.getElementById("breakTime");
+	const toggleBtn = document.getElementById("toggleBtn");
+	const btnReset = document.getElementById("btnReset");
+	const timerInfo = document.getElementById("timerInfo");
 
-  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+	progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return m + ":" + String(s).padStart(2, '0');
-  };
+	const formatTime = (sec) => {
+		const m = Math.floor(sec / 60);
+		const s = sec % 60;
+		return m + ":" + String(s).padStart(2, '0');
+	};
 
-  const updateProgress = () => {
-    const duration = isSession ? sessionDuration : breakDuration;
-    const percent = timeLeft / duration;
-    const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#E53935" : "#3f8efc";  // ✅ 빨강 / 파랑
-    progressCircle.style.strokeDashoffset = offset;
-    timeDisplay.textContent = formatTime(timeLeft);
-  };
+	const updateProgress = () => {
+		const duration = isSession ? sessionDuration : breakDuration;
+		const percent = timeLeft / duration;
+		const offset = CIRCUMFERENCE * (1 - percent);
+		progressCircle.style.stroke = isSession ? "#E53935" : "#3f8efc";
+		progressCircle.style.strokeDashoffset = offset;
+		timeDisplay.textContent = formatTime(timeLeft);
+	};
 
-  const startInterval = () => {
-    interval = setInterval(() => {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updateProgress();
-      } else {
-        clearInterval(interval);
-        isRunning = false;
-        isSession = !isSession;
-        timeLeft = isSession ? sessionDuration : breakDuration;
-        updateProgress();
-        toggleBtn.textContent = "▶️";
-        timerInfo.style.display = "block";
-      }
-    }, 1000);
-  };
+	// 처음 세팅
+	sessionTimeEl.textContent = formatTime(sessionDuration);
+	breakTimeEl.textContent = formatTime(breakDuration);
+	timeDisplay.textContent = formatTime(sessionDuration);
+	updateProgress();
 
-  const resetTimer = () => {
-    clearInterval(interval);
-    isRunning = false;
-    isSession = true;
-    timeLeft = sessionDuration;
-    toggleBtn.textContent = "▶️";
-    updateProgress();
-    timerInfo.style.display = "block";
-  };
+	const resetTimer = () => {
+		clearInterval(interval);
+		isRunning = false;
+		isSession = true;
+		timeLeft = sessionDuration;
+		toggleBtn.textContent = "▶️";
+		updateProgress();
+		timerInfo.style.display = "block";
+	};
 
-  btnReset.addEventListener("click", resetTimer);
+	const updateTimerSettingToDB = () => {
+		fetch("UpdateTimerSessionProc.jsp", {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
+		}).then(res => res.text())
+		  .then(data => console.log("Timer4 시간 저장 결과 : ", data));
+	};
 
-  toggleBtn.addEventListener("click", () => {
-    if (isRunning) {
-      clearInterval(interval);
-      isRunning = false;
-      toggleBtn.textContent = "▶️";
-      timerInfo.style.display = "block";
-    } else {
-      startInterval();
-      isRunning = true;
-      toggleBtn.textContent = "⏸";
-      timerInfo.style.display = "none";
-    }
-  });
+	btnReset.addEventListener("click", resetTimer);
 
-  const makeEditable = (el, type) => {
-    const input = document.createElement("input");
-    input.type = "number";
-    input.className = "timer3-input";
-    input.value = type === "session" ? sessionDuration : breakDuration;
+	toggleBtn.addEventListener("click", () => {
+		if (isRunning) {
+			clearInterval(interval);
+			isRunning = false;
+			toggleBtn.textContent = "▶️";
+			timerInfo.style.display = "block";
+		} else {
+			interval = setInterval(() => {
+				if (timeLeft > 0) {
+					timeLeft--;
+					updateProgress();
+				} else {
+					isSession = !isSession;
+					timeLeft = isSession ? sessionDuration : breakDuration;
+					updateProgress();
+				}
+			}, 1000);
+			isRunning = true;
+			toggleBtn.textContent = "⏸";
+			timerInfo.style.display = "none";
+		}
+	});
 
-    const confirm = () => {
-      let val = parseInt(input.value);
-      if (isNaN(val) || val < 10) val = 10;
-      if (val > 3600) val = 3600;
+	const makeEditable = (el, type) => {
+		const input = document.createElement("input");
+		input.type = "number";
+		input.className = "timer4-input";
+		input.value = type === "session" ? sessionDuration : breakDuration;
 
-      if (type === "session") {
-        sessionDuration = val;
-        sessionTimeEl.textContent = formatTime(sessionDuration);
-      } else {
-        breakDuration = val;
-        breakTimeEl.textContent = formatTime(breakDuration);
-      }
+		const confirm = () => {
+			let val = parseInt(input.value);
+			if (isNaN(val) || val < 10) val = 10;
+			if (val > 3600) val = 3600;
 
-      input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
-      resetTimer();
-    };
+			if (type === "session") {
+				sessionDuration = val;
+				sessionTimeEl.textContent = formatTime(sessionDuration);
+			} else {
+				breakDuration = val;
+				breakTimeEl.textContent = formatTime(breakDuration);
+			}
 
-    input.addEventListener("blur", confirm);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") confirm();
-    });
+			input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
+			updateTimerSettingToDB();
+			resetTimer();
+		};
 
-    el.replaceWith(input);
-    input.focus();
-  };
+		input.addEventListener("blur", confirm);
+		input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+		el.replaceWith(input);
+		input.focus();
+	};
 
-  sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
-  breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
+	sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
+	breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  sessionTimeEl.textContent = formatTime(sessionDuration);
-  breakTimeEl.textContent = formatTime(breakDuration);
-  updateProgress();
+	let isDragging = false;
+	let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-  // 드래그 기능
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+	dragHandle.addEventListener("mousedown", (e) => {
+		e.preventDefault();
+		isDragging = true;
+		startX = e.clientX;
+		startY = e.clientY;
+		offsetX = timer.offsetLeft;
+		offsetY = timer.offsetTop;
+		document.body.style.cursor = "grabbing";
+	});
 
-  dragHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    const rect = timer.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    isDragging = true;
-    document.body.style.cursor = "grabbing";
-    timer.style.transform = "none";
-    timer.style.left = rect.left + "px";
-    timer.style.top = rect.top + "px";
-  });
+	document.addEventListener("mousemove", (e) => {
+		if (!isDragging) return;
+		timer.style.left = (offsetX + e.clientX - startX) + "px";
+		timer.style.top = (offsetY + e.clientY - startY) + "px";
+	});
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    const x = e.clientX - offsetX;
-    const y = e.clientY - offsetY;
-    timer.style.left = x + "px";
-    timer.style.top = y + "px";
-  });
-
-  document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
-    }
-  });
+	document.addEventListener("mouseup", () => {
+		if (isDragging) {
+			isDragging = false;
+			document.body.style.cursor = "default";
+			let x = parseInt(timer.style.left);
+			let y = parseInt(timer.style.top);
+			if (x < 10) x = 10;
+			if (y < 10) y = 10;
+			fetch("UpdateTimerSessionProc.jsp", {
+				method: "POST",
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+				body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+			}).then(res => res.text())
+			  .then(data => console.log("Timer4 위치 저장 결과 : ", data));
+		}
+	});
 });
 </script>
+
 
 </body>
 </html>
