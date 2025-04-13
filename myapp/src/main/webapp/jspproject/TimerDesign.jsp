@@ -74,7 +74,7 @@ const timerData = [
     type: <%= t.getTimer_id() %>,
     session: 600,
     rest: 300
-  }<%= (i < timerList.size() - 1) ? "," : "" %>
+  }<%= (i < timerList.size() - 1) ? "," : ""%>
 <% } %>
 ];
 
