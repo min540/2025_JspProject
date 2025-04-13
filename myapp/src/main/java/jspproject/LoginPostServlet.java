@@ -40,7 +40,7 @@ public class LoginPostServlet extends HttpServlet {
 					        response.sendRedirect("anc.jsp");
 					        return;
 					    } else if (user.getGrade() == 1 || user.getGrade() == 0) {
-					        response.sendRedirect("mainScreen.jsp");
+					        response.sendRedirect("mainScreen.jsp");	
 					        return;
 					    } else {
 					        response.sendRedirect("login.jsp?error=login_failed");

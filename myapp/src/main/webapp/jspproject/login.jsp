@@ -135,11 +135,11 @@ body, html {
 </style>
 </head>
 <script>
-  function handleCredential(response) {
+/*   function handleCredential(response) {
     console.log("✅ 구글 로그인 성공:", response.credential);
 
     // 여기서 JWT 토큰을 서버로 보내거나 처리하면 됨
-  }
+  } */
   function parseJwt(token) {
 	  const base64Url = token.split('.')[1];
 	  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

@@ -1,4 +1,13 @@
 <!-- mainScreen.jsp -->
+<%@page import="jspproject.DBConnectionMgr"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="jspproject.NotifiMgr"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
 <link href="css/style.css?v=2" rel="stylesheet" type="text/css">
 <%@ page import="jspproject.UserBean" %>
@@ -6,7 +15,86 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
 		String path = request.getContextPath();
+// 세션에서 사용자 ID 가져오기
+String user_id = (String) session.getAttribute("user_id");
+
+if (user_id != null && !user_id.trim().equals("")) {
+    // 현재 날짜 가져오기
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    String currentDate = sdf.format(new Date());
+    
+    // NotifiMgr의 objEnd 메소드 호출
+    NotifiMgr notifiMgr = new NotifiMgr();
+    notifiMgr.objEnd(user_id, currentDate);
+    
+    // 알림 메시지 가져오기
+    List<String> alertMessages = new ArrayList<>();
+    
+    Connection con = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    DBConnectionMgr pool = DBConnectionMgr.getInstance();
+    
+    try {
+        con = pool.getConnection();
+        
+        String sql = "SELECT o.obj_id, o.obj_title, o.obj_edate " +
+                 "FROM obj o " +
+                 "WHERE o.user_id = ? AND o.obj_check = 0 " +
+                 "AND (DATE(o.obj_edate) = CURDATE() OR DATE(o.obj_edate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
+    
+        pstmt = con.prepareStatement(sql);
+        pstmt.setString(1, user_id);
+        rs = pstmt.executeQuery();
+        
+        while (rs.next()) {
+            String title = rs.getString("obj_title");
+            Date edate = rs.getDate("obj_edate");
+            
+            String formattedDate = sdf.format(edate);
+            
+            if (formattedDate.equals(currentDate)) {
+                alertMessages.add("작업 목표 마감일 알림: '" + title + "'의 마감일이 오늘입니다.");
+            } else {
+                alertMessages.add("작업 목표 마감일 지남 알림: '" + title + "'의 마감일이 지났습니다.");
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
+        if (con != null) pool.freeConnection(con);
+    }
+    
+    // 알림이 있으면 세션에 저장
+    if (!alertMessages.isEmpty()) {
+        session.setAttribute("alertMessages", alertMessages);
+    }
+}
+//세션에서 알림 메시지 가져오기
+List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
+if (alertMessages != null && !alertMessages.isEmpty()) {
+    // 알림 메시지가 있으면 모달 표시
+    session.removeAttribute("alertMessages"); // 일회성으로 사용하고 제거
 %>
+
+<div class="modal-container" id="notificationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">작업 목표 마감일 알림</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <% for (String message : alertMessages) { %>
+                <div class="notification-item"><%= message %></div>
+            <% } %>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal()">확인</button>
+        </div>
+    </div>
+</div>
 <!-- 프로필 아이콘 -->
 
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
@@ -106,6 +194,19 @@
 <div id="musicListWrapper" style="display:none;">
     <jsp:include page="musicList.jsp" />
 </div>
+
+<style>
+    .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background-color: #3c1e5c; color: white; border-radius: 10px; padding: 20px; max-width: 500px; width: 80%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .modal-title { margin: 0; font-size: 18px; }
+    .modal-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    .modal-body { margin-bottom: 20px; }
+    .modal-footer { text-align: right; }
+    .btn { background-color: rgba(255, 255, 255, 0.2); border: 1px solid white; border-radius: 5px; color: white; padding: 8px 15px; cursor: pointer; transition: background-color 0.3s; }
+    .btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+    .notification-item { border-left: 3px solid #8e44ad; padding: 10px; margin-bottom: 10px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; }
+</style>
 
 <!-- JavaScript 함수 -->
 <script>
@@ -618,4 +719,10 @@
 	    }
 	});
 	
+	function closeModal() {
+        document.getElementById('notificationModal').style.display = 'none';
+    }
 </script>
+<%
+    }
+%>

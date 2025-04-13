@@ -10,15 +10,18 @@ CREATE TABLE `user` (
 
 CREATE TABLE `timer` (
   `timer_id` int UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(50),
-  `timer_session` int,
-  `timer_break` int,
-  `timer_design` int,
   `timer_title` varchar(100),
   `timer_cnt` varchar(300),
-  `timer_loc` int NOT NULL,
-  `timer_onoff` int NOT NULL,
   `timer_img` varchar(255)
+);
+
+CREATE TABLE `user_timer` (
+  `user_timer_id` int UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(50),
+  `timer_id` int,
+  `timer_session` int,
+  `timer_break` int,
+  `timer_loc` int NOT NULL
 );
 
 CREATE TABLE `tema` (
@@ -39,7 +42,7 @@ CREATE TABLE `obj` (
   `obj_check` INT DEFAULT(0), 
   `obj_regdate` date,
   `obj_sdate` date,
-  `obj_edate` DATE
+  `obj_edate` DATE,
   `objgroup_id` INT NOT NULL
 );
 
@@ -58,8 +61,7 @@ CREATE TABLE `bgm` (
   `bgm_cnt` varchar(300),
   `bgm_music` varchar(255) NOT NULL,
   `bgm_onoff` int,
-  `bgm_image` varchar(255),
-  `mplist_id` INT DEFAULT(0) NOT NULL
+  `bgm_image` varchar(255)
 );
 
 CREATE TABLE `anc` (
@@ -92,8 +94,7 @@ CREATE TABLE `mplistmgr` (
   `mplistmgr_id` int UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `mplist_id` int,
   `bgm_id` int,
-  `user_id` varchar(255),
-  `mplistmgr_name` VARCHAR(50)
+  `user_id` varchar(255)
 );
 
 CREATE TABLE `objgroup` (
@@ -103,35 +104,25 @@ CREATE TABLE `objgroup` (
 );
 
 CREATE TABLE `id_check` (
-	`user_id` VARCHARACTER(50)
+	`user_id` VARCHAR(50)
 );
 
-ALTER TABLE `timer` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
+-- 🔗 외래키 설정
 ALTER TABLE `tema` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `obj` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `jour` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `bgm` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
-ALTER TABLE `bgm` ADD FOREIGN KEY (`mplist_id`) REFERENCES `mplist` (`mplist_id`) ON DELETE CASCADE;
-
 ALTER TABLE `anc` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `notifi` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `mplist` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `mplistmgr` ADD FOREIGN KEY (`bgm_id`) REFERENCES `bgm` (`bgm_id`) ON DELETE CASCADE;
-
 ALTER TABLE `mplistmgr` ADD FOREIGN KEY (`mplist_id`) REFERENCES `mplist` (`mplist_id`) ON DELETE CASCADE;
-
 ALTER TABLE `mplistmgr` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `objgroup` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
-
 ALTER TABLE `obj` ADD FOREIGN KEY (`objgroup_id`) REFERENCES `objgroup` (`objgroup_id`) ON DELETE CASCADE;
-
 ALTER TABLE `id_check` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
+ALTER TABLE `user_timer` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+ALTER TABLE `user_timer` ADD FOREIGN KEY (`timer_id`) REFERENCES `timer` (`timer_id`);
+
+INSERT INTO timer (timer_title, timer_cnt, timer_img)
+VALUES ('기본 타이머', '기본으로 적용되는 타이머입니다.', '기본타이머.png');
