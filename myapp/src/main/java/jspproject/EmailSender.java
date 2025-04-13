@@ -30,8 +30,8 @@ public class EmailSender {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("qkrdbsdk417@gmail.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-            message.setSubject("이메일 인증 코드");
-            String content = "회원가입 완료를 위해 아래 인증 코드를 입력하세요:\n" + verificationCode;
+            message.setSubject("오늘, 내일 이메일 인증 코드");
+            String content = "회원가입 완료를 위해 아래 인증 코드를 입력하세요 : \n" + verificationCode + "\n 타인에게 노출하지 않도록 주의 하세요.";
             message.setText(content);
             Transport.send(message);
             System.out.println("인증 코드 이메일 발송 완료");
