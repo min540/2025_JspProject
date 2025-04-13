@@ -7,9 +7,8 @@
   <title>알람 타이머</title>
   <style>
     body {
-      margin: 0;
-      background: transparent;
       overflow: hidden;
+      margin: 0;
     }
 
     .timer6-container {
