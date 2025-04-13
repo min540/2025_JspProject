@@ -38,6 +38,7 @@
 	font-family: 'PFStarDust', sans-serif;
 	color: white;
 	box-shadow: 0 0 10px rgba(255,255,255,0.4);
+	text-decoration: none;
 }
 
 .add-anclist-title {
@@ -46,6 +47,7 @@
 	border-bottom: 1px solid #aaa;
 	margin-bottom: 10px;
 	font-weight: bold;
+	text-decoration: none;
 }
 
 .add-anclist-list {
@@ -70,23 +72,40 @@
 
 .add-anclist-card {
 	background-color: rgba(255, 255, 255, 0.05);
-	border: 1px solid white;
-	border-radius: 12px;
-	padding: 10px 12px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+    border: 1px solid white;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    color: white;
 }
 
 .anclist-title {
 	font-size: 13px;
 	font-weight: bold;
+	text-decoration: none;
 }
 
 .anclist-desc {
 	font-size: 12px;
 	color: rgba(255,255,255,0.7);
+	text-decoration: none;
 }
+
+.add-anclist-list a,
+.add-anclist-list a:link,
+.add-anclist-list a:visited,
+.add-anclist-list a:hover,
+.add-anclist-list a:active,
+.add-anclist-list a:focus {
+  color: #fff;               /* 텍스트 색상(흰색 등) */
+  text-decoration: none;     /* 밑줄 제거 */
+  outline: none;             /* 포커스 시 생기는 테두리 제거 */
+  border: none;              /* 혹시 링크나 포커스 스타일에 border가 있다면 제거 */
+}
+
 </style>
 
 <div class="add-anclist-container">
