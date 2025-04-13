@@ -248,7 +248,7 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
 	}
 	
 	function logout() {
-		window.location.href = "<%= path %>/jspproject/logout.jsp";
+		window.location.href = "<%= request.getContextPath() %>/jspproject/logout";
 	}
 	
 	// 프로필 on/off
