@@ -10,7 +10,7 @@ String user_id = (String)session.getAttribute("user_id");
 boolean isPreview = request.getParameter("preview") != null;
 
 if(isPreview) {
-  user_id = "PREVIEW_MODE";  // 미리보기 모드일 땐 강제 고정
+  user_id = "PREVIEW_MODE";  // 미리보기 모드일땐 강제 고정
 }
 
 UserTimerMgr mgr = new UserTimerMgr();
@@ -23,15 +23,16 @@ if(bean == null && !isPreview){
 
 int sessionTime = (bean != null) ? bean.getTimer_session() : 600;
 int breakTime = (bean != null) ? bean.getTimer_break() : 300;
-String loc = (bean != null) ? bean.getTimer_loc() : "1693,247";  //DB에 값 없을 때 기본 위치
+String loc = (bean != null) ? bean.getTimer_loc() : "1604,99";
 
 String[] pos = loc.split(",");
 String left = pos[0];
 String top = pos[1];
 
-// 미리보기면 style 초기화
 String extraStyle = "";
 if(isPreview){
-  extraStyle = "left:0px; top:0px;";
-}
+	  extraStyle = "position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);";
+	}
+
 %>
+

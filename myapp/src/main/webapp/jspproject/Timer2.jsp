@@ -136,6 +136,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+  const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
   const userId = "<%= user_id %>";
   let sessionDuration = <%= sessionTime %>;
   let breakDuration = <%= breakTime %>;
@@ -248,43 +249,45 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  let isDragging = false;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  // 드래그 (미리보기면 막기)
+  if (!isPreview) {
+    let isDragging = false;
+    let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
-  dragHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    offsetX = timerCard.offsetLeft;
-    offsetY = timerCard.offsetTop;
-    document.body.style.cursor = "grabbing";
-  });
+    dragHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      offsetX = timerCard.offsetLeft;
+      offsetY = timerCard.offsetTop;
+      document.body.style.cursor = "grabbing";
+    });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    timerCard.style.left = (offsetX + e.clientX - startX) + "px";
-    timerCard.style.top = (offsetY + e.clientY - startY) + "px";
-  });
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      timerCard.style.left = (offsetX + e.clientX - startX) + "px";
+      timerCard.style.top = (offsetY + e.clientY - startY) + "px";
+    });
 
-  document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
-      let x = parseInt(timerCard.style.left);
-      let y = parseInt(timerCard.style.top);
-      if (x < 10) x = 10;
-      if (y < 10) y = 10;
-      fetch("UpdateTimerSessionProc.jsp", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "user_id=" + userId + "&timer_loc=" + x + "," + y
-      }).then(res => res.text())
-        .then(data => console.log(data));
-    }
-  });
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = "default";
+        let x = parseInt(timerCard.style.left);
+        let y = parseInt(timerCard.style.top);
+        fetch("UpdateTimerSessionProc.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "user_id=" + userId + "&timer_loc=" + x + "," + y
+        }).then(res => res.text())
+          .then(data => console.log(data));
+      }
+    });
+  }
 });
 </script>
+
 
 </body>
 </html>
