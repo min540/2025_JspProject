@@ -1,3 +1,4 @@
+
 <!-- mainScreen.jsp -->
 <%@page import="jspproject.DBConnectionMgr"%>
 <%@page import="java.sql.ResultSet"%>
@@ -14,69 +15,76 @@
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
-		String path = request.getContextPath();
-// 세션에서 사용자 ID 가져오기
-String user_id = (String) session.getAttribute("user_id");
+    String path = request.getContextPath();
+    String user_id = (String) session.getAttribute("user_id");
 
-if (user_id != null && !user_id.trim().equals("")) {
-    // 현재 날짜 가져오기
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    String currentDate = sdf.format(new Date());
-    
-    // NotifiMgr의 objEnd 메소드 호출
-    NotifiMgr notifiMgr = new NotifiMgr();
-    notifiMgr.objEnd(user_id, currentDate);
-    
-    // 알림 메시지 가져오기
-    List<String> alertMessages = new ArrayList<>();
-    
-    Connection con = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    DBConnectionMgr pool = DBConnectionMgr.getInstance();
-    
-    try {
-        con = pool.getConnection();
-        
-        String sql = "SELECT o.obj_id, o.obj_title, o.obj_edate " +
-                 "FROM obj o " +
-                 "WHERE o.user_id = ? AND o.obj_check = 0 " +
-                 "AND (DATE(o.obj_edate) = CURDATE() OR DATE(o.obj_edate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
-    
-        pstmt = con.prepareStatement(sql);
-        pstmt.setString(1, user_id);
-        rs = pstmt.executeQuery();
-        
-        while (rs.next()) {
-            String title = rs.getString("obj_title");
-            Date edate = rs.getDate("obj_edate");
-            
-            String formattedDate = sdf.format(edate);
-            
-            if (formattedDate.equals(currentDate)) {
-                alertMessages.add("작업 목표 마감일 알림: '" + title + "'의 마감일이 오늘입니다.");
-            } else {
-                alertMessages.add("작업 목표 마감일 지남 알림: '" + title + "'의 마감일이 지났습니다.");
-            }
+    // ✅ 배경 초기값 (기본값)
+ String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
+
+    if (user_id != null && !user_id.trim().equals("")) {
+        // ✅ 현재 적용된 테마 이미지 가져오기
+        jspproject.TemaMgr temaMgr = new jspproject.TemaMgr();
+        jspproject.TemaBean currentTema = temaMgr.getOnTema(user_id);
+        if (currentTema != null && currentTema.getTema_img() != null) {
+        	appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
+
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        try { if (rs != null) rs.close(); } catch (Exception e) {}
-        try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
-        if (con != null) pool.freeConnection(con);
+
+        // 🔔 알림용 날짜 처리
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = sdf.format(new Date());
+
+        // NotifiMgr 호출
+        NotifiMgr notifiMgr = new NotifiMgr();
+        notifiMgr.objEnd(user_id, currentDate);
+
+        List<String> alertMessages = new ArrayList<>();
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        DBConnectionMgr pool = DBConnectionMgr.getInstance();
+
+        try {
+            con = pool.getConnection();
+
+            String sql = "SELECT o.obj_id, o.obj_title, o.obj_edate " +
+                         "FROM obj o " +
+                         "WHERE o.user_id = ? AND o.obj_check = 0 " +
+                         "AND (DATE(o.obj_edate) = CURDATE() OR DATE(o.obj_edate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
+
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String title = rs.getString("obj_title");
+                Date edate = rs.getDate("obj_edate");
+
+                String formattedDate = sdf.format(edate);
+
+                if (formattedDate.equals(currentDate)) {
+                    alertMessages.add("작업 목표 마감일 알림: '" + title + "'의 마감일이 오늘입니다.");
+                } else {
+                    alertMessages.add("작업 목표 마감일 지남 알림: '" + title + "'의 마감일이 지났습니다.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
+            if (con != null) pool.freeConnection(con);
+        }
+
+        if (!alertMessages.isEmpty()) {
+            session.setAttribute("alertMessages", alertMessages);
+        }
     }
-    
-    // 알림이 있으면 세션에 저장
-    if (!alertMessages.isEmpty()) {
-        session.setAttribute("alertMessages", alertMessages);
-    }
-}
-//세션에서 알림 메시지 가져오기
-List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
-if (alertMessages != null && !alertMessages.isEmpty()) {
-    // 알림 메시지가 있으면 모달 표시
-    session.removeAttribute("alertMessages"); // 일회성으로 사용하고 제거
+
+    List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
+    if (alertMessages != null && !alertMessages.isEmpty()) {
+        session.removeAttribute("alertMessages");
 %>
 
 <div class="modal-container" id="notificationModal">
@@ -99,10 +107,11 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
 	<!-- 알림 소리 플레이어 -->
 	<audio id="notifiaudio">
 		<source src="sound/alarm.mp3" type="audio/mp3">
-		Your browser does not support the audio element.
+		<!--  Your browser does not support the audio element.-->
 	</audio>
 
    <% } %>
+   <body style="background-image: url('<%= appliedBackground %>'); background-size: cover;">
 <!-- 프로필 아이콘 -->
 
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
@@ -197,6 +206,11 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
     <jsp:include page="Timer1.jsp" />
+</div>
+
+<!-- 타이머 설정 영역 -->
+<div id="timerWrapper1" style="display: none;">
+    <jsp:include page="TimerDesign.jsp" />
 </div>
 
 <!-- 음악 리스트 -->
@@ -742,5 +756,9 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
 	function closeModal() {
         document.getElementById('notificationModal').style.display = 'none';
     }
-	
+
 </script>
+
+
+	
+
