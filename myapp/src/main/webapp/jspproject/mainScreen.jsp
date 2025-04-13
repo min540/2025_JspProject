@@ -95,6 +95,7 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
         </div>
     </div>
 </div>
+   <% } %>
 <!-- 프로필 아이콘 -->
 
 <img class = "iconLeftUp" src="icon/아이콘_프로필_1.png" border="0" alt="" onclick = "toggleProfile()"> 
@@ -132,6 +133,7 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
              data-index="<%=i%>">
     <% } %>
 </div>
+
 
 <!-- 노래 제목 표시-->
 <b class = "musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
@@ -723,6 +725,3 @@ if (alertMessages != null && !alertMessages.isEmpty()) {
         document.getElementById('notificationModal').style.display = 'none';
     }
 </script>
-<%
-    }
-%>
