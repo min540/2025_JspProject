@@ -135,11 +135,11 @@ body, html {
 </style>
 </head>
 <script>
-  function handleCredential(response) {
+/*   function handleCredential(response) {
     console.log("✅ 구글 로그인 성공:", response.credential);
 
     // 여기서 JWT 토큰을 서버로 보내거나 처리하면 됨
-  }
+  } */
   function parseJwt(token) {
 	  const base64Url = token.split('.')[1];
 	  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -201,6 +201,10 @@ body, html {
 					 <div style="width: 400px; margin: 0 auto; color: red; text-align: center; padding: 5px; border-radius: 10px; position: absolute; margin-top: -35; margin-left: -30;">
 			            아이디 또는 비밀번호가 올바르지 않습니다.
 			        </div>
+				<%} else if("duplicate_login".equals(error)) {%>
+					<div style="width: 400px; margin: 0 auto; color: red; text-align: center; padding: 5px; border-radius: 10px; position: absolute; margin-top: -35; margin-left: -75;">
+						이미 로그인 중인 계정입니다.
+					</div>
 				<%} %>
 			<a href="findId.jsp" class="find-button">아이디/비밀번호 찾기</a>
 			<a href="register.jsp" class="signup-button">회원가입</a>

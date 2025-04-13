@@ -25,6 +25,7 @@ public class ObjUpdateServlet extends HttpServlet {
 	    // 값 추출
 	    int obj_id = json.getInt("obj_id");
 	    String obj_title = json.optString("obj_title", "");
+	    String obj_sdate = json.optString("obj_sdate", null);
 	    String obj_edate = json.optString("obj_edate", null);
 
 	    // edate가 빈 문자열이면 null 처리
@@ -36,7 +37,9 @@ public class ObjUpdateServlet extends HttpServlet {
 	    ObjBean bean = new ObjBean();
 	    bean.setObj_id(obj_id);
 	    bean.setObj_title(obj_title);
+	    bean.setObj_sdate(obj_sdate);
 	    bean.setObj_edate(obj_edate);
+	   
 
 	    // DB 업데이트
 	    ObjMgr mgr = new ObjMgr();
