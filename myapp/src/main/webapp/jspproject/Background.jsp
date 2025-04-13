@@ -285,7 +285,7 @@
     justify-content: center;     /* 가로 가운데 (텍스트 기준) */
     padding: 0;
     text-align: center;
-    line-height: 100px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
+    line-height: 20px;          /* 높이와 같게 맞춰서 가운데처럼 보이게 함 */
 
     /* ✅ 다크 스타일 추가 */
     background-color: #2e2e2e;   /* 짙은 회색 */
@@ -294,6 +294,11 @@
     font-family: 'PFStarDust', sans-serif;
     box-shadow: 0 0 12px rgba(123, 44, 191, 0.4);  /* 살짝 보라빛 glow */
 	}
+	
+	.background-description textarea::-webkit-scrollbar {
+    width: 0px;       /* 스크롤바 너비를 0으로 */
+    height: 0px;
+}
 
     .background-cancel-button {
     display: flex;
@@ -413,33 +418,41 @@
 		
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
-		        <img class="iconbackgroundList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬"  />
+		        <img class="iconbackgroundList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" id="sortButton" />
 		        <input class="background-search" type="text" placeholder="배경 제목 검색" />
 		        <img id="searchButton" class="iconbackgroundList" src="icon/아이콘_검색_1.png" alt="검색" >
 		    </div>
 		</div>
 
 	<div class="background-list" id="backgroundList">
-		<%
-			String user_id = (String) session.getAttribute("user_id");
-		    TemaMgr mgr = new TemaMgr();
-			Vector<TemaBean> vlist = mgr.listTema(user_id); // 테마 리스트 가져오기
-		
-		    for (int i = 0; i < vlist.size(); i++) {
-		        TemaBean bean = vlist.get(i);
-		        int tema_id = bean.getTema_id();
-		        String imgName = bean.getTema_img();
-		        String title = bean.getTema_title();
-		        String description = bean.getTema_cnt();
-		%>
+	
+			<%
+			    String user_id = (String) session.getAttribute("user_id");
+			    TemaMgr mgr = new TemaMgr();
+			
+			    // 현재 적용 중인 테마 가져오기
+			    TemaBean currentTema = mgr.getOnTema(user_id);
+			    String currentImgName = currentTema != null ? currentTema.getTema_img() : "";
+			
+			    Vector<TemaBean> vlist = mgr.listTema(user_id); // 테마 리스트 가져오기
+			
+			    for (int i = 0; i < vlist.size(); i++) {
+			        TemaBean bean = vlist.get(i);
+			        int tema_id = bean.getTema_id();
+			        String imgName = bean.getTema_img();
+			        String title = bean.getTema_title();
+			        String description = bean.getTema_cnt();
+			
+			        //현재 적용된 배경인지 여부
+			        boolean isCurrent = imgName.equals(currentImgName);
+			%>
 		    <div class="background-list-item" data-tema-id="<%= tema_id %>">
 		        <button class="background-image-button"
 		                onclick="selectBackground(this)"
 		                data-img="<%= imgName %>"
 		                data-title="<%= title %>"
 		                data-description="<%= description %>">
-		            <img src="<%= request.getContextPath() %>/jspproject/img/<%= imgName %>"
-		                 alt="<%= title %>" />
+		            <img src="<%= request.getContextPath() %>/jspproject/backgroundImg/<%= imgName %>" alt="<%= title %>" />
 		        </button>
 		
 		        <img class="delete-icon"
@@ -448,7 +461,9 @@
 		             onclick="deleteImage(this)" />
 		    </div>
 		<%}%>
-		
+			<script>
+			    const currentBackgroundImage = "<%= currentImgName %>";
+			</script>
 		<form id="updateTemaForm" action="updateTema.jsp" method="post" enctype="multipart/form-data" style="display:none;">
 		    <input type="hidden" name="tema_id" id="updateTemaId">
 		    <input type="hidden" name="tema_cnt" id="updateTemaCnt">
@@ -484,11 +499,11 @@
     <div class="background-right">
     	<div class="preview-icons">
     		<img class="iconbackgroundList" src="icon/아이콘_수정_1.png" alt="수정" onclick="enableBackgroundEditMode()">
-    		<img class="iconbackgroundList" src="icon/아이콘_삭제_1.png" alt="삭제">
+    		<img class="iconbackgroundList" src="icon/아이콘_삭제_1.png" alt="삭제" onclick="deleteSelectedBackground()">
 		</div>
 		
 			<div class="background-preview">
-			    <img class="backgroundImg" src="backgroundImg/background1.gif" alt="배경 이미지">
+			    <img class="backgroundImg"src="<%= request.getContextPath() %>/jspproject/backgroundImg/background1.gif"alt="배경 이미지">
 			    <input id="backgroundTitleInput" type="text" value="배경 제목" disabled
 			        style="text-align:center; font-size:1.1vw; margin-top:5px; background:none; border:none; color:white; font-family:'PFStarDust', sans-serif;">
 			</div>
@@ -500,13 +515,13 @@
 
         <!-- 가운데 위 버튼 -->
 		<div class="background-cancel-button">
-		    <button class="btn-purple">배경 취소</button>
+		    <button class="btn-purple" id="cancelBackgroundBtn" onclick="cancelBackground()">배경 취소</button>
 		</div>
 		
 		<!-- 아래 좌우 버튼 -->
 		<div class="background-right-buttons">
 			<button class="btn-dark" id="submitBackgroundEditBtn" onclick="saveBackgroundDescription()" disabled>수정</button>
-		    <button class="btn-purple">적용</button>
+		    <button class="btn-purple" onclick="applyBackground()">적용</button>
 		</div>
 
     </div>
@@ -525,7 +540,7 @@ function saveBackgroundDescription() {
 
     items.forEach(item => {
         const btn = item.querySelector(".background-image-button");
-        if (btn.getAttribute("data-img") === fileName) {
+        if (btn.getAttribute("data-img").toLowerCase() === fileName.toLowerCase()) {
             temaId = item.getAttribute("data-tema-id");
         }
     });
@@ -556,7 +571,7 @@ function saveBackgroundDescription() {
             // ✅ 리스트 항목의 description과 title 모두 갱신
             items.forEach(item => {
                 const btn = item.querySelector(".background-image-button");
-                if (btn.getAttribute("data-img") === fileName) {
+                if (btn.getAttribute("data-img").toLowerCase() === fileName.toLowerCase()) {
                     btn.setAttribute("data-description", description);
                     btn.setAttribute("data-title", title); // 제목도 업데이트
                 }
@@ -578,8 +593,15 @@ function saveBackgroundDescription() {
 function deleteImage(el) {
     const item = el.closest('.background-list-item');
     const temaId = item.getAttribute('data-tema-id');
-    const deletedImgName = item.querySelector("img").getAttribute("src").split("/").pop(); // 삭제될 이미지 파일명
+    const deletedImgName = item.querySelector("img").getAttribute("src").split("/").pop();
 
+    // ✅ 현재 적용 중인 이미지면 삭제 방지
+    if (deletedImgName === currentBackgroundImage) {
+        alert("현재 적용 중인 배경입니다. 삭제할 수 없습니다.");
+        return;
+    }
+
+    // 나머지 삭제 로직 동일
     if (confirm("정말 삭제하시겠습니까?")) {
         fetch("<%=request.getContextPath()%>/jspproject/deleteTema.jsp?tema_id=" + temaId)
             .then(res => res.json())
@@ -587,14 +609,6 @@ function deleteImage(el) {
                 if (data.status === "ok") {
                     item.remove();
                     alert("삭제되었습니다.");
-
-                    // 현재 선택된 미리보기 이미지가 삭제된 이미지였다면 초기화
-                    const previewImg = document.querySelector(".backgroundImg").src;
-                    if (previewImg.includes(deletedImgName)) {
-                        document.querySelector(".backgroundImg").src = "backgroundImg/background1.gif";
-                        document.getElementById("backgroundTitleInput").value = "배경 제목";
-                        document.querySelector(".background-description textarea").value = "배경 설명";
-                    }
                 } else {
                     alert("삭제 실패: " + data.message);
                 }
@@ -606,6 +620,96 @@ function deleteImage(el) {
     }
 }
 
+function deleteSelectedBackground() {
+    const fileName = document.querySelector(".backgroundImg").src.split("/").pop();
+    const items = document.querySelectorAll(".background-list-item");
+
+    let targetItem = null;
+    let temaId = null;
+
+    items.forEach(item => {
+        const btn = item.querySelector(".background-image-button");
+        if (btn.getAttribute("data-img").toLowerCase() === fileName.toLowerCase()) {
+            targetItem = item;
+            temaId = item.getAttribute("data-tema-id");
+        }
+    });
+
+    if (!temaId || !targetItem) {
+        alert("삭제할 항목을 찾을 수 없습니다.");
+        return;
+    }
+
+    // 현재 적용 중인 배경은 삭제 방지
+    if (fileName === currentBackgroundImage) {
+        alert("현재 적용 중인 배경은 삭제할 수 없습니다.");
+        return;
+    }
+
+    if (confirm("이 배경을 삭제하시겠습니까?")) {
+        fetch("jspproject/deleteTema.jsp?tema_id=" + temaId)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "ok") {
+                    targetItem.remove();
+                    alert("삭제되었습니다!");
+
+                    // 🔄 오른쪽 미리보기 초기화
+                    document.querySelector(".backgroundImg").src = "";
+                    document.getElementById("backgroundTitleInput").value = "";
+                    document.getElementById("backgroundDescription").value = "";
+                } else {
+                    alert("삭제 실패: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error("삭제 에러:", err);
+                alert("에러 발생: " + err);
+            });
+    }
+}
+//배경취소
+function cancelBackground() {
+    fetch("cancelTema.jsp")
+        .then(res => res.text())
+        .then(result => {
+            if (result.trim() === "ok") {
+                alert("기본 배경으로 설정되었습니다.");
+
+                const imgPath = "<%= request.getContextPath() %>/jspproject/backgroundImg/tema1.jpg";
+                document.querySelector(".backgroundImg").src = imgPath;
+                document.getElementById("backgroundTitleInput").value = "기본 배경";
+                document.getElementById("backgroundDescription").value = "기본 배경 설명";
+
+                document.body.style.backgroundImage = `url('${imgPath}')`;
+
+                // 버튼 비활성화
+                updateCancelButtonState("tema1.jpg");
+            } else {
+                alert("실패: " + result);
+            }
+        })
+        .catch(err => {
+            alert("에러 발생: " + err);
+        });
+}
+//현재 배경이미지만 배경취소 활성화
+function updateCancelButtonState(currentImgName) {
+    const cancelBtn = document.getElementById("cancelBackgroundBtn");
+
+    if (!cancelBtn) return;
+
+    // 기본 배경이면 비활성화
+    if (currentImgName.toLowerCase() === "tema1.jpg") {
+        cancelBtn.disabled = true;
+        cancelBtn.style.opacity = 0.5;
+        cancelBtn.style.cursor = "not-allowed";
+    } else {
+        cancelBtn.disabled = false;
+        cancelBtn.style.opacity = 1;
+        cancelBtn.style.cursor = "pointer";
+    }
+}
 
 function addbackgroundItem() {
     document.getElementById("uploadModal").style.display = "flex";  
@@ -618,7 +722,7 @@ function closeUploadModal() {
 function selectBackground(button) {
     // 수정 모드였으면 자동으로 해제
     if (isEditMode) {
-        disableBackgroundEditMode(); //수정모드해제
+        disableBackgroundEditMode();
     }
 
     const imgName = button.getAttribute("data-img");
@@ -628,13 +732,17 @@ function selectBackground(button) {
     selectedTemaId = button.closest('.background-list-item').getAttribute("data-tema-id");
 
     const contextPath = "<%= request.getContextPath() %>";
-    const fullPath = contextPath + "/jspproject/img/" + imgName;
+    const fullPath = contextPath + "/jspproject/backgroundImg/" + imgName;
 
-    // 🔄 오른쪽 영역 업데이트
+    // 🔄 오른쪽 미리보기 영역 업데이트
     document.querySelector(".backgroundImg").src = fullPath;
     document.getElementById("backgroundTitleInput").value = title;
     document.querySelector(".background-description textarea").value = description;
+
+    // ✅ 배경 취소 버튼 활성/비활성 업데이트
+    updateCancelButtonState(imgName);
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".background-search");
@@ -665,6 +773,21 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+    //글자 순 정렬
+    document.getElementById("sortButton").addEventListener("click", function () {
+        const listContainer = document.getElementById("backgroundList");
+        const items = Array.from(listContainer.querySelectorAll(".background-list-item"));
+
+        // 리스트 항목을 제목 기준 오름차순으로 정렬
+        items.sort((a, b) => {
+            const titleA = a.querySelector("button").getAttribute("data-title").toLowerCase();
+            const titleB = b.querySelector("button").getAttribute("data-title").toLowerCase();
+            return titleA.localeCompare(titleB, 'ko'); // 'ko'로 한글도 고려
+        });
+
+        // 기존 리스트 지우고 정렬된 순서로 다시 붙이기
+        items.forEach(item => listContainer.appendChild(item));
+    });
 
     const uploadForm = document.getElementById("uploadForm");
     if (uploadForm) {
@@ -678,17 +801,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
-                if (data.status === "ok") {
-                    alert("업로드 완료!");
-                    closeUploadModal();
-
-                    const button = appendNewBackgroundItem(data.tema_img, data.tema_title, data.tema_cnt);
-                    selectBackground(button); // 새로 추가된 버튼을 선택
-                } else {
-                    alert("업로드 실패: " + data.message);
-                }
-            })
+			.then(data => {
+			    if (data.status === "ok") {
+			        alert("업로드 완료!");
+			        closeUploadModal();
+			
+			        appendNewBackgroundItem(data.tema_img, data.tema_title, data.tema_cnt);
+			
+			        // 자동으로 selectBackground 호출 ❌ 하지 않음
+			        // 사용자가 적용 버튼을 눌러야 실제 반영되도록 유지
+			    } else {
+			        alert("업로드 실패: " + data.message);
+			    }
+			})
             .catch(err => {
                 alert("에러 발생: " + err);
             });
@@ -711,7 +836,7 @@ function appendNewBackgroundItem(imgName, title, description) {
     button.setAttribute("data-description", description);
 
     const img = document.createElement("img");
-    img.src = "jspproject/img/" + imgName;
+    img.src = "jspproject/backgroundImg/" + imgName;
     img.alt = title;
 
     const deleteIcon = document.createElement("img");
@@ -744,7 +869,6 @@ function enableBackgroundEditMode() {
     isEditMode = true;
 }
 
-
 function disableBackgroundEditMode() {
     const descriptionArea = document.querySelector(".background-description textarea");
 
@@ -757,5 +881,39 @@ function disableBackgroundEditMode() {
     isEditMode = false;
 }
 
+function applyBackground() {
+    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
+    const items = document.querySelectorAll(".background-list-item");
+
+    let temaId = null;
+    items.forEach(item => {
+        const btn = item.querySelector(".background-image-button");
+        if (btn.getAttribute("data-img").toLowerCase() === fileName.toLowerCase()) {
+            temaId = item.getAttribute("data-tema-id");
+        }
+    });
+
+    if (!temaId) {
+        alert("선택된 배경의 ID를 찾을 수 없습니다.");
+        return;
+    }
+
+    // 서버에 적용 요청
+    fetch("applyTema.jsp?tema_id=" + temaId)
+        .then(res => res.text())
+        .then(result => {
+            if (result.trim() === "ok") {
+                alert("배경이 적용되었습니다!");
+                // 메인 화면 배경도 변경되도록 처리
+                document.body.style.backgroundImage = `url('jspproject/backgroundImg/${fileName}')`;
+            } else {
+                alert("적용 실패: " + result);
+            }
+        })
+        .catch(err => {
+            console.error("에러:", err);
+            alert("에러 발생: " + err);
+        });
+}
 
 </script>

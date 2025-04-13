@@ -1,8 +1,23 @@
 @charset "UTF-8";
 
 /*배경화면 설정*/
-body {
-    background-image: url('../tema/background1.jpg');
+body.bg-background1 {
+    background-image: url('../jspproject/backgroundImg/background1.jpg');
+}
+
+body.bg-mountain {
+    background-image: url('../jspproject/backgroundImg/mountain.jpg');
+}
+
+body.bg-sea {
+    background-image: url('../jspproject/backgroundImg/sea.jpg');
+}
+
+body.bg-forest {
+    background-image: url('../jspproject/backgroundImg/forest.jpg');
+}
+
+body[class^="bg-"] {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
