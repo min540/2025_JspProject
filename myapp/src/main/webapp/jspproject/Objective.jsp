@@ -396,8 +396,7 @@
         }
         
         //이동시 재등록
-        
-        
+
        function escapeHtml(str) {
 	    if (!str) return "";
 	    return str
