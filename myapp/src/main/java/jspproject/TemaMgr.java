@@ -51,7 +51,20 @@ public class TemaMgr {
 	                               .toLowerCase();
 	        }
 	        
+	        // 2. 실제 저장된 원본 파일
+            File uploadedFile = multi.getFile("tema_img");
 
+            // 3. 정제된 이름으로 저장할 경로
+            File renamedFile = new File(uploadedFile.getParent(), tema_img);
+            
+         // 4. 이름 변경
+            if (!uploadedFile.getName().equals(tema_img)) {
+                boolean renamed = uploadedFile.renameTo(renamedFile);
+                System.out.println("✅ 파일명 변경됨: " + renamed);
+            } else {
+                System.out.println("⚠️ 이미 동일 이름입니다. rename 생략");
+            }
+        
 	        int tema_dark = 0;
 	        int tema_onoff = 0;
 
