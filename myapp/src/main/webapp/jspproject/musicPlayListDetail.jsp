@@ -1119,11 +1119,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	                    currentBgmIndex = index;
 	                    loadMusicPreviewByBgmId(bgmId, true);
 
-	                    // ✅ 메인 음악 바 연동
-	                    syncMainMusicBar({
-	                        title: item.dataset.bgmName,
-	                        src: item.dataset.bgmMusic
-	                    });
 	                });
 	            });
 	        })
@@ -1161,16 +1156,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 				  playBtn.src = "icon/아이콘_일시정지_1.png";
 				  playBtn.setAttribute("data-state", "playing");
 				  audio.play();
-				
-				  // ✅ 메인 플레이어 상태 동기화 추가
-				  const mainAudio = document.getElementById("mainAudioPlayer");
-				  const mainBtn = document.getElementById("mainPlayToggleBtn");
-				  if (mainAudio && mainBtn) {
-				    mainAudio.pause();
-				    mainAudio.currentTime = 0;
-				    mainBtn.src = "icon/아이콘_일시정지_1.png";
-				    mainBtn.setAttribute("data-state", "playing");
-				  }
 				}	
 		        // ✅ onoff 상태 갱신은 항상 수행
 		        const mplistId = document.getElementById("hiddenMplistId_detail").value;
@@ -1236,12 +1221,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            nextAudio.play();
 	            nextBtn.src = "icon/아이콘_일시정지_1.png";
 	            nextBtn.setAttribute("data-state", "playing");
-	
-	            // ✅ 메인 플레이어와 동기화
-	            syncMainMusicBar({
-	              title: nextItem.dataset.bgmName,
-	              src: nextItem.dataset.bgmMusic
-	            }, true);
 	          }
 	        })
 	        .catch(err => {
@@ -1281,12 +1260,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	      prevBtn.setAttribute("data-state", "playing");
 	
 	      updateOnOffStates(prevId, document.getElementById("hiddenMplistId_detail").value);
-	
-	      // 🔥 메인 플레이어 연동 추가
-	      syncMainMusicBar({
-	        title: window.currentBgmList[window.currentBgmIndex].dataset.bgmName,
-	        src: window.currentBgmList[window.currentBgmIndex].dataset.bgmMusic
-	      }, true);
+
 	    }
 	  }, 500);
 	}
@@ -1320,16 +1294,6 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		    audio.pause();
 		    playBtn.src = "icon/아이콘_재생_1.png";
 		    playBtn.setAttribute("data-state", "paused");
-		  }
-
-		  // ✅ main 플레이어는 따로 컨트롤할 필요 없으면 이 부분 생략 가능
-		  const mainAudio = document.getElementById("mainAudioPlayer");
-		  const mainBtn = document.getElementById("mainPlayToggleBtn");
-		  if (mainAudio && mainBtn) {
-		    mainAudio.pause();
-		    mainAudio.currentTime = 0;
-		    mainBtn.src = "icon/아이콘_재생_1.png";
-		    mainBtn.setAttribute("data-state", "playing");
 		  }
 		};
 

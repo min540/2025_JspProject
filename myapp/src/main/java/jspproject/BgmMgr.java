@@ -323,6 +323,39 @@ public class BgmMgr {
 
         return result;
     }
+    
+    public BgmBean getCurrentBgm(String user_id) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        BgmBean bean = null;
+
+        try {
+            con = pool.getConnection();
+            String sql = "SELECT * FROM bgm WHERE user_id = ? AND bgm_onoff = 1 LIMIT 1";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                bean = new BgmBean();
+                bean.setBgm_id(rs.getInt("bgm_id"));
+                bean.setUser_id(rs.getString("user_id"));
+                bean.setBgm_name(rs.getString("bgm_name"));
+                bean.setBgm_cnt(rs.getString("bgm_cnt"));
+                bean.setBgm_music(rs.getString("bgm_music"));
+                bean.setBgm_onoff(rs.getInt("bgm_onoff"));
+                bean.setBgm_image(rs.getString("bgm_image"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt, rs);
+        }
+
+        return bean;
+    }
+
 
 
 }
