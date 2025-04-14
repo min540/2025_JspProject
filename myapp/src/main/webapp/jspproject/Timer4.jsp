@@ -103,6 +103,25 @@
     .timer4-btn:hover {
       color: #E53935;
     }
+      /* 알림 스타일 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -208,6 +227,14 @@ document.addEventListener("DOMContentLoaded", function () {
           updateProgress();
         } else {
           isSession = !isSession;
+          
+          // 알림 표시
+	      if (isSession) {
+	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+	      } else {
+	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+	      }
+	      
           timeLeft = isSession ? sessionDuration : breakDuration;
           updateProgress();
         }
@@ -218,6 +245,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+//showNotification 함수 추가
+  const showNotification = (message) => {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // 표시 애니메이션을 위해 약간의 지연 후 show 클래스 추가
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    // 5초 후 알림 제거
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300); // 페이드 아웃 애니메이션이 끝날 때까지 기다림
+    }, 5000);
+  };
+  
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
