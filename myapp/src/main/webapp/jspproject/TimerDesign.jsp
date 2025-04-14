@@ -23,10 +23,10 @@
 
 <body>
 
-<div class="timer-container">
+<div class="timer-container" id="timerContainer">
   <div class="timer-left">
     <div class="timer-tab">
-      <button class="tab-btn" onclick="location.href='Background.jsp'">배경화면</button>
+      <button class="tab-btn" onclick="switchToBackground()">배경화면</button>
       <button class="tab-btn active">타이머</button>
     </div>
 
@@ -74,7 +74,7 @@ const timerData = [
     type: <%= t.getTimer_id() %>,
     session: 600,
     rest: 300
-  }<%= (i < timerList.size() - 1) ? "," : "" %>
+  }<%= (i < timerList.size() - 1) ? "," : ""%>
 <% } %>
 ];
 
@@ -201,6 +201,15 @@ document.getElementById("btnCancel").addEventListener("click", function(){
 	  }
 	});
 });
+
+function switchToBackground() {
+    const timerWrapper = document.getElementById("timerWrapper1");
+    if (timerWrapper) timerWrapper.style.display = "none";
+
+    const backgroundWrapper = document.getElementById("backgroundWrapper");
+    if (backgroundWrapper) backgroundWrapper.style.display = "flex";
+}
+
 </script>
 </body>
 </html>
