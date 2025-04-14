@@ -104,12 +104,11 @@
     </div>
 </div>
 
-	<!-- 알림 소리 플레이어 -->
+	<!-- 작업 목록 알림 소리 플레이어 -->
 	<audio id="notifiaudio">
 		<source src="sound/alarm.mp3" type="audio/mp3">
 		<!--  Your browser does not support the audio element.-->
 	</audio>
-
    <% } %>
    <body style="background-image: url('<%= appliedBackground %>'); background-size: cover;">
 <!-- 프로필 아이콘 -->
