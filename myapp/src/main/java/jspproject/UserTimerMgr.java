@@ -165,27 +165,53 @@ public class UserTimerMgr {
 		}
 	}
 	
-	// 타이머 아이디 업데이트
-	public boolean updateTimerId(String user_id, int timer_id){
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = "UPDATE user_timer SET timer_id=? WHERE user_id=?";
+	//타이머 아이디 업데이트
+	public boolean updateTimerId(String user_id, int timer_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    String sql = "UPDATE user_timer SET timer_id=? WHERE user_id=?";
+	    boolean isSuccess = false;
 
-		try {
-			con = pool.getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, timer_id);
-			pstmt.setString(2, user_id);
+	    try {
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, timer_id);
+	        pstmt.setString(2, user_id);
 
-			int count = pstmt.executeUpdate();
-			return count > 0; // 성공하면 true
+	        int result = pstmt.executeUpdate();
+	        if(result > 0) isSuccess = true;
 
-		} catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			pool.freeConnection(con, pstmt);
-		}
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt);
+	    }
+	    return isSuccess;
+	}
+
+	public int getTimerId(String user_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int timer_id = 1;
+
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT timer_id FROM user_timer WHERE user_id=?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, user_id);
+	        rs = pstmt.executeQuery();
+
+	        if(rs.next()){
+	            timer_id = rs.getInt("timer_id");
+	        }
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+
+	    return timer_id;
 	}
 
 

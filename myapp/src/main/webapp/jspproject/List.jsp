@@ -119,12 +119,12 @@
             <div class="title-label">새로운 목록</div>
             <div class="list-container" id="listContainer"></div>
             <button class="custom-button add-btn">＋ 리스트 추가하기</button>
-            <button class="custom-button view-btn">목록 확인</button>
+            <button class="custom-button view-btn" onclick="loadCategoryButtons()">목록 확인</button>
         </div>
     </div>
 
     <script>
-    function reloadCategoryButtons() {
+   /*  function reloadCategoryButtons() {
         const listContainer = document.getElementById('listButtonContainer');
         listContainer.innerHTML = ""; // 기존 버튼들 제거
 
@@ -158,8 +158,10 @@
                 });
                 listContainer.appendChild(editBtn);
             });
-    }
+    } */
 		
+    
+    
     function attachDeleteGroupListener(deleteBtn, itemElement, groupId, input) {
         deleteBtn.addEventListener("click", () => {
             const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);

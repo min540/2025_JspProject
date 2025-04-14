@@ -20,18 +20,27 @@
 <%
     String path = request.getContextPath();
     String user_id = (String) session.getAttribute("user_id");
-
+    // 알림을 이미 표시했는지 확인하는 플래그 추가 - 올바른 초기화 방법
+    Boolean notificationsShown = (Boolean) session.getAttribute("notificationsShown");
     // ✅ 배경 초기값 (기본값)
-  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
+
+
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
+
 
     if (user_id != null && !user_id.trim().equals("")) {
         // ✅ 현재 적용된 테마 이미지 가져오기
         jspproject.TemaMgr temaMgr = new jspproject.TemaMgr();
         jspproject.TemaBean currentTema = temaMgr.getOnTema(user_id);
-        if (currentTema != null && currentTema.getTema_img() != null) {
-        	appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
-
+        if (currentTema != null && currentTema.getTema_img() != null && !currentTema.getTema_img().trim().equals("")) {
+            appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
         }
+
+
+
+
+        // 알림을 아직 표시하지 않았을 때만 알림 생성 처리
+        if (notificationsShown == null || !notificationsShown) {
 
         // 🔔 알림용 날짜 처리
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -82,9 +91,14 @@
 
         if (!alertMessages.isEmpty()) {
             session.setAttribute("alertMessages", alertMessages);
+            // 알림을 표시했다고 세션에 표시
+            session.setAttribute("notificationsShown", true);
+        }else{
+            // 알림이 없어도 표시했다고 마킹
+            session.setAttribute("notificationsShown", true);
+    }
         }
     }
-
     List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
     if (alertMessages != null && !alertMessages.isEmpty()) {
         session.removeAttribute("alertMessages");
@@ -206,7 +220,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer1.jsp" />
+   <jsp:include page="GetTimerView.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
@@ -304,9 +318,15 @@
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
-        var backgroundDiv = document.getElementById("backgroundWrapper");
-        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
-    }
+	  const backgroundWrapper = document.getElementById("backgroundWrapper");
+	  const timerWrapper1 = document.getElementById("timerWrapper1");
+	
+	  const isOpen = (backgroundWrapper?.style.display === "flex") || (timerWrapper1?.style.display === "flex");
+	
+	  [backgroundWrapper, timerWrapper1].forEach(el => {
+	    if (el) el.style.display = isOpen ? "none" : (el === backgroundWrapper ? "flex" : "none");
+	  });
+	}
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
