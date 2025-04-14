@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
     const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb";
+    progressCircle.style.stroke = isSession ? "#B0C4DE" : "#F0F8FF";
     progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };

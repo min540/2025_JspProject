@@ -420,7 +420,7 @@
 	    String contextPath = request.getContextPath();
 		%>
 		<script>
-		    const defaultImage = "<%= contextPath %>/jspproject/backgroundImg/tema1.jpg";
+		    const defaultImage = "<%= contextPath %>/jspproject/backgroundImg/tema2.gif";
 		    const defaultTitle = "기본 배경";
 		    const defaultDescription = "기본 배경 설명";
 		</script>
@@ -435,7 +435,7 @@
 			    TemaBean currentTema = mgr.getOnTema(user_id);
 			    String currentImgName = (currentTema != null && currentTema.getTema_img() != null)
 			    	    ? currentTema.getTema_img()
-			    	    : "tema1.jpg";
+			    	    : "tema2.gif";
 			    
 			    String appliedImage = currentImgName;
 			    
@@ -702,7 +702,7 @@ function cancelBackground() {
 
                 document.body.style.backgroundImage = `url('${defaultImage}')`;
 
-                updateCancelButtonState("tema1.jpg");
+                updateCancelButtonState("tema2.gif");
             } else {
                 alert("실패: " + result);
             }
@@ -718,7 +718,7 @@ function updateCancelButtonState(selectedImgName) {
     if (!cancelBtn) return;
 
     // 소문자로 비교
-    const isDefault = selectedImgName.toLowerCase() === "tema1.jpg";
+    const isDefault = selectedImgName.toLowerCase() === "tema2.gif";
     const isApplied = selectedImgName.toLowerCase() === currentAppliedImage.toLowerCase();
 
     if (isDefault || !isApplied) {
