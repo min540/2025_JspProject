@@ -78,6 +78,16 @@
 	padding: 10px 15px;
 	cursor: pointer;
 }
+.obj-edit-btn.selected {
+	background-color: rgba(255, 255, 255, 0.3);
+	color: #ffe0fd;
+	transform: scale(1.05);
+}
+.obj-edit-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+  }
 
 .obj-completed {
 	position: absolute;
@@ -645,13 +655,17 @@ confirmDateBtn.addEventListener('click', () => {
                             const btn = document.createElement('button');
                             btn.className = 'obj-edit-btn';
                             btn.textContent = group.objgroup_name;
-
+							
                             btn.addEventListener('click', () => {
-                            	console.log("🔁 버튼 클릭:", group.objgroup_name, group.objgroup_id); // ✅ 로그 찍기
+                            	//전체 선택 취소
+                            	document.querySelectorAll('.obj-edit-btn').forEach(b => b.classList.remove('selected'));
+                            	//현재 버튼에 추가
+                            	btn.classList.add('selected');
+                            	
                                 localStorage.setItem("currentList", group.objgroup_id);
                                 localStorage.getItem("currentList");
                                 localStorage.setItem("currentListName", group.objgroup_name);
-                             // ✅ 서버 세션에 현재 선택된 그룹 전달!
+                              // ✅ 서버 세션에 현재 선택된 그룹 전달!
                                 fetch("objCurrentGroupSetServlet", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
@@ -662,7 +676,7 @@ confirmDateBtn.addEventListener('click', () => {
                                 })
                                 .catch(err => {
                                     console.error("❌ 그룹 설정 실패:", err);
-                                });
+                                }); 
 
                             });
 
