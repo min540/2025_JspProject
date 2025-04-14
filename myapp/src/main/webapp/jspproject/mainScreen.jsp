@@ -17,7 +17,8 @@
 <%
     String path = request.getContextPath();
     String user_id = (String) session.getAttribute("user_id");
-
+    // 알림을 이미 표시했는지 확인하는 플래그 추가 - 올바른 초기화 방법
+    Boolean notificationsShown = (Boolean) session.getAttribute("notificationsShown");
     // ✅ 배경 초기값 (기본값)
   String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
 
@@ -30,6 +31,8 @@
 
         }
 
+        // 알림을 아직 표시하지 않았을 때만 알림 생성 처리
+        if (notificationsShown == null || !notificationsShown) {
         // 🔔 알림용 날짜 처리
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDate = sdf.format(new Date());
@@ -79,9 +82,14 @@
 
         if (!alertMessages.isEmpty()) {
             session.setAttribute("alertMessages", alertMessages);
+            // 알림을 표시했다고 세션에 표시
+            session.setAttribute("notificationsShown", true);
+        }else{
+            // 알림이 없어도 표시했다고 마킹
+            session.setAttribute("notificationsShown", true);
+    }
         }
     }
-
     List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
     if (alertMessages != null && !alertMessages.isEmpty()) {
         session.removeAttribute("alertMessages");
