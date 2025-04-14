@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -15,7 +16,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 public class TemaMgr {
 	private DBConnectionMgr pool;
-	public static final String  SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/backgroundImg";
+	public static final String  SAVEFOLDER = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/backgroundImg";
 	public static final String ENCTYPE = "UTF-8";
 	public static final String ENCODING = "UTF-8";
 	public static int MAXSIZE = 5*1024*1024;
@@ -43,13 +44,20 @@ public class TemaMgr {
 	        String tema_title = multi.getParameter("tema_title");
 	        String tema_cnt = multi.getParameter("tema_cnt");
 	        String tema_img = multi.getFilesystemName("tema_img");
+	        
+	        if (tema_img != null) {
+	            tema_img = tema_img.replaceAll("\\s+", "_")
+	                               .replaceAll("[^a-zA-Z0-9._-]", "")
+	                               .toLowerCase();
+	        }
+	        
 
 	        int tema_dark = 0;
 	        int tema_onoff = 0;
 
 	        con = pool.getConnection();
 	        sql = "INSERT INTO tema(user_id, tema_title, tema_cnt, tema_img, tema_dark, tema_onoff) VALUES (?, ?, ?, ?, ?, ?)";
-	        pstmt = con.prepareStatement(sql);
+	        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	        pstmt.setString(1, user_id);  // ← 여기!
 	        pstmt.setString(2, tema_title);
 	        pstmt.setString(3, tema_cnt);
