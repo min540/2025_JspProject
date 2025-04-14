@@ -628,15 +628,31 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	        .then(res => res.json())
 	        .then(data => {
 	            if (data.success) {
+	                const rightPlayBtn = document.getElementById('playToggleBtn2'); // 우측 재생목록용 (있다면)
+	                const rightAudio = document.getElementById('playListAudioPlayer');
+	                const mainBtn = document.getElementById('mainPlayToggleBtn'); // ✅ 메인 버튼 동기화용
+
 	                if (newOnoff === 1) {
 	                    audio.play();
 	                    playBtn.src = 'icon/아이콘_일시정지_1.png';
 	                    playBtn.setAttribute('data-state', 'playing');
+
+	                    if (mainBtn) {
+	                        mainBtn.src = 'icon/아이콘_일시정지_1.png';
+	                        mainBtn.setAttribute('data-state', 'playing');
+	                    }
+
 	                } else {
-	                    audio.pause(); // ✅ 일시정지만 하고 위치 유지
+	                    audio.pause();
 	                    playBtn.src = 'icon/아이콘_재생_1.png';
 	                    playBtn.setAttribute('data-state', 'paused');
+
+	                    if (mainBtn) {
+	                        mainBtn.src = 'icon/아이콘_재생_1.png';
+	                        mainBtn.setAttribute('data-state', 'paused');
+	                    }
 	                }
+
 	            } else {
 	                alert("재생 상태 변경 실패");
 	            }
@@ -797,10 +813,19 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	                item.dataset.bgmOnoff,
 	                true
 	            );
+
+	            // ✅ 메인 음악 바 동기화
+	            syncMainMusicBar({
+	                title: item.dataset.bgmName,
+	                src: item.dataset.bgmMusic
+	            });
 	        });
 	    });
 	}
 	
+	<!-- 전체 코드는 수정이 필요 없어 보이지만, 음악 클릭 시 자동 재생될 때 메인 재생 버튼 상태를 동기화하기 위해 아래 부분을 추가합니다 -->
+
+	// ✅ showBgmDetail 함수 내부에서 autoPlay === true일 때 메인 플레이어 UI 동기화 추가
 	function showBgmDetail(bgmId, bgmName, bgmCnt, bgmImgPath, bgmMusic, bgmOnoff, autoPlay = false) {
 	    document.getElementById("bgmImg").src = bgmImgPath || "img/default.png";
 	    document.getElementById("bgmName").innerText = bgmName || "제목 없음";
@@ -818,35 +843,39 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 
 	    audioPlayer.src = src;
 
-	    // 상태 초기화
 	    playBtn.setAttribute('data-state', Number(bgmOnoff) === 1 ? 'playing' : 'paused');
 	    playBtn.src = Number(bgmOnoff) === 1 ? "icon/아이콘_일시정지_1.png" : "icon/아이콘_재생_1.png";
 
-	    // ✅ autoPlay true일 때 강제로 재생 + 아이콘 갱신
 	    if (autoPlay) {
-	    // ✅ bgm_onoff 값을 DB에 1로 설정
-	    fetch("<%=request.getContextPath()%>/jspproject/bgmOnOff", {
-	        method: "POST",
-	        headers: { "Content-Type": "application/json" },
-	        body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 1 })
-	    });
-	
-	    audioPlayer.load();
-	    audioPlayer.onloadeddata = () => {
-	        audioPlayer.play().then(() => {
-	            playBtn.setAttribute('data-state', 'playing');
-	            playBtn.src = "icon/아이콘_일시정지_1.png";
-	        }).catch(err => {
-	            console.warn("자동 재생 실패:", err);
+	        fetch("<%=request.getContextPath()%>/jspproject/bgmOnOff", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 1 })
 	        });
-	    };
-	}
+
+	        audioPlayer.load();
+	        audioPlayer.onloadeddata = () => {
+	            audioPlayer.play().then(() => {
+	                playBtn.setAttribute('data-state', 'playing');
+	                playBtn.src = "icon/아이콘_일시정지_1.png";
+
+	                // ✅ 메인 UI 상태도 동기화
+	                const mainBtn = document.getElementById("mainPlayToggleBtn");
+	                if (mainBtn) {
+	                    mainBtn.src = "icon/아이콘_일시정지_1.png";
+	                    mainBtn.setAttribute("data-state", "playing");
+	                }
+	            }).catch(err => {
+	                console.warn("자동 재생 실패:", err);
+	            });
+	        };
+	    }
+
 	    const editBtn = document.getElementById('submitEditBtn');
 	    editBtn.disabled = true;
 	    editBtn.style.opacity = '0.5';
 	    editBtn.style.cursor = 'default';
 	}
-
 	
 	window.enableEditMode = function() {
 		  const cntEl = document.getElementById('bgmCnt');
@@ -1044,6 +1073,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	        item.dataset.bgmOnoff,
 	        autoPlay
 	    );
+	    
+	    syncMainMusicBar({
+	        title: item.dataset.bgmName,
+	        src: item.dataset.bgmMusic
+	    }, autoPlay);
 	}
 	
 	function handlePrevMusic(autoPlay = false) {
@@ -1087,6 +1121,11 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	        item.dataset.bgmOnoff,
 	        autoPlay
 	    );
+	    
+	    syncMainMusicBar({
+	        title: item.dataset.bgmName,
+	        src: item.dataset.bgmMusic
+	    }, autoPlay);
 	}
 	
 	const audioPlayer = document.getElementById("playAudioPlayer");

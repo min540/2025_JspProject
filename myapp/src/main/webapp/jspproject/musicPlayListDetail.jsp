@@ -1109,15 +1109,21 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            const container = document.getElementById("musicList_detail");
 	            container.innerHTML = html;
 
-	            // ✅ 여기! 새로 들어간 음악 리스트를 다시 캐싱
+	            // ✅ 음악 리스트 캐싱
 	            currentBgmList = Array.from(container.querySelectorAll('.music-list-item2'));
 
-	            // ✅ 클릭 이벤트 연결 + 인덱스 기억
+	            // ✅ 클릭 이벤트 연결
 	            currentBgmList.forEach((item, index) => {
 	                item.addEventListener('click', function () {
 	                    const bgmId = item.querySelector('input[name="bgm_id"]').value;
-	                    currentBgmIndex = index; // ✅ 현재 인덱스 기억
-	                    loadMusicPreviewByBgmId(bgmId);
+	                    currentBgmIndex = index;
+	                    loadMusicPreviewByBgmId(bgmId, true);
+
+	                    // ✅ 메인 음악 바 연동
+	                    syncMainMusicBar({
+	                        title: item.dataset.bgmName,
+	                        src: item.dataset.bgmMusic
+	                    });
 	                });
 	            });
 	        })
@@ -1126,47 +1132,66 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	        });
 	}
 	
-	function loadMusicPreviewByBgmId(bgmId) {
-	    fetch("<%= request.getContextPath() %>/jspproject/getBgmIdByMplistId.jsp?bgm_id=" + bgmId)
-	        .then(res => res.text())
-	        .then(html => {
-	            document.getElementById("playlistPreview").style.display = "none";
-	            const preview = document.getElementById("musicPreview");
-	            preview.style.display = "block";
-	            preview.innerHTML = html;
+	function loadMusicPreviewByBgmId(bgmId, autoPlay = false) {
+		  fetch("<%= request.getContextPath() %>/jspproject/getBgmIdByMplistId.jsp?bgm_id=" + bgmId)
+		    .then(res => res.text())
+		    .then(html => {
+		      document.getElementById("playlistPreview").style.display = "none";
+		      const preview = document.getElementById("musicPreview");
+		      preview.style.display = "block";
+		      preview.innerHTML = html;
 
-	            // 🎯 새로 삽입된 audio와 재생 버튼에 이벤트 다시 연결
-	            setTimeout(() => {
-	                const audio = document.getElementById("playListAudioPlayer");
-	                const playBtn = document.getElementById("playToggleBtn2");
+		      // 🎯 새로 삽입된 audio와 버튼 이벤트 연결
+		      setTimeout(() => {
+				  const audio = document.getElementById("playListAudioPlayer");
+				  const playBtn = document.getElementById("playToggleBtn2");
+				
+				  // ✅ 기존 mainAudioPlayer 정지
+				  const mainAudio = document.getElementById("mainAudioPlayer");
+				  if (mainAudio && !mainAudio.paused) {
+				    mainAudio.pause();
+				    mainAudio.currentTime = 0;
+				  }
+				
+				  // 기존 코드 유지
+				  if (!audio || !playBtn) return;
 
-	                if (audio && playBtn) {
-	                    playBtn.src = "icon/아이콘_일시정지_1.png";
-	                    playBtn.setAttribute("data-state", "playing");
-	                    audio.play();
-	                    
-	                 	// ✅ bgm_id와 mplist_id로 각각 onoff = 1 처리
-	                    updateOnOffStates(bgmId, document.getElementById("hiddenMplistId_detail").value);
+		        // autoPlay일 경우에만 재생
+		        if (autoPlay) {
+				  playBtn.src = "icon/아이콘_일시정지_1.png";
+				  playBtn.setAttribute("data-state", "playing");
+				  audio.play();
+				
+				  // ✅ 메인 플레이어 상태 동기화 추가
+				  const mainAudio = document.getElementById("mainAudioPlayer");
+				  const mainBtn = document.getElementById("mainPlayToggleBtn");
+				  if (mainAudio && mainBtn) {
+				    mainAudio.pause();
+				    mainAudio.currentTime = 0;
+				    mainBtn.src = "icon/아이콘_일시정지_1.png";
+				    mainBtn.setAttribute("data-state", "playing");
+				  }
+				}	
+		        // ✅ onoff 상태 갱신은 항상 수행
+		        const mplistId = document.getElementById("hiddenMplistId_detail").value;
+		        updateOnOffStates(bgmId, mplistId);
 
-	                    // ended 이벤트 재바인딩
-	                    audio.onended = () => {
-	                        fetch("<%= request.getContextPath() %>/jspproject/bgmOnOff", {
-	                            method: "POST",
-	                            headers: { "Content-Type": "application/json" },
-	                            body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 0 })
-	                        }).then(() => {
-	                            playNextMusicInPlaylist();
-	                        });
-	                    };
-	                }
-	            }, 100); // 렌더링 완료 후 실행
-	        });
+		        // 재생 끝나면 다음 곡으로
+		        audio.onended = () => {
+		          fetch("<%= request.getContextPath() %>/jspproject/bgmOnOff", {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 0 })
+		          }).then(() => {
+		            playNextMusicInPlaylist();
+		          });
+		        };
+
+		        bindMusicPreviewControls();
+		      }, 100);
+		 	});
 	}
 	
-	// ✅ 전역 변수
-	window.currentBgmList = [];  // 음악 목록
-	window.currentBgmIndex = -1; // 현재 곡의 인덱스
-
 	// ✅ 전역 변수
 	window.currentBgmList = [];  // 음악 목록
 	window.currentBgmIndex = -1; // 현재 곡의 인덱스
@@ -1177,28 +1202,28 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	    alert("다음 곡이 없습니다.");
 	    return;
 	  }
-
-	  // 현재 음악 종료 처리
+	
+	  // 현재 곡 종료
 	  const currentId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
-	  
-	  // bgm_onoff = 0으로 업데이트 (현재 곡 종료)
 	  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
 	    method: 'POST',
 	    headers: { 'Content-Type': 'application/json' },
 	    body: JSON.stringify({ bgm_id: parseInt(currentId), bgm_onoff: 0 })
 	  });
-
-	  // 다음 곡으로 넘어가기
+	
+	  // 다음 곡 인덱스 증가 및 정보 가져오기
 	  window.currentBgmIndex++;
-	  const nextId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
+	  const nextItem = window.currentBgmList[window.currentBgmIndex];
+	  const nextId = nextItem.querySelector('input[name="bgm_id"]').value;
+	
 	  loadMusicPreviewByBgmId(nextId);
-
-	  // 🔥 자동 재생 추가
+	
+	  // 🔥 자동 재생 + 메인 동기화
 	  setTimeout(() => {
 	    const nextAudio = document.getElementById("playListAudioPlayer");
 	    const nextBtn = document.getElementById("playToggleBtn2");
 	    if (nextAudio && nextBtn) {
-	      // 먼저 bgm_onoff = 1로 설정
+	      // bgm_onoff = 1로
 	      fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
 	        method: 'POST',
 	        headers: { 'Content-Type': 'application/json' },
@@ -1208,19 +1233,23 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	          if (!data.success) {
 	            console.error("bgm_onoff 갱신 실패", data.message);
 	          } else {
-	            // bgm_onoff 상태가 1로 갱신된 후 자동으로 음악 재생
 	            nextAudio.play();
 	            nextBtn.src = "icon/아이콘_일시정지_1.png";
 	            nextBtn.setAttribute("data-state", "playing");
+	
+	            // ✅ 메인 플레이어와 동기화
+	            syncMainMusicBar({
+	              title: nextItem.dataset.bgmName,
+	              src: nextItem.dataset.bgmMusic
+	            }, true);
 	          }
 	        })
 	        .catch(err => {
-	          console.error("bgm_onoff 갱신 요청 실패", err);
+	          console.error("bgm_onoff 갱신 실패", err);
 	        });
 	    }
-	  }, 500); // 500ms 후에 자동 재생
+	  }, 500);
 	}
-
 
 	// ✅ 이전곡 재생
 	function playPrevMusicInPlaylist() {
@@ -1228,23 +1257,21 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	    alert("이전 곡이 없습니다.");
 	    return;
 	  }
-
+	
 	  // 현재 음악 종료 처리
 	  const currentId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
-
-	  // bgm_onoff = 0으로 업데이트
+	
 	  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
 	    method: 'POST',
 	    headers: { 'Content-Type': 'application/json' },
 	    body: JSON.stringify({ bgm_id: parseInt(currentId), bgm_onoff: 0 })
 	  });
-
-	  // 이전 곡으로 돌아가기
+	
+	  // 이전 곡으로 이동
 	  window.currentBgmIndex--;
 	  const prevId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
 	  loadMusicPreviewByBgmId(prevId);
-
-	  // 🔥 자동 재생 추가
+	
 	  setTimeout(() => {
 	    const prevAudio = document.getElementById("playListAudioPlayer");
 	    const prevBtn = document.getElementById("playToggleBtn2");
@@ -1252,32 +1279,17 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	      prevAudio.play();
 	      prevBtn.src = "icon/아이콘_일시정지_1.png";
 	      prevBtn.setAttribute("data-state", "playing");
-
-	      // 이전 곡이 재생되기 전에 bgm_onoff와 playlist_onoff 상태 업데이트
+	
 	      updateOnOffStates(prevId, document.getElementById("hiddenMplistId_detail").value);
+	
+	      // 🔥 메인 플레이어 연동 추가
+	      syncMainMusicBar({
+	        title: window.currentBgmList[window.currentBgmIndex].dataset.bgmName,
+	        src: window.currentBgmList[window.currentBgmIndex].dataset.bgmMusic
+	      }, true);
 	    }
 	  }, 500);
 	}
-
-	// ✅ 음악 미리보기 html 로드 + 이벤트 바인딩
-	function loadMusicPreviewByBgmId(bgmId) {
-	  fetch('<%= request.getContextPath() %>/jspproject/getBgmIdByMplistId.jsp?bgm_id=' + bgmId)
-	    .then(res => res.text())
-	    .then(html => {
-	      document.getElementById("playlistPreview").style.display = "none";
-	      const preview = document.getElementById("musicPreview");
-	      preview.style.display = "block";
-	      preview.innerHTML = html;
-	
-	      // 🔥 여기에서 바로 bgm_onoff = 1 호출
-	      const mplistId = document.getElementById("hiddenMplistId_detail").value;
-	      updateOnOffStates(bgmId, mplistId);
-	
-	      // 🎯 이벤트 연결
-	      setTimeout(bindMusicPreviewControls, 100);
-	    });
-	}
-
 
 	// ✅ 재생 버튼, 다음/이전 버튼 연결
 	function bindMusicPreviewControls() {
@@ -1288,23 +1300,38 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	  if (!playBtn || !audio || !bgmId) return;
 
 	  playBtn.onclick = () => {
-	    const isPaused = playBtn.getAttribute("data-state") === "paused";
-	    const newOnoff = isPaused ? 1 : 0;
-	    fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
-	      method: 'POST',
-	      headers: { 'Content-Type': 'application/json' },
-	      body: JSON.stringify({ bgm_id: bgmId, bgm_onoff: newOnoff })
-	    });
-	    if (isPaused) {
-	      audio.play();
-	      playBtn.src = "icon/아이콘_일시정지_1.png";
-	      playBtn.setAttribute("data-state", "playing");
-	    } else {
-	      audio.pause();
-	      playBtn.src = "icon/아이콘_재생_1.png";
-	      playBtn.setAttribute("data-state", "paused");
-	    }
-	  };
+		  const isPaused = playBtn.getAttribute("data-state") === "paused";
+		  const newOnoff = isPaused ? 1 : 0;
+
+		  // ✅ bgm_onoff 서버 반영
+		  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
+		    method: 'POST',
+		    headers: { 'Content-Type': 'application/json' },
+		    body: JSON.stringify({ bgm_id: bgmId, bgm_onoff: newOnoff })
+		  });
+
+		  if (isPaused) {
+		    // ▶️ → ⏸️
+		    audio.play();
+		    playBtn.src = "icon/아이콘_일시정지_1.png";
+		    playBtn.setAttribute("data-state", "playing");
+		  } else {
+		    // ⏸️ → ▶️
+		    audio.pause();
+		    playBtn.src = "icon/아이콘_재생_1.png";
+		    playBtn.setAttribute("data-state", "paused");
+		  }
+
+		  // ✅ main 플레이어는 따로 컨트롤할 필요 없으면 이 부분 생략 가능
+		  const mainAudio = document.getElementById("mainAudioPlayer");
+		  const mainBtn = document.getElementById("mainPlayToggleBtn");
+		  if (mainAudio && mainBtn) {
+		    mainAudio.pause();
+		    mainAudio.currentTime = 0;
+		    mainBtn.src = "icon/아이콘_재생_1.png";
+		    mainBtn.setAttribute("data-state", "playing");
+		  }
+		};
 
 	  audio.onended = () => {
 	    fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
@@ -1316,7 +1343,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	      if (window.currentBgmIndex + 1 < window.currentBgmList.length) {
 	        window.currentBgmIndex++;
 	        const nextId = window.currentBgmList[window.currentBgmIndex].querySelector('input[name="bgm_id"]').value;
-	        loadMusicPreviewByBgmId(nextId);
+	        loadMusicPreviewByBgmId(nextId, true);
 
 	        // 💡 약간의 지연 후 자동 재생 보장
 	        setTimeout(() => {
