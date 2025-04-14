@@ -133,7 +133,7 @@
   </style>
 </head>
 <body>
-
+<audio id="alarmAudio" src="sound/Digitalalarm.mp3" preload="auto"></audio>
 <div class="timer1-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer1-drag-handle">:::</div>
@@ -210,6 +210,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	      timeLeft--;
 	      updateProgress();
 	    } else {
+	    	const alarmAudio = document.getElementById("alarmAudio");
+	    	if (alarmAudio) {
+	    		alarmAudio.play().catch(error => {
+	    			console.error("알림음 재생에 실패했습니다.", error);
+	    		});
+	    	}
+	    	
 	      isSession = !isSession;
 	      
 	      // 알림 표시

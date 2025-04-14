@@ -133,7 +133,7 @@
   </style>
 </head>
 <body>
-
+<audio id="alarmAudio" src="sound/Digitalalarm.mp3" preload="auto"></audio>
 <div class="timer2-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer2-drag-handle">:::</div>
@@ -207,26 +207,33 @@ document.addEventListener("DOMContentLoaded", function () {
 	  timeDisplay.textContent = formatTime(timeLeft);
 	};
 
-  const startInterval = () => {
-	  interval = setInterval(() => {
-	    if (timeLeft > 0) {
-	      timeLeft--;
-	      updateProgress();
-	    } else {
-	      isSession = !isSession;
-	      
-	      // 알림 표시
-	      if (isSession) {
-	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
-	      } else {
-	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
-	      }
-	      
-	      timeLeft = isSession ? sessionDuration : breakDuration;
-	      updateProgress();
-	    }
-	  }, 1000);
-	};
+	const startInterval = () => {
+		  interval = setInterval(() => {
+		    if (timeLeft > 0) {
+		      timeLeft--;
+		      updateProgress();
+		    } else {
+		    	const alarmAudio = document.getElementById("alarmAudio");
+		    	if (alarmAudio) {
+		    		alarmAudio.play().catch(error => {
+		    			console.error("알림음 재생에 실패했습니다.", error);
+		    		});
+		    	}
+		    	
+		      isSession = !isSession;
+		      
+		      // 알림 표시
+		      if (isSession) {
+		        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+		      } else {
+		        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+		      }
+		      
+		      timeLeft = isSession ? sessionDuration : breakDuration;
+		      updateProgress();
+		    }
+		  }, 1000);
+		};
 
   const resetTimer = () => {
     clearInterval(interval);
