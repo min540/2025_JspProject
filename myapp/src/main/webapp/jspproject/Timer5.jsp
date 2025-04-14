@@ -9,7 +9,6 @@
     body {
       overflow: hidden;
       margin: 0;
-      background: transparent;
     }
 
     .timer5-timer-container {
