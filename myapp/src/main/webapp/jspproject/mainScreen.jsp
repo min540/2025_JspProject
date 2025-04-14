@@ -19,7 +19,7 @@
     String user_id = (String) session.getAttribute("user_id");
 
     // ✅ 배경 초기값 (기본값)
-  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
 
     if (user_id != null && !user_id.trim().equals("")) {
         // ✅ 현재 적용된 테마 이미지 가져오기

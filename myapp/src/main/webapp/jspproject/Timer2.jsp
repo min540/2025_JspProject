@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	  const offset = CIRCUMFERENCE * (1 - percent);
 
 	  // 세션일 때 주황색, 휴식일 때 초록색
-	  progressCircle.style.stroke = isSession ? "#f4a261" : "#4caf50";
+	  progressCircle.style.stroke = isSession ? "#FF4500" : "#FFA500";
 
 	  progressCircle.style.strokeDashoffset = offset;
 	  timeDisplay.textContent = formatTime(timeLeft);
