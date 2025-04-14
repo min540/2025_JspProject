@@ -55,12 +55,26 @@ public class LoginMgr {
 	        pstmt.setString(5, multi.getParameter("user_phone"));
 	        pstmt.setString(6, User_icon);
 
-	        if (pstmt.executeUpdate() == 1) flag = true;
-    
-	        // ★ user_timer 테이블에도 기본 타이머 insert
-            UserTimerMgr utMgr = new UserTimerMgr();
-            utMgr.insertDefaultUserTimer(multi.getParameter("user_id"));
-        
+	        if (pstmt.executeUpdate() == 1) {
+	            flag = true;
+
+	            // ★ 기본 타이머 추가
+	            UserTimerMgr utMgr = new UserTimerMgr();
+	            utMgr.insertDefaultUserTimer(multi.getParameter("user_id"));
+
+	            // ✅ 기본 테마 추가 (tema2.gif 기준)
+	            TemaMgr temaMgr = new TemaMgr();
+	            TemaBean tema = new TemaBean();
+	            tema.setUser_id(multi.getParameter("user_id"));
+	            tema.setTema_title("기본 배경");
+	            tema.setTema_cnt("기본 설명");
+	            tema.setTema_bimg("tema2.gif"); // 실제 파일명과 일치해야 함
+	            tema.setTema_img("tema2.gif");
+	            tema.setTema_dark(0);
+	            tema.setTema_onoff(1); // 적용된 상태로 등록
+	            temaMgr.insertDefaultTema(tema);
+	        }
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
@@ -69,6 +83,7 @@ public class LoginMgr {
 
 	    return flag;
 	}
+
 
 	
 	//구글 로그인
