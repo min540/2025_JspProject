@@ -396,8 +396,7 @@
         }
         
         //이동시 재등록
-        
-        
+
        function escapeHtml(str) {
 	    if (!str) return "";
 	    return str
@@ -648,10 +647,23 @@ confirmDateBtn.addEventListener('click', () => {
                             btn.textContent = group.objgroup_name;
 
                             btn.addEventListener('click', () => {
+                            	console.log("🔁 버튼 클릭:", group.objgroup_name, group.objgroup_id); // ✅ 로그 찍기
                                 localStorage.setItem("currentList", group.objgroup_id);
                                 localStorage.getItem("currentList");
                                 localStorage.setItem("currentListName", group.objgroup_name);
-                                renderTasksForCurrentList(); // 과제 렌더링
+                             // ✅ 서버 세션에 현재 선택된 그룹 전달!
+                                fetch("objCurrentGroupSetServlet", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ objgroup_id: group.objgroup_id })
+                                })
+                                .then(() => {
+                                    renderTasksForCurrentList();  // 성공 후 렌더링
+                                })
+                                .catch(err => {
+                                    console.error("❌ 그룹 설정 실패:", err);
+                                });
+
                             });
 
                             listContainer.appendChild(btn);
@@ -926,7 +938,7 @@ confirmDateBtn.addEventListener('click', () => {
 		                    })
 		                });
 		            }, 300));
-		
+		            console.log("✔️ 선택된 objgroup_id:", selectedId);
 		            // 10. 삭제 버튼
 		            attachDeleteListener(taskItem, obj_id, titleInput);
 		
@@ -947,7 +959,8 @@ confirmDateBtn.addEventListener('click', () => {
 		
 		        // 12. 완료 체크 수 업데이트
 		        updateCompleteCount();
-		
+		        isRendering = false;
+
 		    } catch (err) {
 		        console.error("❌ 과제 목록 불러오기 실패:", err);
 		        isRendering = false;
