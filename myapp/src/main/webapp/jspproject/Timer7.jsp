@@ -133,7 +133,7 @@
   </style>
 </head>
 <body>
-
+<audio id="alarmAudio" src="sound/Digitalalarm.mp3" preload="auto"></audio>
 <div class="timer7-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer7-drag-handle">:::</div>
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
     const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb";
+    progressCircle.style.stroke = isSession ? "#B0C4DE" : "#F0F8FF";
     progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };
@@ -210,6 +210,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	      timeLeft--;
 	      updateProgress();
 	    } else {
+	    	const alarmAudio = document.getElementById("alarmAudio");
+	    	if (alarmAudio) {
+	    		alarmAudio.play().catch(error => {
+	    			console.error("알림음 재생에 실패했습니다.", error);
+	    		});
+	    	}
+	    	
 	      isSession = !isSession;
 	      
 	      // 알림 표시
