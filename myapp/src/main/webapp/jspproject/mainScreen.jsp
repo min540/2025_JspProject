@@ -218,7 +218,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer3.jsp" />
+   <jsp:include page="GetTimerView.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
@@ -316,9 +316,15 @@
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
-        var backgroundDiv = document.getElementById("backgroundWrapper");
-        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
-    }
+	  const backgroundWrapper = document.getElementById("backgroundWrapper");
+	  const timerWrapper1 = document.getElementById("timerWrapper1");
+	
+	  const isOpen = (backgroundWrapper?.style.display === "flex") || (timerWrapper1?.style.display === "flex");
+	
+	  [backgroundWrapper, timerWrapper1].forEach(el => {
+	    if (el) el.style.display = isOpen ? "none" : (el === backgroundWrapper ? "flex" : "none");
+	  });
+	}
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
