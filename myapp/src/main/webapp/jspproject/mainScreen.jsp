@@ -19,16 +19,16 @@
     String user_id = (String) session.getAttribute("user_id");
 
     // ✅ 배경 초기값 (기본값)
- String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
+ String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
 
     if (user_id != null && !user_id.trim().equals("")) {
         // ✅ 현재 적용된 테마 이미지 가져오기
         jspproject.TemaMgr temaMgr = new jspproject.TemaMgr();
         jspproject.TemaBean currentTema = temaMgr.getOnTema(user_id);
-        if (currentTema != null && currentTema.getTema_img() != null) {
-        	appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
-
+        if (currentTema != null && currentTema.getTema_img() != null && !currentTema.getTema_img().trim().equals("")) {
+            appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
         }
+
 
         // 🔔 알림용 날짜 처리
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
