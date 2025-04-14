@@ -371,7 +371,7 @@ public class ObjMgr {
 		Vector<ObjGroupBean> vlist = new Vector<ObjGroupBean>();
 		try {
 			con = pool.getConnection();
-			sql = "SELECT * FROM objgroup WHERE user_id = ? ORDER BY objgroup_id DESC";
+			sql = "SELECT * FROM objgroup WHERE user_id = ? ORDER BY objgroup_id ASC";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			rs = pstmt.executeQuery();

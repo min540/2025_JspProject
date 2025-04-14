@@ -1,4 +1,4 @@
-<!-- Timer4.jsp -->
+<!-- Timer8.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="TimerInfo.jsp" %>
 
@@ -6,14 +6,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>빨간색 타이머</title>
+<title>노란색 타이머</title>
 <style>
     body {
       overflow: hidden;
       margin: 0;
     }
 
-    .timer4-timer-container {
+    .timer8-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -27,14 +27,14 @@
       cursor: default;
     }
 
-    .timer4-svg {
+    .timer8-svg {
       position: absolute;
       top: 0;
       left: 0;
       transform: rotate(90deg) scaleX(-1);
     }
 
-    .timer4-drag-handle {
+    .timer8-drag-handle {
       position: absolute;
       top: 30px;
       left: 50%;
@@ -48,7 +48,7 @@
       line-height: 1;
     }
 
-    .timer4-center {
+    .timer8-center {
       position: absolute;
       top: 47%;
       left: 50%;
@@ -56,24 +56,24 @@
       text-align: center;
     }
 
-    .timer4-time {
+    .timer8-time {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 6px;
       color: white;
     }
 
-    .timer4-info {
+    .timer8-info {
       font-size: 14px;
       line-height: 1.3;
       color: white;
     }
 
-    .timer4-info strong {
+    .timer8-info strong {
       cursor: pointer;
     }
 
-    input.timer4-input {
+    input.timer8-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
@@ -83,7 +83,7 @@
       outline: none;
     }
 
-    .timer4-bottom-controls {
+    .timer8-bottom-controls {
       position: absolute;
       bottom: 50px;
       left: 50%;
@@ -92,7 +92,7 @@
       gap: 24px;
     }
 
-    .timer4-btn {
+    .timer8-btn {
       font-size: 20px;
       background: none;
       border: none;
@@ -101,11 +101,11 @@
       transition: 0.2s;
     }
 
-    .timer4-btn:hover img {
+    .timer8-btn:hover img {
       filter: brightness(1.2);
     }
 
-    .timer4-btn img {
+    .timer8-btn img {
       width: 24px;
       height: 24px;
       vertical-align: middle;
@@ -134,27 +134,27 @@
 </head>
 <body>
 <audio id="alarmAudio" src="sound/Digitalalarm.mp3" preload="auto"></audio>
-<div class="timer4-timer-container" id="timerContainer"
+<div class="timer8-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
-  <div class="timer4-drag-handle">:::</div>
+  <div class="timer8-drag-handle">:::</div>
 
-  <svg class="timer4-svg" width="240" height="240">
+  <svg class="timer8-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#E53935" stroke-width="12" fill="none"
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#FFFF00" stroke-width="12" fill="none"
       stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
-  <div class="timer4-center">
-    <div class="timer4-time" id="timeDisplay">00:00</div>
-    <div class="timer4-info" id="timerInfo">
+  <div class="timer8-center">
+    <div class="timer8-time" id="timeDisplay">00:00</div>
+    <div class="timer8-info" id="timerInfo">
       <strong id="sessionTime">00:00</strong> 세션<br>
       과 <strong id="breakTime">00:00</strong> 휴식
     </div>
   </div>
 
-  <div class="timer4-bottom-controls">
-    <button class="timer4-btn" id="btnReset">⟲</button>
-    <button class="timer4-btn" id="toggleBtn">
+  <div class="timer8-bottom-controls">
+    <button class="timer8-btn" id="btnReset">⟲</button>
+    <button class="timer8-btn" id="toggleBtn">
       <img id="toggleIcon" src="icon/아이콘_재생_1.png" alt="toggle" />
     </button>
   </div>
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
   const timer = document.getElementById("timerContainer");
-  const dragHandle = document.querySelector(".timer4-drag-handle");
+  const dragHandle = document.querySelector(".timer8-drag-handle");
   const timeDisplay = document.getElementById("timeDisplay");
   const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
     const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#006400" : "#98FB98";
+    progressCircle.style.stroke = isSession ? "#7B68EE" : "#E6E6FA";
     progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };
@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer4-input";
+    input.className = "timer8-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {

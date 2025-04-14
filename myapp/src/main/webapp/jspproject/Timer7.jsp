@@ -1,4 +1,4 @@
-<!-- Timer1.jsp -->
+<!-- Timer7.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="TimerInfo.jsp" %>
 
@@ -133,7 +133,7 @@
   </style>
 </head>
 <body>
-
+<audio id="alarmAudio" src="sound/Digitalalarm.mp3" preload="auto"></audio>
 <div class="timer7-timer-container" id="timerContainer"
      style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer7-drag-handle">:::</div>
@@ -141,7 +141,7 @@
   <svg class="timer7-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
     <circle id="progress" cx="120" cy="120" r="100" stroke="#ffffff" stroke-width="12" fill="none"
-		stroke-linecap="butt" stroke-dasharray="628" />
+      stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
   <div class="timer7-center">
@@ -162,6 +162,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+	
   const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
 
   const userId = "<%= user_id %>";
@@ -197,23 +199,38 @@ document.addEventListener("DOMContentLoaded", function () {
     const duration = isSession ? sessionDuration : breakDuration;
     const percent = timeLeft / duration;
     const offset = CIRCUMFERENCE * (1 - percent);
-    progressCircle.style.stroke = isSession ? "#ffffff" : "#b4c8bb";
+    progressCircle.style.stroke = isSession ? "#B0C4DE" : "#F0F8FF";
     progressCircle.style.strokeDashoffset = offset;
     timeDisplay.textContent = formatTime(timeLeft);
   };
 
   const startInterval = () => {
-    interval = setInterval(() => {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updateProgress();
-      } else {
-        isSession = !isSession;
-        timeLeft = isSession ? sessionDuration : breakDuration;
-        updateProgress();
-      }
-    }, 1000);
-  };
+	  interval = setInterval(() => {
+	    if (timeLeft > 0) {
+	      timeLeft--;
+	      updateProgress();
+	    } else {
+	    	const alarmAudio = document.getElementById("alarmAudio");
+	    	if (alarmAudio) {
+	    		alarmAudio.play().catch(error => {
+	    			console.error("알림음 재생에 실패했습니다.", error);
+	    		});
+	    	}
+	    	
+	      isSession = !isSession;
+	      
+	      // 알림 표시
+	      if (isSession) {
+	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+	      } else {
+	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+	      }
+	      
+	      timeLeft = isSession ? sessionDuration : breakDuration;
+	      updateProgress();
+	    }
+	  }, 1000);
+	};
 
   const resetTimer = () => {
     clearInterval(interval);
@@ -234,12 +251,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => console.log("세션/브레이크 업데이트 결과 : ", data));
   };
 
-  sessionTimeEl.textContent = formatTime(sessionDuration);
-  breakTimeEl.textContent = formatTime(breakDuration);
-  timeLeft = sessionDuration;
-  timeDisplay.textContent = formatTime(sessionDuration);
-  updateProgress();
-
   btnReset.addEventListener("click", resetTimer);
 
   toggleBtn.addEventListener("click", () => {
@@ -256,6 +267,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+//showNotification 함수 추가
+  const showNotification = (message) => {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // 표시 애니메이션을 위해 약간의 지연 후 show 클래스 추가
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    // 5초 후 알림 제거
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300); // 페이드 아웃 애니메이션이 끝날 때까지 기다림
+    }, 5000);
+  };
+  
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
@@ -282,6 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     input.addEventListener("blur", confirm);
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+
     el.replaceWith(input);
     input.focus();
   };
@@ -289,11 +322,16 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  // 드래그 기능 - 미리보기 모드 아닐때만 가능
-  let isDragging = false;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  timeDisplay.textContent = formatTime(sessionDuration);
+  updateProgress();
 
+  // 드래그 - 미리보기 아닐 때만 가능
   if (!isPreview) {
+    let isDragging = false;
+    let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+
     dragHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
       startX = e.clientX;
@@ -323,17 +361,12 @@ document.addEventListener("DOMContentLoaded", function () {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: "user_id=" + userId + "&timer_loc=" + x + "," + y
         }).then(res => res.text())
-          .then(data => console.log("Timer7 위치 저장 결과 : ", data));
+          .then(data => console.log("타이머 위치 저장 결과 : ", data));
       }
     });
-  } else {
-    // 미리보기 모드면 점6개만 보이고 드래그 불가능
-    dragHandle.style.cursor = "default";
-    dragHandle.style.userSelect = "none";
-    dragHandle.addEventListener("mousedown", (e) => e.preventDefault());
   }
-
 });
+
 </script>
 </body>
 </html>

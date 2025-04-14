@@ -17,9 +17,13 @@
 <%
     String path = request.getContextPath();
     String user_id = (String) session.getAttribute("user_id");
-
+    // 알림을 이미 표시했는지 확인하는 플래그 추가 - 올바른 초기화 방법
+    Boolean notificationsShown = (Boolean) session.getAttribute("notificationsShown");
     // ✅ 배경 초기값 (기본값)
- String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
+
+
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
+
 
     if (user_id != null && !user_id.trim().equals("")) {
         // ✅ 현재 적용된 테마 이미지 가져오기
@@ -29,6 +33,11 @@
             appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/" + currentTema.getTema_img();
         }
 
+
+
+
+        // 알림을 아직 표시하지 않았을 때만 알림 생성 처리
+        if (notificationsShown == null || !notificationsShown) {
 
         // 🔔 알림용 날짜 처리
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -79,9 +88,14 @@
 
         if (!alertMessages.isEmpty()) {
             session.setAttribute("alertMessages", alertMessages);
+            // 알림을 표시했다고 세션에 표시
+            session.setAttribute("notificationsShown", true);
+        }else{
+            // 알림이 없어도 표시했다고 마킹
+            session.setAttribute("notificationsShown", true);
+    }
         }
     }
-
     List<String> alertMessages = (List<String>) session.getAttribute("alertMessages");
     if (alertMessages != null && !alertMessages.isEmpty()) {
         session.removeAttribute("alertMessages");
@@ -104,12 +118,11 @@
     </div>
 </div>
 
-	<!-- 알림 소리 플레이어 -->
+	<!-- 작업 목록 알림 소리 플레이어 -->
 	<audio id="notifiaudio">
 		<source src="sound/alarm.mp3" type="audio/mp3">
 		<!--  Your browser does not support the audio element.-->
 	</audio>
-
    <% } %>
    <body style="background-image: url('<%= appliedBackground %>'); background-size: cover;">
 <!-- 프로필 아이콘 -->
@@ -205,7 +218,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer1.jsp" />
+    <jsp:include page="Timer3.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
@@ -664,11 +677,17 @@
 	    const audio = document.getElementById('mainAudioPlayer');
 
 	    if (playBtn && audio) {
-	        // 초기 상태 설정
+	        // 초기 상태
 	        playBtn.setAttribute('data-state', 'paused');
 
 	        playBtn.addEventListener('click', function () {
 	            const currentState = playBtn.getAttribute('data-state');
+
+	            // ✅ 기본 src 확인 (예: 아무 음악도 선택되지 않은 상태)
+	            if (!audio.src || audio.src.includes("music1.mp3")) {
+	                alert("재생 중인 음악이 없습니다.\n음악 목록에서 곡을 먼저 선택해주세요.");
+	                return;
+	            }
 
 	            if (currentState === 'paused') {
 	                // ▶️ → ⏸️ + 음악 재생
@@ -688,6 +707,32 @@
 	        });
 	    }
 	});
+
+	
+	function syncMainMusicBar(bgm, autoPlay = false) {
+	    const audio = document.getElementById("mainAudioPlayer");
+	    const titleEl = document.querySelector(".musicTitle");
+	    const playBtn = document.getElementById("mainPlayToggleBtn");
+
+	    if (audio && titleEl && playBtn) {
+	        const newSrc = "<%= request.getContextPath() %>/jspproject/uploadMusic/" + bgm.src;
+
+	        if (audio.src !== newSrc) {
+	            audio.src = newSrc;
+	        }
+
+	        titleEl.textContent = bgm.title;
+
+	        if (autoPlay) {
+	            audio.play();
+	            playBtn.src = "icon/아이콘_일시정지_1.png";
+	            playBtn.setAttribute("data-state", "playing");
+	        } else {
+	            playBtn.src = "icon/아이콘_재생_1.png";
+	            playBtn.setAttribute("data-state", "paused");
+	        }
+	    }
+	}
 	
 	// 볼륨 조절 관련 메소드
 	document.addEventListener("DOMContentLoaded", function () {
@@ -761,4 +806,3 @@
 
 
 	
-
