@@ -21,11 +21,13 @@ try {
             BgmBean b = view.getBgm();
 %>
     <div class="music-list-item2"
-         data-bgm-id="<%= b.getBgm_id() %>"
-         data-mplistmgr-id="<%= view.getMplistmgr_id() %>">
-        <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>"/>
-        <span><%= b.getBgm_name() %></span>
-    </div>
+	     data-bgm-name="<%= b.getBgm_name() %>"
+	     data-bgm-music="<%= b.getBgm_music() %>"
+	     data-bgm-id="<%= b.getBgm_id() %>"
+	     data-mplistmgr-id="<%= view.getMplistmgr_id() %>">
+	    <input type="checkbox" name="bgm_id" value="<%= b.getBgm_id() %>"/>
+	    <span><%= b.getBgm_name() %></span>
+	</div>
 <%
         }
     } else {

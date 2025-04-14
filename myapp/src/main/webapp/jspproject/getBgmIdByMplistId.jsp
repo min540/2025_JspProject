@@ -32,8 +32,13 @@ MplistBgmView view = mgr.getViewByBgmId(bgm_id);
 <div class="music-controls3">
     <span><img class="iconMusic2 prev-btn" src="icon/아이콘_이전음악_1.png" alt="이전 음악"></span>
     <span>
-        <img id="playToggleBtn2" class="iconMusic2" src="icon/아이콘_재생_1.png" data-state="paused" data-bgm-id="<%= b.getBgm_id() %>">
-        <audio id="playListAudioPlayer" src="music/<%= b.getBgm_music() %>"></audio>
+        <img id="playToggleBtn2"
+	     class="iconMusic2"
+	     src="icon/아이콘_재생_1.png"
+	     data-state="paused"
+	     data-bgm-id="<%= b.getBgm_id() %>"
+	     data-bgm-name="<%= b.getBgm_name() %>"> <!-- ✅ 요거 추가 -->
+	<audio id="playListAudioPlayer" src="music/<%= b.getBgm_music() %>"></audio>
     </span>
     <span><img class="iconMusic2 next-btn" src="icon/아이콘_다음음악_1.png" alt="다음 음악"></span>
 </div>
