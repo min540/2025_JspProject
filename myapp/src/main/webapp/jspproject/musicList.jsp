@@ -560,7 +560,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 		      alt="다음" 
 		      id="nextBgmBtn"
 		      title="다음 곡"
-		      onclick="handleNextMusic()"
+		      onclick="handleNextMusic2()"
 		    >
 		  </span>
 		</div>
@@ -996,7 +996,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	// ✅ 현재 곡 ID 기억용 (전역)
 	let currentBgmId = null;
 
-	function handleNextMusic(autoPlay = false) {
+	function handleNextMusic2(autoPlay = false) {
 	    const musicItems = Array.from(document.querySelectorAll('.music-list-item'));
 	    if (musicItems.length === 0) return alert("음악 목록이 비어있습니다.");
 
@@ -1011,7 +1011,8 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 
 	    // 다음 곡을 가져오기
 	    const item = musicItems[nextIndex];
-	    currentMusicIndex = prevIndex;
+	    currentMusicIndex = nextIndex; // prevIndex 대신 nextIndex 사용
+
 	    currentBgmId = item.dataset.bgmId;
 
 	    // showBgmDetail 호출 (다음 곡 정보로 갱신)
@@ -1055,7 +1056,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	
 	const audioPlayer = document.getElementById("playAudioPlayer");
 	audioPlayer.onended = function () {
-	    handleNextMusic(true);  // 자동 다음 곡 재생
+	    handleNextMusic2(true);  // 자동 다음 곡 재생
 	};
 
 </script>
