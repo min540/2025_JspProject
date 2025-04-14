@@ -1268,10 +1268,16 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	      const preview = document.getElementById("musicPreview");
 	      preview.style.display = "block";
 	      preview.innerHTML = html;
-
-	      setTimeout(bindMusicPreviewControls, 100); // 새로 로드된 오디오와 버튼 이벤트 연결
+	
+	      // 🔥 여기에서 바로 bgm_onoff = 1 호출
+	      const mplistId = document.getElementById("hiddenMplistId_detail").value;
+	      updateOnOffStates(bgmId, mplistId);
+	
+	      // 🎯 이벤트 연결
+	      setTimeout(bindMusicPreviewControls, 100);
 	    });
 	}
+
 
 	// ✅ 재생 버튼, 다음/이전 버튼 연결
 	function bindMusicPreviewControls() {
@@ -1339,18 +1345,34 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	window.loadMusicListByMplistId = loadMusicListByMplistId;
 
 	
-	function updateOnOffStates(bgmId, mplistId) {
-		  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
-		    method: 'POST',
-		    headers: { 'Content-Type': 'application/json' },
-		    body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 1 })
-		  });
+	let lastMplistId = null;  // 마지막 재생 중이던 재생목록 기억용
 
-		  fetch('<%= request.getContextPath() %>/jspproject/mplistOnOff', {
-		    method: 'POST',
-		    headers: { 'Content-Type': 'application/json' },
-		    body: JSON.stringify({ mplist_id: parseInt(mplistId), mplist_onoff: 1 })
-		  });
-		}
+	function updateOnOffStates(bgmId, mplistId) {
+	  // ✅ 이전 재생목록 off
+	  if (lastMplistId && lastMplistId !== mplistId) {
+	    fetch('<%= request.getContextPath() %>/jspproject/mplistOnOff', {
+	      method: 'POST',
+	      headers: { 'Content-Type': 'application/json' },
+	      body: JSON.stringify({ mplist_id: parseInt(lastMplistId), mplist_onoff: 0 })
+	    });
+	  }
+
+	  // ✅ 현재 재생곡 on
+	  fetch('<%= request.getContextPath() %>/jspproject/bgmOnOff', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 1 })
+	  });
+
+	  // ✅ 현재 재생목록 on
+	  fetch('<%= request.getContextPath() %>/jspproject/mplistOnOff', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({ mplist_id: parseInt(mplistId), mplist_onoff: 1 })
+	  });
+
+	  // ✅ 현재 재생목록 기억
+	  lastMplistId = mplistId;
+	}
 
 </script>
