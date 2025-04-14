@@ -93,25 +93,53 @@
     .timer5-btn:hover {
       opacity: 0.8;
     }
+    
+    /* 알림 스타일 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
 
-<div class="timer5-timer-container" id="timerContainer" style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
+<div class="timer5-timer-container" id="timerContainer" 
+	style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer5-drag-handle">:::</div>
 
   <svg class="timer5-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
-    <circle id="progress" cx="120" cy="120" r="100" stroke="#60BAAF" stroke-width="12" fill="none" stroke-linecap="butt" stroke-dasharray="628" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#60BAAF" stroke-width="12" fill="none" 
+      stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
   <div class="timer5-center">
-    <div class="timer5-time" id="timeDisplay"><strong id="editableTime">00:00</strong></div>
+    <div class="timer5-time" id="timeDisplay">00:00</div>
+    <div class="timer5-info" id="timerInfo">
+    <strong id="editableTime">00:00</strong> 세션<br>
+    과 <strong id="breakTime">00:00</strong> 휴식
+    </div>
   </div>
 
   <div class="timer5-bottom-controls">
     <button class="timer5-btn" id="btnReset">⟲</button>
-    <button class="timer5-btn" id="toggleBtn"><img id="toggleIcon" src="icon/아이콘_재생_1.png" width="24" height="24" /></button>
+    <button class="timer5-btn" id="toggleBtn">
+    <img id="toggleIcon" src="icon/아이콘_재생_1.png" width="24" height="24" />
+    </button>
   </div>
 </div>
 
@@ -183,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
           timeLeft--;
           updateProgress();
         } else {
+          startInterval();
           clearInterval(interval);
           isRunning = false;
           toggleIcon.src = "icon/아이콘_재생_1.png";
@@ -261,6 +290,50 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+	const startInterval = () => {
+		  interval = setInterval(() => {
+		    if (timeLeft > 0) {
+		      timeLeft--;
+		      updateProgress();
+		    } else {
+		      isSession = !isSession;
+		      
+		      // 알림 표시
+		      if (isSession) {
+		        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+		      } else {
+		        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+		      }
+		      
+		      timeLeft = isSession ? sessionDuration : breakDuration;
+		      updateProgress();
+		    }
+		  }, 1000);
+		};
+
+	//showNotification 함수 추가
+	  const showNotification = (message) => {
+	    const notification = document.createElement('div');
+	    notification.className = 'notification';
+	    notification.textContent = message;
+	    document.body.appendChild(notification);
+	    
+	    // 표시 애니메이션을 위해 약간의 지연 후 show 클래스 추가
+	    setTimeout(() => {
+	      notification.classList.add('show');
+	    }, 10);
+	    
+	    // 5초 후 알림 제거
+	    setTimeout(() => {
+	      notification.classList.remove('show');
+	      setTimeout(() => {
+	        document.body.removeChild(notification);
+	      }, 300); // 페이드 아웃 애니메이션이 끝날 때까지 기다림
+	    }, 5000);
+	  };
+	
+
 </script>
 </body>
 </html>
