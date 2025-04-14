@@ -1,14 +1,13 @@
-<!-- 보라색 원형 타이머 -->
+<!-- Timer3.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="jspproject.*" %>
 <%@ include file="TimerInfo.jsp" %>
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>보라 타이머</title>
- <style>
+<title>주황색 타이머</title>
+<style>
     body {
       overflow: hidden;
       margin: 0;
@@ -102,10 +101,18 @@
       transition: 0.2s;
     }
 
-    .timer3-btn:hover {
-      color: #BA68C8;
+    .timer3-btn:hover img {
+      filter: brightness(1.2);
     }
-     .notification {
+
+    .timer3-btn img {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+    }
+
+    /* 알림 스타일 */
+    .notification {
       position: fixed;
       top: 20px;
       right: 20px;
@@ -119,21 +126,22 @@
       max-width: 300px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-      .notification.show {
+
+    .notification.show {
       opacity: 1;
     }
   </style>
 </head>
 <body>
 
-<div class="timer3-timer-container" id="timerContainer" 
-style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
+<div class="timer3-timer-container" id="timerContainer"
+     style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
   <div class="timer3-drag-handle">:::</div>
 
   <svg class="timer3-svg" width="240" height="240">
     <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
     <circle id="progress" cx="120" cy="120" r="100" stroke="#8E24AA" stroke-width="12" fill="none"
-            stroke-linecap="butt" stroke-dasharray="628" />
+      stroke-linecap="butt" stroke-dasharray="628" />
   </svg>
 
   <div class="timer3-center">
@@ -146,15 +154,19 @@ style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
 
   <div class="timer3-bottom-controls">
     <button class="timer3-btn" id="btnReset">⟲</button>
-    <button class="timer3-btn" id="toggleBtn">▶️</button>
+    <button class="timer3-btn" id="toggleBtn">
+      <img id="toggleIcon" src="icon/아이콘_재생_1.png" alt="toggle" />
+    </button>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const userId = "<%= user_id %>";
+
+	
   const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
 
+  const userId = "<%= user_id %>";
   let sessionDuration = <%= sessionTime %>;
   let breakDuration = <%= breakTime %>;
   let timeLeft = sessionDuration;
@@ -171,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
   const breakTimeEl = document.getElementById("breakTime");
-  const toggleBtn = document.getElementById("toggleBtn");
+  const toggleIcon = document.getElementById("toggleIcon");
   const btnReset = document.getElementById("btnReset");
   const timerInfo = document.getElementById("timerInfo");
 
@@ -192,12 +204,33 @@ document.addEventListener("DOMContentLoaded", function () {
     timeDisplay.textContent = formatTime(timeLeft);
   };
 
+  const startInterval = () => {
+	  interval = setInterval(() => {
+	    if (timeLeft > 0) {
+	      timeLeft--;
+	      updateProgress();
+	    } else {
+	      isSession = !isSession;
+	      
+	      // 알림 표시
+	      if (isSession) {
+	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+	      } else {
+	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+	      }
+	      
+	      timeLeft = isSession ? sessionDuration : breakDuration;
+	      updateProgress();
+	    }
+	  }, 1000);
+	};
+
   const resetTimer = () => {
     clearInterval(interval);
     isRunning = false;
     isSession = true;
     timeLeft = sessionDuration;
-    toggleBtn.textContent = "▶️";
+    toggleIcon.src = "icon/아이콘_재생_1.png";
     updateProgress();
     timerInfo.style.display = "block";
   };
@@ -208,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
     }).then(res => res.text())
-      .then(data => console.log(data));
+      .then(data => console.log("세션/브레이크 업데이트 결과 : ", data));
   };
 
   btnReset.addEventListener("click", resetTimer);
@@ -217,29 +250,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (isRunning) {
       clearInterval(interval);
       isRunning = false;
-      toggleBtn.textContent = "▶️";
+      toggleIcon.src = "icon/아이콘_재생_1.png";
       timerInfo.style.display = "block";
     } else {
-      interval = setInterval(() => {
-        if (timeLeft > 0) {
-          timeLeft--;
-          updateProgress();
-        } else {
-          isSession = !isSession;
-          
-          // 알림 표시
-	      if (isSession) {
-	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
-	      } else {
-	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
-	      }
-          
-          timeLeft = isSession ? sessionDuration : breakDuration;
-          updateProgress();
-        }
-      }, 1000);
+      startInterval();
       isRunning = true;
-      toggleBtn.textContent = "⏸";
+      toggleIcon.src = "icon/아이콘_일시정지_1.png";
       timerInfo.style.display = "none";
     }
   });
@@ -275,6 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let val = parseInt(input.value);
       if (isNaN(val) || val < 10) val = 10;
       if (val > 3600) val = 3600;
+
       if (type === "session") {
         sessionDuration = val;
         sessionTimeEl.textContent = formatTime(sessionDuration);
@@ -282,6 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
         breakDuration = val;
         breakTimeEl.textContent = formatTime(breakDuration);
       }
+
       input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
       updateTimerSettingToDB();
       resetTimer();
@@ -289,6 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     input.addEventListener("blur", confirm);
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+
     el.replaceWith(input);
     input.focus();
   };
@@ -301,18 +320,18 @@ document.addEventListener("DOMContentLoaded", function () {
   timeDisplay.textContent = formatTime(sessionDuration);
   updateProgress();
 
-  // 미리보기 모드 아닐때만 드래그 허용
+  // 드래그 - 미리보기 아닐 때만 가능
   if (!isPreview) {
     let isDragging = false;
     let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
     dragHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
-      isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
       offsetX = timer.offsetLeft;
       offsetY = timer.offsetTop;
+      isDragging = true;
       document.body.style.cursor = "grabbing";
     });
 
@@ -326,21 +345,21 @@ document.addEventListener("DOMContentLoaded", function () {
       if (isDragging) {
         isDragging = false;
         document.body.style.cursor = "default";
-        let x = parseInt(timer.style.left);
-        let y = parseInt(timer.style.top);
-        if (x < 10) x = 10;
-        if (y < 10) y = 10;
+
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
+
         fetch("UpdateTimerSessionProc.jsp", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: "user_id=" + userId + "&timer_loc=" + x + "," + y
         }).then(res => res.text())
-          .then(data => console.log(data));
+          .then(data => console.log("타이머 위치 저장 결과 : ", data));
       }
     });
   }
 });
-</script>
 
+</script>
 </body>
 </html>

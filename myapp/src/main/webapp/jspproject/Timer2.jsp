@@ -1,139 +1,171 @@
+<!-- Timer2.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="jspproject.*" %>
 <%@ include file="TimerInfo.jsp" %>
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>네모 타이머</title>
+<title>주황색 타이머</title>
 <style>
     body {
       overflow: hidden;
       margin: 0;
     }
 
-    .timer2-card {
+    .timer2-timer-container {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 320px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      padding: 16px 16px 20px;
-      box-sizing: border-box;
-      text-align: center;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: #11111c;
+      border: 3px solid #1C1C1C;
+      user-select: none;
       cursor: default;
-      border: 10px solid #a259ff;
+    }
+
+    .timer2-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(90deg) scaleX(-1);
     }
 
     .timer2-drag-handle {
-      font-size: 24px;
-      cursor: grab;
-      color: #bbb;
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: white;
       user-select: none;
-      margin-bottom: 10px;
+      cursor: grab;
+      z-index: 10;
+      letter-spacing: 1px;
+      line-height: 1;
     }
 
-    .timer2-progress-container {
-      width: 100%;
-      height: 12px;
-      background: #e0e0e0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 20px;
+    .timer2-center {
+      position: absolute;
+      top: 47%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
     }
 
-    .timer2-progress-bar {
-      height: 100%;
-      background-color: #3f8efc;
-      width: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .timer2-time-display {
-      font-size: 36px;
+    .timer2-time {
+      font-size: 24px;
       font-weight: bold;
-      color: #222;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
+      color: white;
     }
 
-    .timer2-session-info {
+    .timer2-info {
       font-size: 14px;
-      color: #555;
+      line-height: 1.3;
+      color: white;
     }
 
-    .timer2-session-info strong {
-      color: #3f8efc;
+    .timer2-info strong {
       cursor: pointer;
-    }
-
-    .timer2-session-info .break-time {
-      color: #4caf50;
     }
 
     input.timer2-input {
       width: 50px;
       font-size: 14px;
       text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 2px;
-    }
-
-    .timer2-btn-area {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .timer2-play-btn {
-      width: 40px;
-      height: 40px;
-      background: white;
+      background: transparent;
       border: none;
-      border-radius: 8px;
-      font-size: 20px;
-      color: #3f8efc;
-      cursor: pointer;
-      transition: all 0.2s;
+      color: white;
+      outline: none;
     }
 
-    .timer2-play-btn:hover {
-      background: #f0f4ff;
-      color: #1a5ef0;
+    .timer2-bottom-controls {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+    }
+
+    .timer2-btn {
+      font-size: 20px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .timer2-btn:hover img {
+      filter: brightness(1.2);
+    }
+
+    .timer2-btn img {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+    }
+
+    /* 알림 스타일 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification.show {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
-<div class="timer2-card" id="timerCard" 
- style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
-  <div class="timer2-drag-handle" id="dragHandle">:::</div>
+<div class="timer2-timer-container" id="timerContainer"
+     style="left:<%= left %>px; top:<%= top %>px; <%= extraStyle %>">
+  <div class="timer2-drag-handle">:::</div>
 
-  <div class="timer2-progress-container">
-    <div class="timer2-progress-bar" id="progressBar"></div>
+  <svg class="timer2-svg" width="240" height="240">
+    <circle cx="120" cy="120" r="100" stroke="#333" stroke-width="12" fill="none" />
+    <circle id="progress" cx="120" cy="120" r="100" stroke="#3f8efc" stroke-width="12" fill="none"
+      stroke-linecap="butt" stroke-dasharray="628" />
+  </svg>
+
+  <div class="timer2-center">
+    <div class="timer2-time" id="timeDisplay">00:00</div>
+    <div class="timer2-info" id="timerInfo">
+      <strong id="sessionTime">00:00</strong> 세션<br>
+      과 <strong id="breakTime">00:00</strong> 휴식
+    </div>
   </div>
 
-  <div class="timer2-time-display" id="timeDisplay">00:00</div>
-
-  <div class="timer2-session-info" id="timerInfo">
-    <strong id="sessionTime">00:00</strong> 세션,
-    <strong id="breakTime" class="break-time">00:00</strong> 휴식
-  </div>
-
-  <div class="timer2-btn-area">
-    <button class="timer2-play-btn" id="toggleBtn">▶️</button>
-    <button class="timer2-play-btn" id="btnReset">⟲</button>
+  <div class="timer2-bottom-controls">
+    <button class="timer2-btn" id="btnReset">⟲</button>
+    <button class="timer2-btn" id="toggleBtn">
+      <img id="toggleIcon" src="icon/아이콘_재생_1.png" alt="toggle" />
+    </button>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+	
   const isPreview = "<%= request.getParameter("preview") != null %>" === "true";
+
   const userId = "<%= user_id %>";
   let sessionDuration = <%= sessionTime %>;
   let breakDuration = <%= breakTime %>;
@@ -142,15 +174,20 @@ document.addEventListener("DOMContentLoaded", function () {
   let isRunning = false;
   let interval = null;
 
-  const timerCard = document.getElementById("timerCard");
-  const dragHandle = document.getElementById("dragHandle");
-  const progressBar = document.getElementById("progressBar");
+  const RADIUS = 100;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+  const timer = document.getElementById("timerContainer");
+  const dragHandle = document.querySelector(".timer2-drag-handle");
   const timeDisplay = document.getElementById("timeDisplay");
+  const progressCircle = document.getElementById("progress");
   const sessionTimeEl = document.getElementById("sessionTime");
   const breakTimeEl = document.getElementById("breakTime");
-  const toggleBtn = document.getElementById("toggleBtn");
+  const toggleIcon = document.getElementById("toggleIcon");
   const btnReset = document.getElementById("btnReset");
   const timerInfo = document.getElementById("timerInfo");
+
+  progressCircle.style.strokeDasharray = CIRCUMFERENCE;
 
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
@@ -159,19 +196,44 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const updateProgress = () => {
-    const duration = isSession ? sessionDuration : breakDuration;
-    const percent = timeLeft / duration;
-    progressBar.style.width = (percent * 100) + "%";
-    progressBar.style.backgroundColor = isSession ? "#3f8efc" : "#4caf50";
-    timeDisplay.textContent = formatTime(timeLeft);
-  };
+	  const duration = isSession ? sessionDuration : breakDuration;
+	  const percent = timeLeft / duration;
+	  const offset = CIRCUMFERENCE * (1 - percent);
+
+	  // 세션일 때 주황색, 휴식일 때 초록색
+	  progressCircle.style.stroke = isSession ? "#f4a261" : "#4caf50";
+
+	  progressCircle.style.strokeDashoffset = offset;
+	  timeDisplay.textContent = formatTime(timeLeft);
+	};
+
+  const startInterval = () => {
+	  interval = setInterval(() => {
+	    if (timeLeft > 0) {
+	      timeLeft--;
+	      updateProgress();
+	    } else {
+	      isSession = !isSession;
+	      
+	      // 알림 표시
+	      if (isSession) {
+	        showNotification("휴식 시간이 끝났습니다. 작업 세션을 시작합니다.");
+	      } else {
+	        showNotification("작업 세션이 끝났습니다. 휴식 시간을 시작합니다.");
+	      }
+	      
+	      timeLeft = isSession ? sessionDuration : breakDuration;
+	      updateProgress();
+	    }
+	  }, 1000);
+	};
 
   const resetTimer = () => {
     clearInterval(interval);
     isRunning = false;
     isSession = true;
     timeLeft = sessionDuration;
-    toggleBtn.textContent = "▶️";
+    toggleIcon.src = "icon/아이콘_재생_1.png";
     updateProgress();
     timerInfo.style.display = "block";
   };
@@ -182,13 +244,8 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "user_id=" + userId + "&timer_session=" + sessionDuration + "&timer_break=" + breakDuration
     }).then(res => res.text())
-      .then(data => console.log(data));
+      .then(data => console.log("세션/브레이크 업데이트 결과 : ", data));
   };
-
-  sessionTimeEl.textContent = formatTime(sessionDuration);
-  breakTimeEl.textContent = formatTime(breakDuration);
-  timeDisplay.textContent = formatTime(sessionDuration);
-  updateProgress();
 
   btnReset.addEventListener("click", resetTimer);
 
@@ -196,35 +253,48 @@ document.addEventListener("DOMContentLoaded", function () {
     if (isRunning) {
       clearInterval(interval);
       isRunning = false;
-      toggleBtn.textContent = "▶️";
+      toggleIcon.src = "icon/아이콘_재생_1.png";
       timerInfo.style.display = "block";
     } else {
-      interval = setInterval(() => {
-        if (timeLeft > 0) {
-          timeLeft--;
-          updateProgress();
-        } else {
-          isSession = !isSession;
-          timeLeft = isSession ? sessionDuration : breakDuration;
-          updateProgress();
-        }
-      }, 1000);
+      startInterval();
       isRunning = true;
-      toggleBtn.textContent = "⏸";
+      toggleIcon.src = "icon/아이콘_일시정지_1.png";
       timerInfo.style.display = "none";
     }
   });
 
+//showNotification 함수 추가
+  const showNotification = (message) => {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // 표시 애니메이션을 위해 약간의 지연 후 show 클래스 추가
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    // 5초 후 알림 제거
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300); // 페이드 아웃 애니메이션이 끝날 때까지 기다림
+    }, 5000);
+  };
+  
   const makeEditable = (el, type) => {
     const input = document.createElement("input");
     input.type = "number";
-    input.className = "timer2-input";
+    input.className = "timer1-input";
     input.value = type === "session" ? sessionDuration : breakDuration;
 
     const confirm = () => {
       let val = parseInt(input.value);
       if (isNaN(val) || val < 10) val = 10;
       if (val > 3600) val = 3600;
+
       if (type === "session") {
         sessionDuration = val;
         sessionTimeEl.textContent = formatTime(sessionDuration);
@@ -232,6 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
         breakDuration = val;
         breakTimeEl.textContent = formatTime(breakDuration);
       }
+
       input.replaceWith(type === "session" ? sessionTimeEl : breakTimeEl);
       updateTimerSettingToDB();
       resetTimer();
@@ -239,6 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     input.addEventListener("blur", confirm);
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirm(); });
+
     el.replaceWith(input);
     input.focus();
   };
@@ -246,45 +318,51 @@ document.addEventListener("DOMContentLoaded", function () {
   sessionTimeEl.addEventListener("click", () => makeEditable(sessionTimeEl, "session"));
   breakTimeEl.addEventListener("click", () => makeEditable(breakTimeEl, "break"));
 
-  // 드래그 (미리보기면 막기)
+  sessionTimeEl.textContent = formatTime(sessionDuration);
+  breakTimeEl.textContent = formatTime(breakDuration);
+  timeDisplay.textContent = formatTime(sessionDuration);
+  updateProgress();
+
+  // 드래그 - 미리보기 아닐 때만 가능
   if (!isPreview) {
     let isDragging = false;
     let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
 
     dragHandle.addEventListener("mousedown", (e) => {
       e.preventDefault();
-      isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
-      offsetX = timerCard.offsetLeft;
-      offsetY = timerCard.offsetTop;
+      offsetX = timer.offsetLeft;
+      offsetY = timer.offsetTop;
+      isDragging = true;
       document.body.style.cursor = "grabbing";
     });
 
     document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
-      timerCard.style.left = (offsetX + e.clientX - startX) + "px";
-      timerCard.style.top = (offsetY + e.clientY - startY) + "px";
+      timer.style.left = (offsetX + e.clientX - startX) + "px";
+      timer.style.top = (offsetY + e.clientY - startY) + "px";
     });
 
     document.addEventListener("mouseup", () => {
       if (isDragging) {
         isDragging = false;
         document.body.style.cursor = "default";
-        let x = parseInt(timerCard.style.left);
-        let y = parseInt(timerCard.style.top);
+
+        const x = parseInt(timer.style.left);
+        const y = parseInt(timer.style.top);
+
         fetch("UpdateTimerSessionProc.jsp", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: "user_id=" + userId + "&timer_loc=" + x + "," + y
         }).then(res => res.text())
-          .then(data => console.log(data));
+          .then(data => console.log("Timer2 위치 저장 결과 : ", data));
       }
     });
   }
 });
+
 </script>
-
-
 </body>
 </html>
