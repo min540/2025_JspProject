@@ -31,14 +31,25 @@ public class NotifiMgr {
 	        pstmt = con.prepareStatement(sql);
 	        pstmt.setString(1, id);
 	        rs = pstmt.executeQuery();
+			/* 이게 원본
+			 * while(rs.next()) { ObjBean bean = new ObjBean();
+			 * bean.setObj_id(rs.getInt(1));
+			 * bean.setObj_edate(SDF_DATE.format(rs.getDate(2))); e_date.add(bean); }
+			 * 
+			 */ 
 	        
-	        while(rs.next()) {
+	        while (rs.next()) {
 	            ObjBean bean = new ObjBean();
 	            bean.setObj_id(rs.getInt(1));
-	            bean.setObj_edate(SDF_DATE.format(rs.getDate(2)));
+	            java.sql.Date sqlDate = rs.getDate(2);
+	            if (sqlDate != null) {
+	                bean.setObj_edate(SDF_DATE.format(sqlDate));
+	            } else {
+	                bean.setObj_edate("");  // null일 경우 빈 문자열이나 "미정" 등의 기본값을 할당
+	            }
 	            e_date.add(bean);
 	        }
-
+        
 	        if(!e_date.isEmpty()) {
 	            // 현재 날짜 가져오기
 	            String currentDate = SDF_DATE.format(new java.util.Date());
