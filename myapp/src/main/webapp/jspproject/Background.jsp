@@ -59,23 +59,23 @@
    	font-size: 1vw;
 	}
 	
-	.background-search {
-    padding: 10px 14px;
-    font-size: 15px;
-    width: 300px;
-    height: 37px; /* 👈 높이를 명시적으로 지정 */
-    border: none;
-    border-radius: 6px;
-    background-color: #000;
-    color: white;
-    box-shadow: 0 0 8px rgba(123, 44, 191, 0.6);
-    outline: none;
-    transition: 0.2s ease;
-    box-sizing: border-box; /* padding 포함한 크기 계산 */
-    margin-top: 2px;
+	.bg-title-search {
+	  padding: 10px 14px;
+	  font-size: 14px;
+	  width: 192px !important;
+	  height: 37px;
+	  border: none;
+	  border-radius: 6px;
+	  background-color: #000;
+	  color: white;
+	  box-shadow: 0 0 8px rgba(123, 44, 191, 0.6);
+	  outline: none;
+	  transition: 0.2s ease;
+	  box-sizing: border-box;
+	  margin-top: 2px;
 	}
 
-	.background-search::placeholder {
+	.bg-title-search::placeholder {
     color: rgba(255, 255, 255, 0.5);
 	}
 
@@ -411,7 +411,7 @@
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
 		        <img class="iconbackgroundList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" id="sortButton" />
-		        <input class="background-search" type="text" placeholder="배경 제목 검색" />
+		        <input class="bg-title-search" type="text" placeholder="배경 제목 검색" />
 		        <img id="searchButton" class="iconbackgroundList" src="icon/아이콘_검색_1.png" alt="검색" >
 		    </div>
 		</div>
@@ -478,7 +478,7 @@
 			    const currentBackgroundImage = "<%= currentImgName %>";
 			    let currentAppliedImage = "<%= appliedImage %>";
 			</script>
-		<form id="updateTemaForm" action="updateTema.jsp" method="post" enctype="multipart/form-data" style="display:none;">
+		<form id="updateTemaForm" action="jspproject/updateTemaServlet" method="post" enctype="multipart/form-data" style="display:none;">
 		    <input type="hidden" name="tema_id" id="updateTemaId">
 		    <input type="hidden" name="tema_cnt" id="updateTemaCnt">
 		    <input type="hidden" name="tema_title" id="updateTemaTitle">
@@ -490,7 +490,7 @@
 
 		<!-- ✅ 업로드 폼 모달 or 인라인 -->
 		<div id="uploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
-		    <form id="uploadForm" action="uploadTema.jsp" method="post" enctype="multipart/form-data"
+		    <form id="uploadForm" action="uploadTemaServlet" method="post" enctype="multipart/form-data"
 		          style="background:#1d102d; padding:20px; border-radius:12px; color:white; display:flex; flex-direction:column; gap:10px; width:300px;">
 		        <h3 style="text-align:center;">배경 업로드</h3>
 		        <input type="text" name="tema_title" placeholder="제목" required>
@@ -552,7 +552,7 @@
 function saveBackgroundDescription() {
     const description = document.querySelector(".background-description textarea").value;
     const title = document.getElementById("backgroundTitleInput").value; // 제목 가져오기
-    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
+    const fileName = decodeURIComponent(document.querySelector(".backgroundImg").src.split('/').pop().split('?')[0]);
 
     const items = document.querySelectorAll(".background-list-item");
     let temaId = null;
@@ -577,7 +577,7 @@ function saveBackgroundDescription() {
 
     const formData = new FormData(form);
 
-    fetch("updateTema.jsp", {
+    fetch("updateTemaServlet", {
         method: "POST",
         body: formData
     })
@@ -622,7 +622,7 @@ function deleteImage(el) {
 
     // 나머지 삭제 로직 동일
     if (confirm("정말 삭제하시겠습니까?")) {
-        fetch("<%=request.getContextPath()%>/jspproject/deleteTema.jsp?tema_id=" + temaId)
+        fetch("<%=request.getContextPath()%>/jspproject/deleteTemaServlet?tema_id=" + temaId)
             .then(res => res.json())
             .then(data => {
                 if (data.status === "ok") {
@@ -640,7 +640,7 @@ function deleteImage(el) {
 }
 
 function deleteSelectedBackground() {
-    const fileName = document.querySelector(".backgroundImg").src.split("/").pop();
+	const fileName = decodeURIComponent(document.querySelector(".backgroundImg").src.split('/').pop().split('?')[0]);
     const items = document.querySelectorAll(".background-list-item");
 
     let targetItem = null;
@@ -666,7 +666,7 @@ function deleteSelectedBackground() {
     }
 
     if (confirm("이 배경을 삭제하시겠습니까?")) {
-        fetch("jspproject/deleteTema.jsp?tema_id=" + temaId)
+        fetch("deleteTemaServlet?tema_id=" + temaId)
             .then(res => res.json())
             .then(data => {
                 if (data.status === "ok") {
@@ -689,7 +689,7 @@ function deleteSelectedBackground() {
 }
 //배경취소
 function cancelBackground() {
-    fetch("cancelTema.jsp")
+    fetch("cancelTemaServlet")
         .then(res => res.text())
         .then(result => {
             if (result.trim() === "ok") {
@@ -754,7 +754,7 @@ function selectBackground(button) {
     selectedTemaId = button.closest('.background-list-item').getAttribute("data-tema-id");
 
     const contextPath = "<%= request.getContextPath() %>";
-    const fullPath = contextPath + "/jspproject/backgroundImg/" + imgName;
+    const fullPath = contextPath + "/jspproject/backgroundImg/" + imgName + "?v=" + new Date().getTime();
 
     // 🔄 오른쪽 미리보기 영역 업데이트
     document.querySelector(".backgroundImg").src = fullPath;
@@ -768,7 +768,7 @@ function selectBackground(button) {
 
 document.addEventListener("DOMContentLoaded", function () {
 	updateCancelButtonState("<%= currentImgName %>");
-    const searchInput = document.querySelector(".background-search");
+    const searchInput = document.querySelector(".bg-title-search");
     const searchButton = document.getElementById("searchButton");
 
     searchInput.addEventListener("input", function () {
@@ -819,24 +819,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const formData = new FormData(uploadForm);
 
-            fetch("uploadTema.jsp", {
+            fetch("uploadTemaServlet", {
                 method: "POST",
                 body: formData
             })
             .then(res => res.json())
-			.then(data => {
-			    if (data.status === "ok") {
-			        alert("업로드 완료!");
-			        closeUploadModal();
-			
-			        appendNewBackgroundItem(data.tema_img, data.tema_title, data.tema_cnt);
-			
-			        // 자동으로 selectBackground 호출 ❌ 하지 않음
-			        // 사용자가 적용 버튼을 눌러야 실제 반영되도록 유지
-			    } else {
-			        alert("업로드 실패: " + data.message);
-			    }
-			})
+            .then(data => {
+                if (data.status === "ok") {
+                    alert("업로드 완료!"); 
+
+                    const uploadModal = document.getElementById("uploadModal");
+                    const backgroundWrapper = document.getElementById("backgroundWrapper");
+
+                    if (uploadModal) uploadModal.style.display = "none";
+
+                    if (backgroundWrapper) {
+                        backgroundWrapper.style.display = "none"; 
+						//최신으로 업데이트
+                        fetch("Background.jsp")
+                            .then(res => res.text())
+                            .then(html => {
+                                backgroundWrapper.innerHTML = html;
+                              
+                            });
+                    }
+
+                } else {
+                    alert("업로드 실패: " + data.message);
+                }
+            })
             .catch(err => {
                 alert("에러 발생: " + err);
             });
@@ -859,7 +870,7 @@ function appendNewBackgroundItem(imgName, title, description) {
     button.setAttribute("data-description", description);
 
     const img = document.createElement("img");
-    img.src = "jspproject/backgroundImg/" + imgName;
+    img.src = "jspproject/backgroundImg/" + imgName + "?v=" + new Date().getTime();
     img.alt = title;
 
     const deleteIcon = document.createElement("img");
@@ -905,7 +916,7 @@ function disableBackgroundEditMode() {
 }
 
 function applyBackground() {
-    const fileName = document.querySelector(".backgroundImg").src.split('/').pop();
+	const fileName = document.querySelector(".backgroundImg").src.split('/').pop().split('?')[0];  
     const items = document.querySelectorAll(".background-list-item");
 
     let temaId = null;
@@ -922,7 +933,7 @@ function applyBackground() {
     }
 
     // 서버에 적용 요청
-    fetch("applyTema.jsp?tema_id=" + temaId)
+    fetch("applyTemaServlet?tema_id=" + temaId)
         .then(res => res.text())
         .then(result => {
             if (result.trim() === "ok") {
