@@ -204,7 +204,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer1.jsp" />
+    <jsp:include page="Timer3.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
