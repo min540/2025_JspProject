@@ -1,3 +1,4 @@
+<!-- TimerDesign.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" language="java" import="java.util.*, jspproject.*" %>
 <%
   TimerMgr mgr = new TimerMgr();
@@ -26,20 +27,20 @@
 <div class="timer-container" id="timerContainer">
   <div class="timer-left">
     <div class="timer-tab">
-      <button class="tab-btn" onclick="switchToBackground()">배경화면</button>
-      <button class="tab-btn active">타이머</button>
+      <button class="timer-tab-btn" onclick="switchToBackground()">배경화면</button>
+      <button class="timer-tab-btn active">타이머</button>
     </div>
 
-    <div class="timer-header">
-      <div class="header-left"></div>
-      <div class="header-right">
-        <div class="filter-controls">
-          <img id="sortAlpha" class="icontimerList" src="icon/아이콘_글자순_1.png" alt="글자순 정렬">
-          <input class="timer-search" type="text" placeholder="타이머 검색" />
-          <img id="searchTimerBtn" class="icontimerList" src="icon/아이콘_검색_1.png" alt="검색">
-        </div>
-      </div>
-    </div>
+	<div class="timer-header">
+	  <div class="timer-header-left"></div>
+	  <div class="timer-header-right">
+	    <div class="timer-filter-controls">
+	      <img id="sortAlpha" class="timer-icontimerList" src="icon/아이콘_글자순_1.png" alt="글자순 정렬">
+	      <input class="timer-search" type="text" placeholder="타이머 검색" />
+	      <img id="searchTimerBtn" class="timer-icontimerList" src="icon/아이콘_검색_1.png" alt="검색">
+	    </div>
+	  </div>
+	</div>
 
     <div class="timer-list" id="timerGrid"></div>
   </div>
@@ -53,10 +54,10 @@
       <textarea id="timerDescription" placeholder="타이머 설명을 입력하세요." readonly></textarea>
     </div>
 <div class="timer-cancel-button">
-  <button class="btn-purple" id="btnCancel">타이머 취소</button>
+  <button class="timer-btn-purple" id="btnCancel">타이머 취소</button>
 </div>
     <div class="timer-right-buttons">
-      <button class="btn-purple" id="btnSave">적용</button>
+      <button class="timer-btn-purple" id="btnSave">적용</button>
     </div>
   </div>
 </div>
@@ -169,10 +170,12 @@ document.getElementById("btnSave").addEventListener("click", function(){
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: "user_id=<%= user_id %>&timer_id=" + selectedTimer
-  }).then(res => res.text())
+  })
+  .then(res => res.text())
   .then(result => {
     if(result.trim() === "ok"){
       alert("타이머가 변경되었습니다!");
+      reloadTimerView();  // 타이머 다시 로딩
     }else{
       alert("변경 실패 : " + result);
     }

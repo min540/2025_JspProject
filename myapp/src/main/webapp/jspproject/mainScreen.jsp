@@ -19,7 +19,7 @@
     String user_id = (String) session.getAttribute("user_id");
 
     // ✅ 배경 초기값 (기본값)
- String appliedBackground ="/jspproject/backgroundImg/tema1.jpg";
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
 
     if (user_id != null && !user_id.trim().equals("")) {
         // ✅ 현재 적용된 테마 이미지 가져오기
@@ -204,7 +204,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer1.jsp" />
+   <jsp:include page="GetTimerView.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
@@ -302,9 +302,15 @@
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
-        var backgroundDiv = document.getElementById("backgroundWrapper");
-        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
-    }
+	  const backgroundWrapper = document.getElementById("backgroundWrapper");
+	  const timerWrapper1 = document.getElementById("timerWrapper1");
+	
+	  const isOpen = (backgroundWrapper?.style.display === "flex") || (timerWrapper1?.style.display === "flex");
+	
+	  [backgroundWrapper, timerWrapper1].forEach(el => {
+	    if (el) el.style.display = isOpen ? "none" : (el === backgroundWrapper ? "flex" : "none");
+	  });
+	}
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
@@ -663,11 +669,17 @@
 	    const audio = document.getElementById('mainAudioPlayer');
 
 	    if (playBtn && audio) {
-	        // 초기 상태 설정
+	        // 초기 상태
 	        playBtn.setAttribute('data-state', 'paused');
 
 	        playBtn.addEventListener('click', function () {
 	            const currentState = playBtn.getAttribute('data-state');
+
+	            // ✅ 기본 src 확인 (예: 아무 음악도 선택되지 않은 상태)
+	            if (!audio.src || audio.src.includes("music1.mp3")) {
+	                alert("재생 중인 음악이 없습니다.\n음악 목록에서 곡을 먼저 선택해주세요.");
+	                return;
+	            }
 
 	            if (currentState === 'paused') {
 	                // ▶️ → ⏸️ + 음악 재생
@@ -687,6 +699,32 @@
 	        });
 	    }
 	});
+
+	
+	function syncMainMusicBar(bgm, autoPlay = false) {
+	    const audio = document.getElementById("mainAudioPlayer");
+	    const titleEl = document.querySelector(".musicTitle");
+	    const playBtn = document.getElementById("mainPlayToggleBtn");
+
+	    if (audio && titleEl && playBtn) {
+	        const newSrc = "<%= request.getContextPath() %>/jspproject/uploadMusic/" + bgm.src;
+
+	        if (audio.src !== newSrc) {
+	            audio.src = newSrc;
+	        }
+
+	        titleEl.textContent = bgm.title;
+
+	        if (autoPlay) {
+	            audio.play();
+	            playBtn.src = "icon/아이콘_일시정지_1.png";
+	            playBtn.setAttribute("data-state", "playing");
+	        } else {
+	            playBtn.src = "icon/아이콘_재생_1.png";
+	            playBtn.setAttribute("data-state", "paused");
+	        }
+	    }
+	}
 	
 	// 볼륨 조절 관련 메소드
 	document.addEventListener("DOMContentLoaded", function () {
