@@ -35,7 +35,7 @@ body[class^="bg-"] {
 /*오른쪽 상단 아이콘*/
 .icon-container {
     position: absolute;
-    left: 74vw;
+    left: 78.5vw;
     top: 2.4vh;
     display: flex;
     align-items: center;
@@ -150,6 +150,12 @@ body[class^="bg-"] {
 .iconRightDown.obj {
     width: 4vw;
     height: 4vw;
+    margin-left: 0.3vw;
+}
+
+.iconRightDown.timer {
+    width: 4.7vw;
+    height: 4.7vw;
     margin-left: 0.3vw;
 }
 
