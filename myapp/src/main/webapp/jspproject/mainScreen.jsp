@@ -1,5 +1,6 @@
 
 <!-- mainScreen.jsp -->
+<%@page import="java.util.Vector"%>
 <%@page import="jspproject.DBConnectionMgr"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
@@ -10,9 +11,11 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
 <%@ page import="jspproject.UserBean" %>
+<%@ page import="jspproject.BgmBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
+<jsp:useBean id="bmgr" class="jspproject.BgmMgr" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%
     String path = request.getContextPath();
@@ -22,7 +25,7 @@
     // ✅ 배경 초기값 (기본값)
 
 
-  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
 
 
     if (user_id != null && !user_id.trim().equals("")) {
@@ -133,8 +136,7 @@
 <div class="icon-container">
     <img class="iconRightUp allscreen" src="icon/아이콘_전체화면_1.png" border="0" alt="전체화면" onclick="toggleFullScreen()" > 
     <img class="iconRightUp notifi" src="icon/아이콘_공지사항_1.png" border="0" alt="공지사항 확인" onclick = "toggleAnc()" > 
-    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()"> 
-    <img class="iconRightUp darkmode" src="icon/아이콘_다크모드_3.png" border="0" alt="다크모드로 변경"> 
+    <img class="iconRightUp tema" src="icon/아이콘_배경_2.png" border="0" alt="배경화면 설정" onclick = "toggleBackground()">
     <img class="iconRightUp uioff" src="icon/아이콘_UI끄기_1.png" border="0" alt="UI 끄기" onclick="toggleUI()">
     <img class="iconRightUp logout" src="icon/아이콘_로그아웃_1.png" border="0" alt="로그아웃" onclick="logout()">
 </div>
@@ -145,10 +147,10 @@
 		<img id="mainPlayToggleBtn" class="iconMusic" src="icon/아이콘_재생_1.png" border="0" alt="음악 재생" > 
 	</span>
 	<audio id="mainAudioPlayer" src="music/music1.mp3"></audio>
-	<img class="iconMusic" src="icon/아이콘_셔플_1.png" border="0" alt="음악 랜덤" > 
-	<img class="iconMusic" src="icon/아이콘_반복_1.png" border="0" alt="음악 반복" > 
-	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" > 
-	<img class="iconMusic" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" > 
+	<img class="iconMusic" src="icon/아이콘_셔플off_2.png" border="0" alt="음악 랜덤" > 
+	<img class="iconMusic" src="icon/아이콘_반복off_2.png" border="0" alt="음악 반복" > 
+	<img class="iconMusic" src="icon/아이콘_이전음악_1.png" border="0" alt="이전 음악 재생" onclick="playPreviousMusic()" > 
+	<img class="iconMusic" src="icon/아이콘_다음음악_1.png" border="0" alt="다음 음악 재생" onclick="playNextMusic()" > 
 	<img id="volumeMuteBtn" class="iconMusic" src="icon/아이콘_볼륨_1.png" border="0" alt="볼륨 음소거">
 </div>
 
@@ -165,13 +167,13 @@
 
 
 <!-- 노래 제목 표시-->
-<b class = "musicTitle">노래제목 - 예시 어쩌고 저쩌고 제목 길게 나오기 요렇게</b>
+<b class = "musicTitle">재생 중인 노래가 없습니다</b>
 
 <!-- 오른쪽 하단 아이콘들 -->
 <div class = "icon-container2">
 	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
 	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
-	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
+	<img class="iconRightDown timer" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
 </div>
@@ -218,7 +220,7 @@
 
 <!-- 타이머 -->
 <div id="timerWrapper" style="display: none;">
-    <jsp:include page="Timer3.jsp" />
+   <jsp:include page="GetTimerView.jsp" />
 </div>
 
 <!-- 타이머 설정 영역 -->
@@ -316,9 +318,15 @@
 	
 	// 배경 설정 on/off
 	function toggleBackground() {
-        var backgroundDiv = document.getElementById("backgroundWrapper");
-        backgroundDiv.style.display = (backgroundDiv.style.display === "none") ? "block" : "none";
-    }
+	  const backgroundWrapper = document.getElementById("backgroundWrapper");
+	  const timerWrapper1 = document.getElementById("timerWrapper1");
+	
+	  const isOpen = (backgroundWrapper?.style.display === "flex") || (timerWrapper1?.style.display === "flex");
+	
+	  [backgroundWrapper, timerWrapper1].forEach(el => {
+	    if (el) el.style.display = isOpen ? "none" : (el === backgroundWrapper ? "flex" : "none");
+	  });
+	}
 	
 	// 음악 리스트 on/off
 	function toggleMusicList() {
@@ -671,67 +679,261 @@
 	    	drawMonthlyCompleteChartBar();
 	    }, 50);
 	}
-	
+
 	document.addEventListener('DOMContentLoaded', function () {
 	    const playBtn = document.getElementById('mainPlayToggleBtn');
 	    const audio = document.getElementById('mainAudioPlayer');
+	    const repeatBtn = document.querySelector(".iconMusic[src*='반복']");
 
+	    // 🎛 반복 아이콘 토글
+	    if (repeatBtn) {
+	        repeatBtn.addEventListener("click", function () {
+	            isSingleRepeat = !isSingleRepeat;
+	            repeatBtn.src = isSingleRepeat
+	                ? "icon/아이콘_반복_1.png"
+	                : "icon/아이콘_반복off_2.png";
+	            alert("한 곡 반복 " + (isSingleRepeat ? "ON" : "OFF"));
+	        });
+	    }
+
+	    // ▶️ 재생 / ⏸️ 일시정지 버튼
 	    if (playBtn && audio) {
-	        // 초기 상태
 	        playBtn.setAttribute('data-state', 'paused');
 
 	        playBtn.addEventListener('click', function () {
 	            const currentState = playBtn.getAttribute('data-state');
 
-	            // ✅ 기본 src 확인 (예: 아무 음악도 선택되지 않은 상태)
 	            if (!audio.src || audio.src.includes("music1.mp3")) {
 	                alert("재생 중인 음악이 없습니다.\n음악 목록에서 곡을 먼저 선택해주세요.");
 	                return;
 	            }
 
 	            if (currentState === 'paused') {
-	                // ▶️ → ⏸️ + 음악 재생
 	                playBtn.src = 'icon/아이콘_일시정지_1.png';
 	                playBtn.alt = '일시정지';
 	                playBtn.setAttribute('data-state', 'playing');
-
 	                audio.play();
 	            } else {
-	                // ⏸️ → ▶️ + 음악 정지
 	                playBtn.src = 'icon/아이콘_재생_1.png';
 	                playBtn.alt = '재생';
 	                playBtn.setAttribute('data-state', 'paused');
-
 	                audio.pause();
 	            }
+
+	            // 🎵 음악 상세 표시 처리 (생략 가능)
+	            const bgmId = document.getElementById("hiddenBgmId")?.value;
+	            const bgmName = document.getElementById("hiddenBgmName")?.value;
+	            const bgmCnt = document.getElementById("hiddenBgmCnt")?.value;
+	            const bgmImg = document.getElementById("bgmImg")?.src;
+
+	            if (typeof showBgmDetail === "function" && bgmId && bgmName && bgmImg) {
+	                showBgmDetail(
+	                    bgmId,
+	                    bgmName,
+	                    bgmCnt,
+	                    bgmImg,
+	                    audio.src.split('/').pop(),
+	                    playBtn.getAttribute("data-state") === "playing" ? 1 : 0,
+	                    false
+	                );
+	            }
 	        });
-	    }
+
+	        // ✅ 한 곡 반복 여부 확인
+	       audio.onended = function () {
+		    const playBtn = document.getElementById("mainPlayToggleBtn");
+		
+		    if (isSingleRepeat) {  // ✅ 이게 진짜 반복 여부 확인
+		        audio.currentTime = 0;
+		        audio.play();
+		    } else {
+		        if (typeof handleNextMusic === "function") {
+		            handleNextMusic(true);
+		        }
+		
+		        // 다음 곡 없을 때 재생 아이콘으로 돌려놓기
+		        if (playBtn) {
+		            playBtn.src = "icon/아이콘_재생_1.png";
+		            playBtn.setAttribute("data-state", "paused");
+		            playBtn.alt = "재생";
+		        }
+		    }
+		};
+	  }
 	});
 
 	
-	function syncMainMusicBar(bgm, autoPlay = false) {
-	    const audio = document.getElementById("mainAudioPlayer");
-	    const titleEl = document.querySelector(".musicTitle");
-	    const playBtn = document.getElementById("mainPlayToggleBtn");
+	function handleNextMusic(auto = false) {
+	    playNextMusic();
+	}
+	
+	<%
+	    Vector <BgmBean> bgmList = bmgr.getBgmList(user_id);
+	%>
 
-	    if (audio && titleEl && playBtn) {
-	        const newSrc = "<%= request.getContextPath() %>/jspproject/uploadMusic/" + bgm.src;
-
-	        if (audio.src !== newSrc) {
-	            audio.src = newSrc;
-	        }
-
-	        titleEl.textContent = bgm.title;
-
+	// ✅ 1. 음악 동기화 함수 먼저 선언
+	  function syncMainMusicBar(info, autoPlay = false) {
+	    if (!window.parent) return;
+	
+	    const mainDoc = window.parent.document;
+	    const mainPlay = mainDoc.getElementById("mainAudioPlayer");
+	    const mainBtn = mainDoc.getElementById("mainPlayToggleBtn");
+	    const musicTitle = mainDoc.querySelector(".musicTitle");
+	
+	    if (!mainPlay || !mainBtn) return;
+	
+	    // 경로 확인 (music 또는 uploadMusic 중 어디인지 확인 필요)
+	    const src = info.bgm_music.includes("/") 
+	        ? info.bgm_music 
+	        : document.body.dataset.context + "/jspproject/music/" + info.bgm_music;
+	
+	    mainPlay.src = src;
+	    mainPlay.load();
+	    mainPlay.onloadeddata = () => {
 	        if (autoPlay) {
-	            audio.play();
-	            playBtn.src = "icon/아이콘_일시정지_1.png";
-	            playBtn.setAttribute("data-state", "playing");
-	        } else {
-	            playBtn.src = "icon/아이콘_재생_1.png";
-	            playBtn.setAttribute("data-state", "paused");
+	            mainPlay.play().then(() => {
+	                mainBtn.src = "icon/아이콘_일시정지_1.png";
+	                mainBtn.setAttribute("data-state", "playing");
+	            }).catch(e => console.warn("play() 실패", e));
 	        }
+	
+	        if (musicTitle) {
+	            musicTitle.textContent = info.bgm_name || info.title;
+	        }
+	
+	        window.parent.currentSelectedBgm = {
+	            title: info.bgm_name || info.title,
+	            src: info.bgm_music || info.src
+	        };
+	    };
+	}
+
+	  // ✅ 2. 전역 리스트 및 현재 인덱스 설정
+	  window.bgmList = [
+	    <% for (int i = 0; i < bgmList.size(); i++) {
+	      BgmBean bgm = bgmList.get(i); %>
+	        {
+	          bgm_id: <%= bgm.getBgm_id() %>,
+	          bgm_name: "<%= bgm.getBgm_name() %>",
+	          bgm_music: "<%= bgm.getBgm_music() %>",
+	          bgm_onoff: <%= bgm.getBgm_onoff() %>
+	        }<%= (i < bgmList.size() - 1) ? "," : "" %>
+	    <% } %>
+	  ];
+	  window.currentBgmIndex = window.bgmList.findIndex(bgm => bgm.bgm_onoff === 1);
+	
+	  // ✅ 3. 이전 / 다음 곡 함수
+	  function playPreviousMusic() {
+	    if (window.currentBgmIndex > 0) {
+	        // ✅ 현재 곡의 onoff = 0으로 설정
+	        const currentBgm = window.bgmList[window.currentBgmIndex];
+	        if (currentBgm) {
+	            fetch("<%= path %>/jspproject/bgmOnOff", {
+	                method: "POST",
+	                headers: { "Content-Type": "application/json" },
+	                body: JSON.stringify({
+	                    bgm_id: currentBgm.bgm_id,
+	                    bgm_onoff: 0
+	                })
+	            });
+	        }
+	
+	        // ✅ 이전 곡으로 이동
+	        window.currentBgmIndex--;
+	        const prevBgm = window.bgmList[window.currentBgmIndex];
+	        syncMainMusicBar(prevBgm, true);
+	
+	        // ✅ 이전 곡의 onoff = 1로 설정
+	        if (prevBgm) {
+	            fetch("<%= path %>/jspproject/bgmOnOff", {
+	                method: "POST",
+	                headers: { "Content-Type": "application/json" },
+	                body: JSON.stringify({
+	                    bgm_id: prevBgm.bgm_id,
+	                    bgm_onoff: 1
+	                })
+	            });
+	        }
+	    } else {
+	        alert("이전 곡이 없습니다.");
 	    }
+	}
+	
+	// ✅ 전역 선언은 위에서 되어있어야 해!
+	  let isShuffle = false;
+	  let isSingleRepeat = false; // 한 곡만 반복 여부
+
+	  document.addEventListener('DOMContentLoaded', function () {
+	      const shuffleBtn = document.querySelector(".iconMusic[src*='셔플']");
+	      
+	      if (shuffleBtn) {
+	          shuffleBtn.addEventListener("click", function () {
+	              isShuffle = !isShuffle;
+	              shuffleBtn.src = isShuffle
+	                  ? "icon/아이콘_셔플_1.png"
+	                  : "icon/아이콘_셔플off_2.png";
+	              alert("셔플 재생 " + (isShuffle ? "ON" : "OFF"));
+	          });
+	      }
+	  });
+
+	  function playNextMusic() {
+		    const currentBgm = window.bgmList[window.currentBgmIndex];
+
+		    // 현재 곡 off 처리
+		    if (currentBgm) {
+		        fetch("<%= path %>/jspproject/bgmOnOff", {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify({ bgm_id: currentBgm.bgm_id, bgm_onoff: 0 })
+		        });
+		    }
+
+		    if (isShuffle) {
+		        const nextIndex = Math.floor(Math.random() * window.bgmList.length);
+		        window.currentBgmIndex = nextIndex;
+		    } else if (window.currentBgmIndex < window.bgmList.length - 1) {
+		        window.currentBgmIndex++;
+		    } else {
+		        // ❌ isRepeat 제거 → 대신 그냥 재생 종료 처리
+		        alert("다음 곡이 없습니다.");
+		        const playBtn = document.getElementById("mainPlayToggleBtn");
+		        const audio = document.getElementById("mainAudioPlayer");
+		        if (playBtn && audio) {
+		            playBtn.src = "icon/아이콘_재생_1.png";
+		            playBtn.setAttribute("data-state", "paused");
+		            audio.pause();
+		        }
+		        return;
+		    }
+
+		    const nextBgm = window.bgmList[window.currentBgmIndex];
+		    syncMainMusicBar(nextBgm, true);
+
+		    if (nextBgm) {
+		        fetch("<%= path %>/jspproject/bgmOnOff", {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify({ bgm_id: nextBgm.bgm_id, bgm_onoff: 1 })
+		        });
+		    }
+		}
+
+	  function syncMusicBarState(isPlaying) {
+		    const mainBtn = document.getElementById("mainPlayToggleBtn");
+		    const mainAudio = document.getElementById("mainAudioPlayer");
+
+		    if (mainBtn && mainAudio) {
+		        if (isPlaying) {
+		            mainBtn.src = 'icon/아이콘_일시정지_1.png';
+		            mainBtn.setAttribute('data-state', 'playing');
+		            mainAudio.play();
+		        } else {
+		            mainBtn.src = 'icon/아이콘_재생_1.png';
+		            mainBtn.setAttribute('data-state', 'paused');
+		            mainAudio.pause();
+		        }
+		    }
 	}
 	
 	// 볼륨 조절 관련 메소드
@@ -804,5 +1006,31 @@
 
 </script>
 
+<%
+	jspproject.BgmBean currentBgm = bmgr.getCurrentBgm(user_id); // bgm_onoff = 1인 음악
+%>
 
+<% if (currentBgm != null) { %>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+	    const titleEl = document.querySelector(".musicTitle");
+	    const audio = document.getElementById("mainAudioPlayer");
+	    const playBtn = document.getElementById("mainPlayToggleBtn");
 	
+	    if (titleEl && audio && playBtn) {
+	        titleEl.textContent = "<%= currentBgm.getBgm_name() %>";
+	        audio.src = "<%= path %>/jspproject/music/<%= currentBgm.getBgm_music() %>";
+	        playBtn.src = "icon/아이콘_재생_1.png"; // 자동 재생하지 않으므로 일시정지 아이콘 ❌
+	        playBtn.setAttribute("data-state", "paused");
+	
+	        // 현재 선택된 음악 기억
+	        window.currentSelectedBgm = {
+	            bgmId: <%= currentBgm.getBgm_id() %>,
+	            title: "<%= currentBgm.getBgm_name() %>",
+	            src: "<%= currentBgm.getBgm_music() %>"
+	        };
+	    }
+	});
+</script>
+<% } %>	

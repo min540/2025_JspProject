@@ -28,4 +28,3 @@
 		mgr.updateUserTimerLoc(user_id, timer_loc);
 	}
 %>
-

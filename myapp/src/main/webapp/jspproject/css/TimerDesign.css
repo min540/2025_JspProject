@@ -26,7 +26,7 @@
   margin-bottom: 10px;
 }
 
-.tab-btn {
+.timer-tab-btn {
   background: none;
   border: none;
   color: #fff;
@@ -38,7 +38,7 @@
   font-size: 1vw;
 }
 
-.tab-btn.active {
+.timer-tab-btn.active {
   border-bottom: 2px solid white;
 }
 
@@ -64,19 +64,19 @@
 	  margin-bottom: 10px;
 	}
 
-	.header-left {
+	.timer-header-left {
 	  flex-shrink: 0;
 	  margin-left: 10px;
 	}
 
 
-	.header-right {
+	.timer-header-right {
 	  flex-grow: 1; /* 💡 오른쪽에 넉넉한 공간 확보 */
 	  display: flex;
 	  justify-content: flex-end;
 	}
 	
-	.filter-controls {
+	.timer-filter-controls {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -217,7 +217,7 @@
   cursor: pointer;
 }
 
-.preview-icons {
+.timer-preview-icons {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -226,13 +226,13 @@
   z-index: 10;
 }
 
-.icontimerList {
+.timer-icontimerList {
     width: 2vw;
 	height: 2vw;
 	cursor: pointer;
 }
 
-.btn-purple {
+.timer-btn-purple {
   background-color: #7b2cbf;
   color: white;
 }
@@ -261,5 +261,20 @@
   color: white;
   line-height: 1.4;
   font-family: 'PFStarDust', sans-serif; /* ✅ 동일한 글꼴 적용 */
+}
+
+.timer-header {
+  position: relative;
+  padding-bottom: 8px;  /* 선이랑 살짝 간격 */
+}
+
+.timer-header::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);  /* 색, 투명도 조절 가능 */
 }
 
