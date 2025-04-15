@@ -224,6 +224,35 @@ window.onload = function() {
 	    }
 	  <% } %>
 	};
+	//전화번호 입력란 자동 (-) 생성
+	document.addEventListener("DOMContentLoaded", function() {
+		// 'user_phone' 이름을 가진 input 요소를 선택
+		const phoneField = document.querySelector('input[name="user_phone"]');
+		phoneField.addEventListener("input", function() {
+		  // 숫자 이외의 문자를 모두 제거합니다.
+		  let input = this.value.replace(/\D/g, "");
+		    
+		  // 입력 값이 "010"으로 시작할 경우에만 포맷 적용
+		  if (input.startsWith("010")) {
+		    if (input.length <= 3) {
+		      // '010'까지 입력된 경우 그대로 표시
+		      this.value = input;
+		    } else if (input.length <= 7) {
+		      // 010 입력 후 4자리 미만이면 "010-" 후 나머지 숫자 추가
+		      this.value = input.substring(0, 3) + "-" + input.substring(3);
+		    } else if (input.length <= 11) {
+		      // 010 입력 후 4자리 이상이면 "010-XXXX-XXXX" 형태
+		      this.value = input.substring(0, 3) + "-" + input.substring(3, 7) + "-" + input.substring(7);
+		    } else {
+		      // 최대 11자리까지만 허용 (010-XXXX-XXXX)
+		      this.value = input.substring(0, 3) + "-" + input.substring(3, 7) + "-" + input.substring(7, 11);
+		    }
+		  } else {
+		    // 010이 아닐 경우엔 그냥 숫자만 출력하거나, 추가 포맷팅을 적용할 수 있습니다.
+		    this.value = input;
+		  }
+	 	});
+	});
 </script>
 
 <body>
