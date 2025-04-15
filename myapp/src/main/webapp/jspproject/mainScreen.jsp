@@ -11,7 +11,7 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@ page  contentType="text/html; charset=UTF-8"%>
-<link href="css/style.css?v=2" rel="stylesheet" type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
 <%@ page import="jspproject.UserBean" %>
 <%@ page import="jspproject.BgmBean" %>
 <jsp:useBean id="lmgr" class="jspproject.LoginMgr"/>
