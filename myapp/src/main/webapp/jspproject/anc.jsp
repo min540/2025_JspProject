@@ -262,8 +262,8 @@ input[type="checkbox"]:checked::after {
   text-decoration: none; 
 } 
 a:hover {
-  color: #32225B;        
-  text-decoration: underline; /* 또는 none 유지 가능 */
+  color: white;        
+  text-decoration: none; /* 또는 none 유지 가능 */
 }
 
 ul, ol {
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function(){
 </head> 
 <body>
 	<header>
-	<h3>오늘, 내일</h3>
+	<h3><a href="login.jsp">오늘, 내일</a></h3>
 	<a href="anc.jsp"><h4>공지사항</h4></a>
 	<a href="ancPost.jsp"><h4>글쓰기</h4></a>
 	</header>
