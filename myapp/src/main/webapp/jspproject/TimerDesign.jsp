@@ -175,8 +175,25 @@ document.getElementById("btnSave").addEventListener("click", function(){
   .then(result => {
     if(result.trim() === "ok"){
       alert("타이머가 변경되었습니다!");
-      reloadTimerView();  // 타이머 다시 로딩
-    }else{
+      
+      // 메인 화면으로 리다이렉트
+      try {
+        if (window.parent && window.parent !== window) {
+          // iframe 내에서 실행 중인 경우
+          window.parent.closeTimerSettings();
+          // 필요한 경우 타이머 다시 로드
+          if (typeof window.parent.reloadTimer === 'function') {
+            window.parent.reloadTimer();
+          }
+        } else {
+          // 독립 창인 경우
+          window.location.href = "mainScreen.jsp";
+        }
+      } catch (e) {
+        console.error("이동 오류:", e);
+        window.location.href = "mainScreen.jsp";
+      }
+    } else {
       alert("변경 실패 : " + result);
     }
   });
@@ -184,7 +201,6 @@ document.getElementById("btnSave").addEventListener("click", function(){
 
 //취소 버튼 -> Timer1.jsp 리셋 + DB에도 timer_id=1 저장
 document.getElementById("btnCancel").addEventListener("click", function(){
-
   selectedTimer = 1;  // 무조건 Timer1 고정
   const first = timerData.find(t => t.type === 1);
   if(!first) return;
@@ -198,11 +214,29 @@ document.getElementById("btnCancel").addEventListener("click", function(){
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: "user_id=<%= user_id %>&timer_id=1"
   }).then(res => res.text())
-	   .then(result => {
-	  if(result.trim() !== "ok"){
-	    alert("DB 업데이트 실패 : " + result);
-	  }
-	});
+    .then(result => {
+      if(result.trim() === "ok"){
+        // 메인 화면으로 리다이렉트
+        try {
+          if (window.parent && window.parent !== window) {
+            // iframe 내에서 실행 중인 경우
+            window.parent.closeTimerSettings();
+            // 필요한 경우 타이머 다시 로드
+            if (typeof window.parent.reloadTimer === 'function') {
+              window.parent.reloadTimer();
+            }
+          } else {
+            // 독립 창인 경우
+            window.location.href = "mainScreen.jsp";
+          }
+        } catch (e) {
+          console.error("이동 오류:", e);
+          window.location.href = "mainScreen.jsp";
+        }
+      } else {
+        alert("DB 업데이트 실패 : " + result);
+      }
+    });
 });
 
 function switchToBackground() {

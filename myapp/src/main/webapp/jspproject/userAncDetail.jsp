@@ -13,6 +13,12 @@
 <head>
 <title>오늘, 내일</title>
 <style>
+@font-face {
+    font-family: 'PFStarDust';
+    src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
 body, html {
   	margin: 0;
     padding: 0;
@@ -27,11 +33,19 @@ header{
   	padding-right: 370px; 
   	
 }
-header h3, header h4 {
+header h3 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
-
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 25px;
+}
+header h4 {
+	color: white;
+	margin: 0 12px; /* 좌우 여백만 */
+	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 18px;
 }
 .image-wrapper {
   position: relative;
@@ -61,30 +75,23 @@ header h3, header h4 {
   background: linear-gradient(to left, rgba(55, 35, 88, 1), transparent);
 }
 .inner-effect {
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
+  	box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
+  	position: absolute;
+  	top: 0;
+  	left: 0;
+  	width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 .box{
-	width: 600px;
-	height: 1000px;
-	background-color: #4A3C6E;
-	margin: 0 auto;
-	top: -140px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-	position: relative;
-	z-index: 10;
-	/* padding: 20px; */
+	margin-left: auto;
+    margin-right: 30px;
 }
-.ntitle{
+.ncontent{
 	margin-left: 20px;
-	color: white;
-	/* margin-bottom: 0px;*/
-	margin-top: 5px; 
+    color: white;
+    margin-top: 15px;
+    white-space: pre-wrap;
 }
 .container {
   display: flex;
@@ -95,49 +102,54 @@ header h3, header h4 {
 }
 .container-box {
   	display: flex;
-  	align-items: stretch;
-  	min-height: 500px;
+    align-items: stretch;
+    min-height: 500px;
+    margin-left: -870px;
+    margin-top: -140;
+    position: absolute;
 }
 .ntitle{
 	margin-left: 20px;
-	color: white;
+    color: white;
+    white-space: pre-wrap;
+    margin-top: 15px;
 }
-.left-section, .right-section {
- 	width: 50%;
- 	box-sizing: border-box;
+.left-section {
+ 	width: 415px;
+    height: 1000px;
+    box-sizing: border-box;
+    background-color: #5C4B85;
+    padding: 15px;
 }
-.divider {
-  position: absolute;
-  top:70px;
-  bottom:0px;
-  left:400px;
-  width: 1px;
-  height: auto;
-  background-color: #888;
-  margin: 0 16px;
+
+.right-section {
+	height: 1000px;
+    width: 186px;
+    background-color: #3f235a;
 }
+
 .box1 {
   	width: 130px;
-  	height: 130px;
-  	background-color: #372358;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 선택: 그림자 효과 */
-  	margin-left: auto;
-	margin-right: 45px;
-	margin-top: 70px;
-	color: white;
+    height: 130px;
+    background-color: #372358;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: auto;
+    margin-right: 30px;
+    margin-top: 30px;
+    color: white;
 }
 .rtext{
 	color: white;
-	margin-top: 5px;
-	margin-left: 125;
-	font-size: 10px; 
-	font-weight: bold;
+    margin-top: 10px;
+    margin-left: 32px;
+    font-size: 15px;
+    font-weight: bold;
 }
 .rdtext{
 	color: white;
-	margin-top: 5px;
-	margin-left: 130px;
-	font-size: 12px;
+    margin-top: 5px;
+    margin-left: 34px;
+    font-size: 15px;
 }
 .image-overlay-text {
   position: absolute;
@@ -153,34 +165,42 @@ header h3, header h4 {
   box-sizing: border-box;
   margin-left: auto;
   margin-right: 45px;
-  margin-top: 70px;
+  margin-top: 90px;
   pointer-events: none;
 }
-.newtext{
-  	margin-left: 125px;
-  	color: white;
-  	font-size: 10px;
-  	 line-height: 2;
+.sbtn{
+	margin-left: 200px;
+	margin-top: 10px;
+	background: none;
+
 }
-.new{
-	margin-left: auto;
-	margin-right: 110px;
-	margin-top: 70px;
+.text-button1{
+	background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    position: absolute;
+    width: 50px;
+    margin-left: -115;
+}
+
+.text-button2{
+	background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    position: absolute;
+    width: 50px;
+    margin-left: -65;
+}
+
+a {
+	text-decoration: none;
 	color: white;
-	font-weight: bold;
-	 line-height: 2;
-}
-.newtext h4 {
-	margin: 0;
-  	padding: 0;
-}
- a {
-  color: white;           
-  text-decoration: none;   
-} 
-a:hover {
-  color: #32225B;        
-  text-decoration: underline; /* 또는 none 유지 가능 */
 }
 </style>
 <script>
@@ -188,7 +208,7 @@ a:hover {
 </head> 
 <body>
 	<header>
-	<h3>오늘, 내일</h3>
+	<h3><a href="mainScreen.jsp">오늘, 내일</a></h3>
 	</header>
 <div class="image-wrapper">
   <img src="http://localhost/2025_JspProject/jspproject/images/loginimg.jpg" class="main-image" />
@@ -203,7 +223,7 @@ a:hover {
 				<h2 class="ntitle" style="font-size:30px;"><%=bean.getAnc_title() %></h2>
 			<!-- 공지사항 내용 -->
 			<% if (bean.getAnc_img() != null) { %>
-				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= bean.getAnc_img() %>" width="415" height="200">
+				<img src="<%= request.getContextPath() %>/jspproject/upload/<%= bean.getAnc_img() %>" width="385" height="200">
 			<% } %>
 			<div class="ntitle"><%=bean.getAnc_cnt() %></div>
 			</div>
@@ -216,10 +236,6 @@ a:hover {
 			
 			<% if (pbean.getAnc_img() != null) { %>
 		
-			<div class="image-overlay-text">
-			
-      			<%=pbean.getAnc_title()%>
-    		</div>
 			<a href="userAncDetail.jsp?anc_id=<%= pbean.getAnc_id() %>">
 			<img src="<%= request.getContextPath() %>/jspproject/upload/<%= pbean.getAnc_img() %>" width="130" height="130"></img>
 			</a>
@@ -235,21 +251,6 @@ a:hover {
 			<div class="rtext">작성자</div>
 			<div class="rdtext"><%=bean.getUser_id()%></div>
 			
-			<div style="display: flex; flex-direction: column; align-items: flex-start;">
-					<div class=" ntitle new ">주요 공지</div><!-- 특정공지 선택 컬럼을 만들어서 특정공지만띄 우게하기 if if (recent.get주요공지컬럼() == 1 or 스트링값이라면) {-->
-				<%
-    				Vector<AncBean> hlist = amgr.getHighlightAncList();
-    				if (hlist != null && hlist.size() > 0) {
-        				for (int i = 0; i < hlist.size(); i++) {
-            					AncBean hbean = hlist.get(i);
-				%>
-            		<div class="newtext">
-                		<h4><a href="ancDetail.jsp?anc_id=<%=hbean.getAnc_id()%>"><%=hbean.getAnc_title()%></a></h4>
-            		</div>
-				<% }
-        		} else {%>
-					<div class="newtext">하이라이트 공지가 없습니다.</div>
-				<%}%>
 				</div>
 			</div>
 		</div>
