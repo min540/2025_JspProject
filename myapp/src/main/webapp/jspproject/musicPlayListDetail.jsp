@@ -665,7 +665,7 @@
 					         data-mplist-name="<%= m.getMplist_name() %>"
 					         data-mplist-img="<%= m.getMplist_img() %>"
 					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
-					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <img src="mplistImg/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
 					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
 					        <div class="playlist-count2">곡 수</div>
 					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
@@ -857,7 +857,7 @@
 		    document.getElementById("musicPreview").style.display = "none";
 		    document.getElementById("musicPreview").innerHTML = "";
 		
-		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
+		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + img;
 		    document.getElementById("mplistName_detail").innerText = name;
 		    document.getElementById("mplistCnt_detail").innerText = cnt;
 		
@@ -927,71 +927,64 @@
 	        });
 	    }
 	    
-	    let originalMusicList = [];  // 원래 순서를 저장하는 배열
-	    let filteredMusicItems = [];  // 검색된 항목들을 저장하는 배열
-
-	    // ✅ 검색 기능
 	    function searchMusic() {
 	        const searchText = document.querySelector('.music-search2').value.toLowerCase(); // 입력한 텍스트 소문자로 변환
 	        const musicItems = document.querySelectorAll('.music-list-item2'); // 음악 목록 아이템을 선택
 
-	        // 검색된 항목만 표시
-	        filteredMusicItems = [];  // 검색된 항목을 초기화
-
+	        // 각 음악 항목을 순회하면서 제목을 검색
 	        musicItems.forEach(item => {
 	            const title = item.querySelector('span').innerText.toLowerCase(); // 음악 제목
 	            if (title.includes(searchText)) {
 	                item.style.display = ''; // 검색어가 포함된 항목은 보이도록
-	                filteredMusicItems.push(item);  // 검색된 항목 배열에 추가
 	            } else {
 	                item.style.display = 'none'; // 검색어가 포함되지 않은 항목은 숨김
 	            }
 	        });
-
-	        // 정렬을 검색된 항목만 대상으로 적용
-	        if (isSorted) {
-	            sortMusicList();  // 검색 후, 정렬 상태이면 정렬을 다시 적용
-	        }
 	    }
 
 	    let isSorted = false;  // 정렬 상태 여부를 추적하는 변수
+	    let originalOrder = [];  // 원래 순서를 저장할 배열
 
-	 // ✅ 글자순 정렬 기능
-	 function sortMusicList() {
-	     const musicListContainer = document.getElementById('musicList_detail');
-	     const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item2'));
+	    function sortMusicList() {
+	        const musicListContainer = document.getElementById('musicList_detail');
+	        const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item2'));
 
-	     if (musicItems.length === 0) return;  // 음악 목록이 비어 있으면 처리 안 함
+	        if (musicItems.length === 0) return;  // 음악 목록이 비어 있으면 처리 안 함
 
-	     // 정렬 상태 변경
-	     isSorted = !isSorted;
+	        // 처음 한 번만 원래 순서를 저장
+	        if (originalOrder.length === 0) {
+	            originalOrder = musicItems.map(item => item);  // 원래 순서를 저장
+	        }
 
-	     if (isSorted) {
-	         // 음악 아이템을 알파벳 순으로 정렬
-	         const sortedItems = musicItems.sort((a, b) => {
-	             const titleA = a.querySelector('span').innerText.toLowerCase();
-	             const titleB = b.querySelector('span').innerText.toLowerCase();
-	             return titleA.localeCompare(titleB); // 문자열 순으로 비교
-	         });
+	        if (!isSorted) {
+	            // 음악 아이템을 알파벳 순으로 정렬
+	            const sortedItems = musicItems.sort((a, b) => {
+	                const titleA = a.querySelector('span').innerText.toLowerCase();
+	                const titleB = b.querySelector('span').innerText.toLowerCase();
+	                return titleA.localeCompare(titleB); // 문자열 순으로 비교
+	            });
 
-	         // 정렬된 항목을 다시 musicListContainer에 추가
-	         sortedItems.forEach(item => {
-	             musicListContainer.appendChild(item);
-	         });
+	            // 정렬된 항목을 다시 musicListContainer에 추가
+	            sortedItems.forEach(item => {
+	                musicListContainer.appendChild(item);
+	            });
 
-	     } else {
-	         // 원래 순서로 돌아오기 위해, 음악 아이템을 처음 순서대로 다시 추가
-	         musicItems.forEach(item => {
-	             musicListContainer.appendChild(item);  // 원래 순서대로 돌아오도록 추가
-	         });
-	     }
-	 }
+	            isSorted = true; // 정렬 상태로 설정
+	        } else {
+	            // 원래 순서로 돌아오기 위해, 음악 아이템을 처음 순서대로 다시 추가
+	            originalOrder.forEach(item => {
+	                musicListContainer.appendChild(item);  // 원래 순서대로 돌아오도록 추가
+	            });
+
+	            isSorted = false; // 정렬 취소 상태로 설정
+	        }
+	    }
 
 	    // 페이지 로드 시 음악 목록의 순서를 저장
 	    function storeOriginalMusicList() {
 	        const musicListContainer = document.getElementById('musicList_detail');
 	        const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item2'));
-	        originalMusicList = [...musicItems]; // 원본 순서를 저장
+	        originalOrder = [...musicItems]; // 원본 순서를 저장
 	    }
 
 	    // 페이지가 로드될 때 originalMusicList를 저장하도록
@@ -1449,5 +1442,7 @@
 	  // ✅ 현재 재생목록 기억
 	  lastMplistId = mplistId;
 	}
+	
+	
     
 </script>

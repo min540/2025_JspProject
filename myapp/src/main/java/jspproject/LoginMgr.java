@@ -62,14 +62,14 @@ public class LoginMgr {
 	            UserTimerMgr utMgr = new UserTimerMgr();
 	            utMgr.insertDefaultUserTimer(multi.getParameter("user_id"));
 
-	            // ✅ 기본 테마 추가 (tema2.gif 기준)
+	            // ✅ 기본 테마 추가 (tema1.jpg 기준)
 	            TemaMgr temaMgr = new TemaMgr();
 	            TemaBean tema = new TemaBean();
 	            tema.setUser_id(multi.getParameter("user_id"));
 	            tema.setTema_title("기본 배경");
 	            tema.setTema_cnt("기본 설명");
-	            tema.setTema_bimg("tema2.gif"); // 실제 파일명과 일치해야 함
-	            tema.setTema_img("tema2.gif");
+	            tema.setTema_bimg("tema1.jpg"); // 실제 파일명과 일치해야 함
+	            tema.setTema_img("tema1.jpg");
 	            tema.setTema_dark(0);
 	            tema.setTema_onoff(1); // 적용된 상태로 등록
 	            temaMgr.insertDefaultTema(tema);
