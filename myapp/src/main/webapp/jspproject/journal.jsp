@@ -225,29 +225,43 @@
       }
 
       document.getElementById('deleteForm').addEventListener('submit', function (e) {
-        const deleteInputs = document.getElementById('deleteInputs');
-        deleteInputs.innerHTML = '';
+    	  const deleteInputs = document.getElementById('deleteInputs');
+    	  deleteInputs.innerHTML = '';
 
-        const checkedEntries = document.querySelectorAll('.entry input[type="checkbox"]:checked');
+    	  const checkedEntries = document.querySelectorAll('.entry input[type="checkbox"]:checked');
 
-        if (checkedEntries.length === 0) {
-          e.preventDefault();
-          alert("삭제할 항목을 선택하세요.");
-          return;
-        }
+    	  if (checkedEntries.length === 0) {
+    	    e.preventDefault();
+    	    alert("삭제할 항목을 선택하세요.");
+    	    return;
+    	  }
 
-        checkedEntries.forEach(entryCheckbox => {
-          const entryDiv = entryCheckbox.closest('.entry');
-          const jourId = entryDiv.dataset.id;
+    	  // ✅ 삭제 전 사용자 확인
+    	  if (checkedEntries.length === 1) {
+    	    if (!confirm("일지를 삭제하시겠습니까?")) {
+    	      e.preventDefault();
+    	      return;
+    	    }
+    	  } else {
+    	    if (!confirm("일지를 전체 삭제하시겠습니까?")) {
+    	      e.preventDefault();
+    	      return;
+    	    }
+    	  }
 
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = 'rnum';
-          input.value = jourId;
+    	  // ✅ 삭제할 항목들을 hidden input으로 추가
+    	  checkedEntries.forEach(entryCheckbox => {
+    	    const entryDiv = entryCheckbox.closest('.entry');
+    	    const jourId = entryDiv.dataset.id;
 
-          deleteInputs.appendChild(input);
-        });
-      });
+    	    const input = document.createElement('input');
+    	    input.type = 'hidden';
+    	    input.name = 'rnum';
+    	    input.value = jourId;
+
+    	    deleteInputs.appendChild(input);
+    	  });
+    	});
     });
   </script>
 </body>
