@@ -173,7 +173,7 @@
 <div class = "icon-container2">
 	<img class="iconRightDown" src="icon/아이콘_음악_1.png" border="0" alt="음악 변경" onclick = "toggleMusicList()">
 	<img class="iconRightDown obj" src="icon/아이콘_작업목표_1.png" border="0" alt="작업 목표 설정" onclick = "toggleObjList()">
-	<img class="iconRightDown" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
+	<img class="iconRightDown timer" src="icon/아이콘_타이머_1.png" border="0" alt="타이머 키기" onclick = "toggleTimerList()">
 	<img class="iconRightDown" src="icon/아이콘_달력_1.png" border="0" alt="통계 보기" onclick = "toggleGraphView()" >
 	<img class="iconRightDown diary" src="icon/아이콘_일기_1.png" border="0" alt="일지 설정" onclick = "toggleJournalList()">
 </div>

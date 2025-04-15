@@ -453,8 +453,8 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 
 		    <!-- 오른쪽: 정렬/검색 -->
 		    <div class="header-right">
-		        <img class="iconMusicList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" >
-		        <input class="music-search" type="text" placeholder="음악 제목 검색" />
+		        <img class="iconMusicList" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" onclick="sortMusicList()">
+		        <input class="music-search" type="text" placeholder="음악 제목 검색" oninput="searchMusic()" />
 		        <img class="iconMusicList" src="icon/아이콘_검색_1.png" alt="검색" >
 		    </div>
 		</div>
@@ -1058,5 +1058,58 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	audioPlayer.onended = function () {
 	    handleNextMusic2(true);  // 자동 다음 곡 재생
 	};
+	
+	function searchMusic() {
+	    const searchText = document.querySelector('.music-search').value.toLowerCase(); // 입력한 텍스트 소문자로 변환
+	    const musicItems = document.querySelectorAll('.music-list-item'); // 음악 목록 아이템을 선택
+
+	    // 각 음악 항목을 순회하면서 제목을 검색
+	    musicItems.forEach(item => {
+	        const title = item.querySelector('span').innerText.toLowerCase(); // 음악 제목
+	        if (title.includes(searchText)) {
+	            item.style.display = ''; // 검색어가 포함된 항목은 보이도록
+	        } else {
+	            item.style.display = 'none'; // 검색어가 포함되지 않은 항목은 숨김
+	        }
+	    });
+	}
+
+	let isSorted = false;  // 정렬 상태 여부를 추적하는 변수
+	let originalOrder = [];  // 원래 순서를 저장할 배열
+
+	function sortMusicList() {
+	    const musicListContainer = document.getElementById('musicList');
+	    const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item'));
+
+	    if (musicItems.length === 0) return;  // 음악 목록이 비어 있으면 처리 안 함
+
+	    // 처음 한 번만 원래 순서를 저장
+	    if (originalOrder.length === 0) {
+	        originalOrder = musicItems.map(item => item);  // 원래 순서를 저장
+	    }
+
+	    if (!isSorted) {
+	        // 음악 아이템을 알파벳 순으로 정렬
+	        const sortedItems = musicItems.sort((a, b) => {
+	            const titleA = a.querySelector('span').innerText.toLowerCase();
+	            const titleB = b.querySelector('span').innerText.toLowerCase();
+	            return titleA.localeCompare(titleB); // 문자열 순으로 비교
+	        });
+
+	        // 정렬된 항목을 다시 musicListContainer에 추가
+	        sortedItems.forEach(item => {
+	            musicListContainer.appendChild(item);
+	        });
+
+	        isSorted = true; // 정렬 상태로 설정
+	    } else {
+	        // 원래 순서로 돌아오기 위해, 음악 아이템을 처음 순서대로 다시 추가
+	        originalOrder.forEach(item => {
+	            musicListContainer.appendChild(item);  // 원래 순서대로 돌아오도록 추가
+	        });
+
+	        isSorted = false; // 정렬 취소 상태로 설정
+	    }
+	}
 
 </script>
