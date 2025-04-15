@@ -420,7 +420,7 @@
 	    String contextPath = request.getContextPath();
 		%>
 		<script>
-		    const defaultImage = "<%= contextPath %>/jspproject/backgroundImg/tema2.gif";
+		    const defaultImage = "<%= contextPath %>/jspproject/backgroundImg/tema1.jpg";
 		    const defaultTitle = "기본 배경";
 		    const defaultDescription = "기본 배경 설명";
 		</script>
@@ -435,7 +435,7 @@
 			    TemaBean currentTema = mgr.getOnTema(user_id);
 			    String currentImgName = (currentTema != null && currentTema.getTema_img() != null)
 			    	    ? currentTema.getTema_img()
-			    	    : "tema2.gif";
+			    	    : "tema1.jpg";
 			    
 			    String appliedImage = currentImgName;
 			    
@@ -702,7 +702,10 @@ function cancelBackground() {
 
                 document.body.style.backgroundImage = `url('${defaultImage}')`;
 
-                updateCancelButtonState("tema2.gif");
+                updateCancelButtonState("tema1.jpg");
+             	
+                // ✅ 적용 후 메인으로 이동
+                window.location.href = "mainScreen.jsp"; // 또는 전체 경로 필요하면 contextPath 포함
             } else {
                 alert("실패: " + result);
             }
@@ -718,7 +721,7 @@ function updateCancelButtonState(selectedImgName) {
     if (!cancelBtn) return;
 
     // 소문자로 비교
-    const isDefault = selectedImgName.toLowerCase() === "tema2.gif";
+    const isDefault = selectedImgName.toLowerCase() === "tema1.jpg";
     const isApplied = selectedImgName.toLowerCase() === currentAppliedImage.toLowerCase();
 
     if (isDefault || !isApplied) {
@@ -943,6 +946,9 @@ function applyBackground() {
                 updateCancelButtonState(fileName);
                 // 메인 화면 배경도 변경되도록 처리
                 document.body.style.backgroundImage = `url('jspproject/backgroundImg/${fileName}')`;
+                
+             // ✅ 적용 후 메인으로 이동
+                window.location.href = "mainScreen.jsp"; // 또는 전체 경로 필요하면 contextPath 포함
             } else {
                 alert("적용 실패: " + result);
             }

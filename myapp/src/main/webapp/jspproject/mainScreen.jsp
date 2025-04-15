@@ -25,7 +25,7 @@
     // ✅ 배경 초기값 (기본값)
 
 
-  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema2.gif";
+  String appliedBackground = request.getContextPath() + "/jspproject/backgroundImg/tema1.jpg";
 
 
     if (user_id != null && !user_id.trim().equals("")) {

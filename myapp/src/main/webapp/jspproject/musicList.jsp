@@ -486,7 +486,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 		         data-bgm-id="<%= b.getBgm_id() %>"
 		         data-bgm-name="<%= b.getBgm_name() %>"
 		         data-bgm-cnt="<%= b.getBgm_cnt() %>"
-		         data-bgm-image="img/<%= b.getBgm_image() %>"
+		         data-bgm-image="musicImg/<%= b.getBgm_image() %>"
 		         data-bgm-music="<%= b.getBgm_music() %>"
 		         data-bgm-onoff="<%= view.getBgm_onoff() %>"
 		         data-bgm-order="<%= view.getBgm_order() %>"

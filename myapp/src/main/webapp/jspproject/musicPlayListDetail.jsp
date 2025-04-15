@@ -665,7 +665,7 @@
 					         data-mplist-name="<%= m.getMplist_name() %>"
 					         data-mplist-img="<%= m.getMplist_img() %>"
 					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
-					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <img src="mplistImg/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
 					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
 					        <div class="playlist-count2">곡 수</div>
 					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
@@ -857,7 +857,7 @@
 		    document.getElementById("musicPreview").style.display = "none";
 		    document.getElementById("musicPreview").innerHTML = "";
 		
-		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
+		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + img;
 		    document.getElementById("mplistName_detail").innerText = name;
 		    document.getElementById("mplistCnt_detail").innerText = cnt;
 		
