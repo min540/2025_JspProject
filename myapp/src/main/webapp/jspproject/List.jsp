@@ -123,45 +123,7 @@
         </div>
     </div>
 
-    <script>
-   /*  function reloadCategoryButtons() {
-        const listContainer = document.getElementById('listButtonContainer');
-        listContainer.innerHTML = ""; // 기존 버튼들 제거
-
-        fetch("getObjGroupList.jsp")
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(group => {
-                    const btn = document.createElement('button');
-                    btn.className = 'obj-edit-btn';
-                    btn.textContent = group.objgroup_name;
-
-                    btn.addEventListener('click', () => {
-                        localStorage.setItem("currentList", group.objgroup_id);
-                        localStorage.setItem("currentListName", group.objgroup_name);
-                        renderTasksForCurrentList(); // 과제 목록 갱신
-                    });
-
-                    listContainer.appendChild(btn);
-                });
-
-                // 편집 버튼도 다시 추가
-                const editBtn = document.createElement('button');
-                editBtn.className = 'obj-edit-btn';
-                editBtn.textContent = '✎';
-                editBtn.addEventListener('click', () => {
-                    const rect = document.getElementById('cardWrapper').getBoundingClientRect();
-                    localStorage.setItem("cardLeft", Math.floor(rect.left));
-                    localStorage.setItem("cardTop", Math.floor(rect.top));
-                    document.getElementById("cardWrapper").style.display = "none";
-                    document.getElementById("listCardWrapper").style.display = "block";
-                });
-                listContainer.appendChild(editBtn);
-            });
-    } */
-		
-    
-    
+    <script>    
     function attachDeleteGroupListener(deleteBtn, itemElement, groupId, input) {
         deleteBtn.addEventListener("click", () => {
             const confirmed = confirm(`"${input.value}" 항목을 정말 삭제하시겠습니까?`);

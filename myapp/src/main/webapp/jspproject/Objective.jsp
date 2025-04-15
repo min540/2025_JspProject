@@ -116,7 +116,7 @@
 	justify-content: center;
 	gap: 10px;
 	margin-top: 60px;
-	position: relative; /* ✅ 이거 꼭 있어야 드롭다운 기준 맞음 */
+	position: relative; /*  이거 꼭 있어야 드롭다운 기준 맞음 */
 }
 
 .dropdown-item:hover {
@@ -139,8 +139,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
-	height: 290px; /* ✅ 높이 고정 */
-	overflow-y: auto; /* ✅ 스크롤 가능 */
+	height: 290px; /*  높이 고정 */
+	overflow-y: auto; /*  스크롤 가능 */
 	margin-bottom:20px;
 }
 
@@ -222,16 +222,16 @@
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-45%, -55%); /* 👈 수직 위치 살짝 위로 */
+	transform: translate(-45%, -55%); /*  수직 위치 살짝 위로 */
 }
 
 .obj-start-date{
 	display: inline-block;
 	font-size: 14px;
 	color: white;
-	min-width: 120px;       /* ✅ 너비 확보 */
-	display: inline-flex;   /* ✅ 텍스트 제대로 보이게 */
-	align-items: center;    /* ✅ 중앙 정렬 */
+	min-width: 120px;       /*  너비 확보 */
+	display: inline-flex;   /*  텍스트 제대로 보이게 */
+	align-items: center;    /*  중앙 정렬 */
 }
 
 .obj-created-date {
@@ -346,9 +346,6 @@
   </div>
 </div>
 
-
-
-
 	<script>
         const handle = document.getElementById('dragHandle');
         const cardWrapper = document.getElementById('cardWrapper');
@@ -399,6 +396,7 @@
             document.getElementById('completedNum').textContent = completed;
             document.getElementById('totalNum').textContent = total;
         }
+        
         //기본 1개의 리스트를 제공
         function createDefaultGroupOnce() {
 	    return fetch("insertObjGroup.jsp", {
@@ -414,11 +412,11 @@
 	        return id; // 혹시 이후에 .then(id => ...) 하게 된다면 필요함
 	    })
 	    .catch(err => {
-	        console.error("❌ 기본 리스트 생성 실패:", err);
+	        console.error("❌ 기본 리스트 생성 실패:", err);z
 	    });
 	}
         
-        window.switchToTaskView = function switchToTaskView() {
+       /*  window.switchToTaskView = function switchToTaskView() {
         	console.log("🌀 [switchToTaskView] 호출됨");
         	
         	  document.getElementById("listCardWrapper").style.display = "none";
@@ -438,7 +436,7 @@
         	    .removeEventListener("click", addTaskHandler); // 중복 방지
         	  document.querySelector(".obj-add-task-btn")
         	    .addEventListener("click", addTaskHandler);
-        	}
+        	} */
 
 
         function debounce(func, delay) {

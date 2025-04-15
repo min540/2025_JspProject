@@ -18,8 +18,8 @@ import org.json.JSONObject;
 public class BgmUploadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private static final String IMAGE_PATH = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
-    private static final String MUSIC_PATH = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/music";
+    private static final String IMAGE_PATH = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/img";
+    private static final String MUSIC_PATH = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/music";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
