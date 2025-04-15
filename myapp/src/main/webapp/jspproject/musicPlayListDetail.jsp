@@ -9,15 +9,15 @@
 <jsp:useBean id="bmgr" class="jspproject.BgmMgr"/>
 <jsp:useBean id="pmgr" class="jspproject.MplistMgr"/>
 <%
-String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
-if (user_id == null) {
-    response.sendRedirect("login.jsp");
-    return;
+		String user_id = (String) session.getAttribute("user_id");  // ✅ 이제 문자열로 바로 받아도 안전함
+		if (user_id == null) {
+		    response.sendRedirect("login.jsp");
+		    return;
 }
 
-UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
-Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
-Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
+	UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
+	Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
+	Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 %>
  <style>
     .music-container3 {
@@ -665,7 +665,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 					         data-mplist-name="<%= m.getMplist_name() %>"
 					         data-mplist-img="<%= m.getMplist_img() %>"
 					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
-					        <img src="img/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
+					        <img src="mplistImg/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
 					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
 					        <div class="playlist-count2">곡 수</div>
 					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
@@ -695,8 +695,8 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 				
 				    <!-- 오른쪽: 정렬/검색 -->
 				    <div class="header-right2">
-				        <img class="iconMusicList2" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" >
-				        <input class="music-search2" type="text" placeholder="음악 제목 검색" />
+				        <img class="iconMusicList2" src="icon/아이콘_글자순_1.png" alt="글자 순 정렬" onclick="sortMusicList()">
+				        <input class="music-search2" type="text" placeholder="음악 제목 검색" oninput="searchMusic()"/>
 				        <img class="iconMusicList2" src="icon/아이콘_검색_1.png" alt="검색" >
 				    </div>
 				</div>
@@ -857,7 +857,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 		    document.getElementById("musicPreview").style.display = "none";
 		    document.getElementById("musicPreview").innerHTML = "";
 		
-		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/img/" + img;
+		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + img;
 		    document.getElementById("mplistName_detail").innerText = name;
 		    document.getElementById("mplistCnt_detail").innerText = cnt;
 		
@@ -926,6 +926,83 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	            document.getElementById("mplistImgInput_detail").click();
 	        });
 	    }
+	    
+	    function searchMusic() {
+	        const searchText = document.querySelector('.music-search2').value.toLowerCase(); // 입력한 텍스트 소문자로 변환
+	        const musicItems = document.querySelectorAll('.music-list-item2'); // 음악 목록 아이템을 선택
+
+	        // 각 음악 항목을 순회하면서 제목을 검색
+	        musicItems.forEach(item => {
+	            const title = item.querySelector('span').innerText.toLowerCase(); // 음악 제목
+	            if (title.includes(searchText)) {
+	                item.style.display = ''; // 검색어가 포함된 항목은 보이도록
+	            } else {
+	                item.style.display = 'none'; // 검색어가 포함되지 않은 항목은 숨김
+	            }
+	        });
+	    }
+
+	    let isSorted = false;  // 정렬 상태 여부를 추적하는 변수
+	    let originalOrder = [];  // 원래 순서를 저장할 배열
+
+	    function sortMusicList() {
+	        const musicListContainer = document.getElementById('musicList_detail');
+	        const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item2'));
+
+	        if (musicItems.length === 0) return;  // 음악 목록이 비어 있으면 처리 안 함
+
+	        // 처음 한 번만 원래 순서를 저장
+	        if (originalOrder.length === 0) {
+	            originalOrder = musicItems.map(item => item);  // 원래 순서를 저장
+	        }
+
+	        if (!isSorted) {
+	            // 음악 아이템을 알파벳 순으로 정렬
+	            const sortedItems = musicItems.sort((a, b) => {
+	                const titleA = a.querySelector('span').innerText.toLowerCase();
+	                const titleB = b.querySelector('span').innerText.toLowerCase();
+	                return titleA.localeCompare(titleB); // 문자열 순으로 비교
+	            });
+
+	            // 정렬된 항목을 다시 musicListContainer에 추가
+	            sortedItems.forEach(item => {
+	                musicListContainer.appendChild(item);
+	            });
+
+	            isSorted = true; // 정렬 상태로 설정
+	        } else {
+	            // 원래 순서로 돌아오기 위해, 음악 아이템을 처음 순서대로 다시 추가
+	            originalOrder.forEach(item => {
+	                musicListContainer.appendChild(item);  // 원래 순서대로 돌아오도록 추가
+	            });
+
+	            isSorted = false; // 정렬 취소 상태로 설정
+	        }
+	    }
+
+	    // 페이지 로드 시 음악 목록의 순서를 저장
+	    function storeOriginalMusicList() {
+	        const musicListContainer = document.getElementById('musicList_detail');
+	        const musicItems = Array.from(musicListContainer.getElementsByClassName('music-list-item2'));
+	        originalOrder = [...musicItems]; // 원본 순서를 저장
+	    }
+
+	    // 페이지가 로드될 때 originalMusicList를 저장하도록
+	    document.addEventListener('DOMContentLoaded', function() {
+	        storeOriginalMusicList();
+	    });
+
+	    // 이벤트 연결
+	    const sortBtn = document.querySelector('.iconMusicList2');
+	    if (sortBtn) {
+	        sortBtn.addEventListener('click', sortMusicList);
+	    }
+
+	    const searchInput = document.querySelector('.music-search2');
+	    if (searchInput) {
+	        searchInput.addEventListener('input', searchMusic);
+	    }
+
 });
 	
 	// ✅ 곡 삭제 아이콘 클릭 시 삭제 처리
@@ -1365,5 +1442,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
 	  // ✅ 현재 재생목록 기억
 	  lastMplistId = mplistId;
 	}
-
+	
+	
+    
 </script>
