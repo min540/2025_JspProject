@@ -355,7 +355,21 @@ public class BgmMgr {
 
         return bean;
     }
-
-
+    
+    // BgmMgr.java에 추가
+    public void resetAllBgmOnOff() {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try {
+            con = pool.getConnection();
+            String sql = "UPDATE bgm SET bgm_onoff = 0";
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
 
 }
