@@ -368,8 +368,7 @@
         		renderTasksForCurrentList();
         	}
         	
-        	reloadCategoryButtons();  // ✨ 최신 리스트 불러오기
-            renderTasksForCurrentList(); // 선택된 리스트 기준으로 과제 보여주기
+         /*    renderTasksForCurrentList(); // 선택된 리스트 기준으로 과제 보여주기 */
         });
        
     </script>

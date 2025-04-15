@@ -1,5 +1,6 @@
 <!-- Objective.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -313,7 +314,8 @@
 	transition: all 0.3s ease;
 }
 </style>
-</head>
+
+</head> 
 <body>
 	<div class="obj-card-wrapper" id="cardWrapper">
 		<div class="obj-todo-card">
@@ -356,6 +358,9 @@
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarPicker = document.getElementById('calendarPicker'); 
         const confirmDateBtn = document.getElementById('confirmDateBtn');
+       <%--  const user_id = "<%= userId %>";
+	    sessionStorage.setItem("user_id", user_id);  --%>
+        
         let currentTargetTask = null;
         let isDragging = false, offsetX = 0, offsetY = 0;
         handle.addEventListener('mousedown', (e) => {
@@ -416,29 +421,6 @@
 	    });
 	}
         
-       /*  window.switchToTaskView = function switchToTaskView() {
-        	console.log("🌀 [switchToTaskView] 호출됨");
-        	
-        	  document.getElementById("listCardWrapper").style.display = "none";
-        	  document.getElementById("cardWrapper").style.display = "block";
-
-        	  //  이전 task 요소 제거
-        	  document.getElementById("obj-taskList").innerHTML = "";
-
-        	  //드롭박스 재생성
-        	  loadCategoryButtons();
-        	  
-        	  //  과제 다시 불러오기
-        	  renderTasksForCurrentList();
-
-        	  //  버튼 리스너 재등록 (필요시)
-        	  document.querySelector(".obj-add-task-btn")
-        	    .removeEventListener("click", addTaskHandler); // 중복 방지
-        	  document.querySelector(".obj-add-task-btn")
-        	    .addEventListener("click", addTaskHandler);
-        	} */
-
-
         function debounce(func, delay) {
             let timer;
             return function (...args) {
@@ -495,15 +477,14 @@
             	  </div>
             	`;
             //user_id 값 가져오기
-          	<%
+			<%
             String userId = (String) session.getAttribute("user_id");
     		if (userId == null) userId = "";
     		 %>
-    	
-			const user_id = "<%= userId %>";
-		    sessionStorage.setItem("user_id", user_id); 
-		  
-
+			
+    		const user_id = "<%= userId %>";
+ 		    sessionStorage.setItem("user_id", user_id); 
+    		 
             // 제목 input에 포커스 주기
             const titleInput = taskItem.querySelector('input[type="text"]');
             titleInput.focus();
@@ -678,21 +659,23 @@ confirmDateBtn.addEventListener('click', () => {
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-     
+
             //  위치 복원
             const savedLeft = localStorage.getItem("cardLeft") || "100";
             const savedTop = localStorage.getItem("cardTop") || "100";
             document.getElementById("cardWrapper").style.left = savedLeft + "px";
             document.getElementById("cardWrapper").style.top = savedTop + "px";
+            
+          
             loadCategoryButtons();
-            renderTasksForCurrentList();
+            renderTasksForCurrentList();          
         });
-        
-
+    
+       
+		
 		function deleteTaskImmediately(objId) {
 		    console.log("🧪 삭제 요청 시도:", objId);
-		
-		   /*  pendingDeletes.delete(objId); */
+
 		
 		    fetch("objDeleteServlet", {
 		        method: "POST",
@@ -730,152 +713,281 @@ confirmDateBtn.addEventListener('click', () => {
                 });
             }
             
+            
             function loadCategoryButtons() {
-            	// 🔥 DB에서 리스트 불러오기
-    		    const listContainer = document.getElementById('listButtonContainer');
-    			listContainer.innerHTML = "";
+            	  const listContainer = document.getElementById('listButtonContainer');
+            	  listContainer.innerHTML = "";
 
-    		     
-    	            fetch("getObjGroupList.jsp")
-    	                .then(res => res.json())
-    	                .then(data => {
-    	                    if (data.length === 0) {
-    	                    	createDefaultGroupOnce().then(() => loadCategoryButtons());
-    	                        return;
-    	                    } else {
-    	                        // 버튼 생성
-    	                    	const maxVisible = 3;
-    	                    	const visible = data.slice(0, maxVisible);
-    	                    	const hidden = data.slice(maxVisible);
-    	                    	console.log("visible:", visible.map(g => g.objgroup_name));
-    	                    	console.log("hidden:", hidden.map(g => g.objgroup_name));
-    	                    	// ✅ 1. 기본 visible 3개만 버튼으로
-    	                    	visible.forEach(group => {
-    	                    		const btn = document.createElement('button');
-    	                    		btn.className = 'obj-edit-btn';
-    	                    		btn.textContent = group.objgroup_name;
+            	  // 📦 보관함 버튼 먼저 만들어두기 (선언 먼저!)
+            	  const archiveBtn = document.createElement('button');
+            	  archiveBtn.className = 'obj-edit-btn';
+            	  archiveBtn.textContent = '✉'; 
+            	  archiveBtn.title = '보관함 보기';
 
-    	                    		const selectedId = localStorage.getItem("currentList");
-    	                    		if (group.objgroup_id == selectedId) btn.classList.add("selected");
+            	  archiveBtn.addEventListener('click', () => {
+            	    renderArchiveTasks();
+            	    document.querySelectorAll('.obj-edit-btn, .dropdown-item').forEach(btn => btn.classList.remove('selected'));
+            	    archiveBtn.classList.add('selected');
+            	  });
 
-    	                    		btn.addEventListener('click', () => {
-    	                    			document.querySelectorAll('.obj-edit-btn, .dropdown-item').forEach(b => b.classList.remove('selected'));
-    	                    			btn.classList.add('selected');
+            	  // ✎ 편집 버튼도 미리 선언
+            	  const editBtn = document.createElement('button');
+            	  editBtn.className = 'obj-edit-btn';
+            	  editBtn.textContent = '✎';
+            	  editBtn.title = '카테고리 편집';
 
-    	                    			localStorage.setItem("currentList", group.objgroup_id);
-    	                    			localStorage.setItem("currentListName", group.objgroup_name);
+            	  editBtn.addEventListener('click', () => {
+            	    const rect = document.getElementById('cardWrapper').getBoundingClientRect();
+            	    localStorage.setItem("cardLeft", Math.floor(rect.left));
+            	    localStorage.setItem("cardTop", Math.floor(rect.top));
 
-    	                    			fetch("objCurrentGroupSetServlet", {
-    	                    				method: "POST",
-    	                    				headers: { "Content-Type": "application/json" },
-    	                    				body: JSON.stringify({ objgroup_id: group.objgroup_id })
-    	                    			})
-    	                    			.then(() => renderTasksForCurrentList())
-    	                    			.catch(err => console.error("❌ 그룹 설정 실패:", err));
-    	                    		});
+            	    document.getElementById("cardWrapper").style.display = "none";
+            	    document.getElementById("listCardWrapper").style.display = "block";
+            	  });
 
-    	                    		listContainer.appendChild(btn);
-    	                    	});
+            	  // 📂 카테고리 불러오기
+            	  fetch("getObjGroupList.jsp")
+            	    .then(res => res.json())
+            	    .then(data => {
+            	      if (data.length === 0) {
+            	        createDefaultGroupOnce().then(() => loadCategoryButtons());
+            	        return;
+            	      }
 
-    	                    	// ✅ 2. 나머지는 드롭다운에
-    	                    	if (hidden.length > 0) {
-    	                    		const dropdownBtn = document.createElement('button');
-    	                    		dropdownBtn.className = 'obj-edit-btn';
-    	                    		dropdownBtn.textContent = '...';
+            	      const maxVisible = 3;
+            	      const visible = data.slice(0, maxVisible);
+            	      const hidden = data.slice(maxVisible);
 
-    	                    		const dropdownMenu = document.createElement('div');
-    	                    		dropdownMenu.className = 'dropdown-menu';
+            	      // 기본 visible 버튼
+            	      visible.forEach(group => {
+            	        const btn = document.createElement('button');
+            	        btn.className = 'obj-edit-btn';
+            	        btn.textContent = group.objgroup_name;
 
-    	                    		hidden.forEach(group => {
-    	                    			const item = document.createElement('div');
-    	                    			item.className = 'dropdown-item';
-    	                    			item.textContent = group.objgroup_name;
+            	        const selectedId = localStorage.getItem("currentList");
+            	        if (group.objgroup_id == selectedId) btn.classList.add("selected");
 
-    	                    			const selectedId = localStorage.getItem("currentList");
-    	                    			if (group.objgroup_id == selectedId) item.classList.add("selected");
+            	        btn.addEventListener('click', () => {
+            	          document.querySelectorAll('.obj-edit-btn, .dropdown-item').forEach(b => b.classList.remove('selected'));
+            	          btn.classList.add('selected');
 
-    	                    			item.addEventListener('click', () => {
-    	                    				document.querySelectorAll('.obj-edit-btn, .dropdown-item').forEach(b => b.classList.remove('selected'));
-    	                    				item.classList.add('selected');
+            	          localStorage.setItem("currentList", group.objgroup_id);
+            	          localStorage.setItem("currentListName", group.objgroup_name);
 
-    	                    				localStorage.setItem("currentList", group.objgroup_id);
-    	                    				localStorage.setItem("currentListName", group.objgroup_name);
+            	          fetch("objCurrentGroupSetServlet", {
+            	            method: "POST",
+            	            headers: { "Content-Type": "application/json" },
+            	            body: JSON.stringify({ objgroup_id: group.objgroup_id })
+            	          })
+            	            .then(() => renderTasksForCurrentList())
+            	            .catch(err => console.error("❌ 그룹 설정 실패:", err));
+            	        });
 
-    	                    				fetch("objCurrentGroupSetServlet", {
-    	                    					method: "POST",
-    	                    					headers: { "Content-Type": "application/json" },
-    	                    					body: JSON.stringify({ objgroup_id: group.objgroup_id })
-    	                    				}).then(() => {
-    	                    					renderTasksForCurrentList();
-    	                    					dropdownMenu.style.display = 'none';
-    	                    				});
-    	                    			});
+            	        listContainer.appendChild(btn);
+            	      });
 
-    	                    			dropdownMenu.appendChild(item);
-    	                    			
-    	                    		});
+            	      // 드롭다운 처리
+            	      if (hidden.length > 0) {
+            	        const dropdownBtn = document.createElement('button');
+            	        dropdownBtn.className = 'obj-edit-btn';
+            	        dropdownBtn.textContent = '...';
 
-    	                    		// 메뉴 위치 동적으로 설정
-    	                    		dropdownBtn.addEventListener('click', () => {
-    							    // 부모 기준 위치 계산
-    							    const btnOffsetTop = dropdownBtn.offsetTop;
-    							    const btnOffsetLeft = dropdownBtn.offsetLeft;
-    							
-    							    dropdownMenu.style.top = dropdownBtn.offsetTop + dropdownBtn.offsetHeight + 'px';
-    							    dropdownMenu.style.left = (dropdownBtn.offsetLeft - 5) + 'px';
+            	        const dropdownMenu = document.createElement('div');
+            	        dropdownMenu.className = 'dropdown-menu';
 
-    							
-    							    dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
-    								});
+            	        hidden.forEach(group => {
+            	          const item = document.createElement('div');
+            	          item.className = 'dropdown-item';
+            	          item.textContent = group.objgroup_name;
 
+            	          const selectedId = localStorage.getItem("currentList");
+            	          if (group.objgroup_id == selectedId) item.classList.add("selected");
 
+            	          item.addEventListener('click', () => {
+            	            document.querySelectorAll('.obj-edit-btn, .dropdown-item').forEach(b => b.classList.remove('selected'));
+            	            item.classList.add('selected');
 
-    	                    		// ✅ 바깥 클릭 시 드롭다운 닫기
-    	                    		document.addEventListener('click', (e) => {
-    	                    			if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-    	                    				dropdownMenu.style.display = 'none';
-    	                    			}
-    	                    		});
+            	            localStorage.setItem("currentList", group.objgroup_id);
+            	            localStorage.setItem("currentListName", group.objgroup_name);
 
-    	                    		// ✅ 드롭다운 버튼은 목록에
-    	                    		listContainer.appendChild(dropdownBtn);
+            	            fetch("objCurrentGroupSetServlet", {
+            	              method: "POST",
+            	              headers: { "Content-Type": "application/json" },
+            	              body: JSON.stringify({ objgroup_id: group.objgroup_id })
+            	            }).then(() => {
+            	              renderTasksForCurrentList();
+            	              dropdownMenu.style.display = 'none';
+            	            });
+            	          });
 
-    	                    		// ✅ 드롭다운 메뉴는 카드 내부에 넣는다 (이동 동기화 위해!)
-    	                    		listContainer.appendChild(dropdownMenu);		
+            	          dropdownMenu.appendChild(item);
+            	        });
 
-    	                    	}
-    	                    }
-    	                    // 편집 버튼
-    	                    const editBtn = document.createElement('button');
-    	                    editBtn.className = 'obj-edit-btn';
-    	                    editBtn.textContent = '✎';
-    	                    editBtn.addEventListener('click', () => {
-    	                        const rect = document.getElementById('cardWrapper').getBoundingClientRect();
-    	                        localStorage.setItem("cardLeft", Math.floor(rect.left));
-    	                        localStorage.setItem("cardTop", Math.floor(rect.top));
-    	                        
-    	                        document.getElementById("cardWrapper").style.display = "none";
-    	                        document.getElementById("listCardWrapper").style.display = "block";
-    	                    });
-    	                    listContainer.appendChild(editBtn);
-    	                })
-    	                .catch(err => {
-    	                    console.error("❌ 리스트 불러오기 실패:", err);
-    	                });	
-            	
-            }
- 
-            let isRendering = false;
+            	        dropdownBtn.addEventListener('click', () => {
+            	          dropdownMenu.style.top = dropdownBtn.offsetTop + dropdownBtn.offsetHeight + 'px';
+            	          dropdownMenu.style.left = (dropdownBtn.offsetLeft - 5) + 'px';
+            	          dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+            	        });
+
+            	        document.addEventListener('click', (e) => {
+            	          if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            	            dropdownMenu.style.display = 'none';
+            	          }
+            	        });
+
+            	        listContainer.appendChild(dropdownBtn);
+            	        listContainer.appendChild(dropdownMenu);
+            	      }
+
+            	      // ✅ 버튼은 무조건 마지막에 추가!
+            	      listContainer.appendChild(editBtn);
+            	      listContainer.appendChild(archiveBtn);
+            	    })
+            	    .catch(err => {
+            	      console.error("❌ 리스트 불러오기 실패:", err);
+            	    });
+            	}
+
+            
+            
+            
+            
+            
+            
+            
+            function renderArchiveTasks() {
+            	  fetch("objArchivedListServlet")
+            	    .then(res => res.json())
+            	    .then(data => {
+            	      const taskList = document.getElementById("obj-taskList");
+            	      taskList.innerHTML = "";
+
+            	      if (data.status !== "success") {
+            	        console.error("❌ 보관함 데이터 불러오기 실패:", data.message);
+            	        return;
+            	      }
+
+            	      const tasks = data.data;
+
+            	      if (tasks.length === 0) {
+            	        taskList.innerHTML = `
+            	          <div style="text-align: center; color: white; padding-top: 30px;">
+            	             완료된 과제가 없습니다.
+            	          </div>`;
+            	        return;
+            	      }
+
+            	      console.log("📦 보관함 과제 수:", tasks.length);
+
+            	      tasks.forEach(task => {
+            	        const taskItem = document.createElement("div");
+            	        taskItem.className = "obj-task-item";
+            	        taskItem.dataset.objId = task.obj_id;
+
+            	        // ✅ 제목 및 날짜
+            	        const safeTitle = task.obj_title?.trim() || "제목 없음";
+            	        const sdate = task.obj_sdate || "";
+            	        const edate = task.obj_edate || "";
+            	        const dateLabel = sdate && edate ? `${sdate} ~ ${edate}` : "기간을 설정해주세요";
+
+            	        // ✅ task-left
+            	        const taskLeft = document.createElement("div");
+            	        taskLeft.className = "obj-task-left";
+
+            	        const checkbox = document.createElement("input");
+            	        checkbox.type = "checkbox";
+            	        checkbox.className = "task-check";
+            	        checkbox.checked = task.obj_check === 1;
+
+            	        const titleInput = document.createElement("input");
+            	        titleInput.type = "text";
+            	        titleInput.className = "pf-font";
+            	        titleInput.value = safeTitle;
+            	        titleInput.readOnly = true;
+
+            	        const dateSpan = document.createElement("span");
+            	        dateSpan.className = "obj-created-date";
+            	        dateSpan.textContent = dateLabel;
+            	        dateSpan.title = "마감일: " + (edate || "없음");
+
+            	        taskLeft.appendChild(checkbox);
+            	        taskLeft.appendChild(titleInput);
+            	        taskLeft.appendChild(dateSpan);
+
+            	        // ✅ 버튼 영역
+            	        const btnWrap = document.createElement("div");
+            	        btnWrap.className = "obj-task-buttons";
+
+            	        const deleteBtn = document.createElement("button");
+            	        deleteBtn.className = "delete-task";
+            	        deleteBtn.textContent = "X";
+
+            	        btnWrap.appendChild(deleteBtn);
+
+            	        // ✅ 전체 조립
+            	        taskItem.appendChild(taskLeft);
+            	        taskItem.appendChild(btnWrap);
+            	        taskList.appendChild(taskItem);
+
+            	        // ✅ 체크 해제 처리 → 리스트로 복귀
+            	        checkbox.addEventListener("change", () => {
+            	          const isChecked = checkbox.checked ? 1 : 0;
+
+            	          fetch("objCheckUpdateServlet", {
+            	            method: "POST",
+            	            headers: { "Content-Type": "application/json" },
+            	            body: JSON.stringify({
+            	              obj_id: task.obj_id,
+            	              obj_check: isChecked
+            	            })
+            	          })
+            	            .then(res => res.json())
+            	            .then(result => {
+            	              console.log("🔁 체크 상태 변경:", result);
+            	              if (isChecked === 0) {
+            	            	  taskItem.remove();
+            	            	  updateCompleteCount();
+            	              } else {
+            	                renderArchiveTasks(); // 재랜더링
+            	              }
+            	            });
+            	        });
+
+            	        // ✅ 삭제 처리
+            	        deleteBtn.addEventListener("click", () => {
+            	          const confirmed = confirm(`"${task.obj_title}"을(를) 삭제할까요?`);
+            	          if (!confirmed) return;
+
+            	          fetch("objDeleteServlet", {
+            	            method: "POST",
+            	            headers: { "Content-Type": "application/json" },
+            	            body: JSON.stringify({ obj_id: task.obj_id })
+            	          })
+            	            .then(res => res.json())
+            	            .then(() => {
+            	              taskItem.remove();
+            	              updateCompleteCount();
+            	            });
+            	        });
+            	      });
+
+            	      updateCompleteCount();
+            	    })
+            	    .catch(err => {
+            	      console.error("❌ 보관함 fetch 오류:", err);
+            	    });
+            	}
+     
             //화면 출력되는 부분
+           let isRendering = false;
            async function renderTasksForCurrentList(objgroup_id) {
         	if (isRendering) return; // 중복 방지
-        	isRendering = true;
+        	//isRendering = true;
             	
             const taskList = document.getElementById("obj-taskList");
 		    taskList.innerHTML = "";
 		
 		    const selectedId = localStorage.getItem("currentList");
-		    console.log("✔️ 선택된 objgroup_id:", selectedId);
 		
 		    try {
 		        // 1. 현재 그룹 ID를 세션에 저장
@@ -897,8 +1009,7 @@ confirmDateBtn.addEventListener('click', () => {
 
 		        // 3. 과제 데이터 렌더링 시작
 		        tasks.forEach(task => {
-		            console.log("🧾 task 전체 확인 방금 추가함:", task);
-		
+		        	   if (task.obj_check === 1) return;
 		            // 기본 정보 추출
 		            const {
 		                obj_id,
@@ -954,7 +1065,7 @@ confirmDateBtn.addEventListener('click', () => {
 		
 		            // 7. DOM에 과제 추가
 		            taskList.appendChild(taskItem);
-		            console.log("📦 taskItem.innerHTML 확인:", taskItem.innerHTML);
+		           
 		
 		            // 8. 체크박스 상태 반영
 		            const checkbox = taskItem.querySelector(".task-check");
@@ -971,6 +1082,12 @@ confirmDateBtn.addEventListener('click', () => {
 		                    .then(res => res.json())
 		                    .then(data => {
 		                        console.log("✅ 체크 상태 업데이트 성공:", data);
+		                        
+		                        if (checked === 1) {
+		                            taskItem.remove(); // 즉시 제거
+		                            updateCompleteCount();
+		                          }
+		                        
 		                        updateCompleteCount();
 		                    })
 		                    .catch(err => console.error("❌ 체크 상태 업데이트 실패:", err));
@@ -993,7 +1110,7 @@ confirmDateBtn.addEventListener('click', () => {
 		                    })
 		                });
 		            }, 300));
-		            console.log("✔️ 선택된 objgroup_id:", selectedId);
+		            
 		            // 10. 삭제 버튼
 		            attachDeleteListener(taskItem, obj_id, titleInput);
 		
