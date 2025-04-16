@@ -15,7 +15,7 @@ import org.json.JSONObject;
 @WebServlet("/jspproject/mplistImageUpdate")
 public class MplistImageUpdateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final String SAVEFOLDER = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspprojectt/mplistImg";  // ✅ 이미지 저장 경로
+    private final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/mplistImg";  // ✅ 이미지 저장 경로
     private final int MAXSIZE = 10 * 1024 * 1024; // 최대 10MB
     private final String ENCTYPE = "UTF-8";
 
