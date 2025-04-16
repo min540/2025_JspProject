@@ -17,7 +17,6 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 public class BgmMgr {
     private DBConnectionMgr pool;
-    public static final String SAVEFOLDER = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/img";
     public static final String ENCTYPE = "UTF-8";
     public static int MAXSIZE = 10 * 1024 * 1024;
 
