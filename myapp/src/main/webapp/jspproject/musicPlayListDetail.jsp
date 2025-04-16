@@ -667,7 +667,6 @@
 					         data-mplist-cnt="<%= m.getMplist_cnt() %>">
 					        <img src="mplistImg/<%= m.getMplist_img() != null ? m.getMplist_img() : "default.png" %>" alt="">
 					        <div class="playlist-name2"><%= m.getMplist_name() %></div>
-					        <div class="playlist-count2">곡 수</div>
 					        <img class="iconDelete2" src="icon/아이콘_삭제_1.png" alt="삭제">
 					    </div>
 					<% }
