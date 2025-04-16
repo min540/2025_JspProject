@@ -490,7 +490,7 @@
 
 		<!-- ✅ 업로드 폼 모달 or 인라인 -->
 		<div id="uploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
-		    <form id="uploadForm" action="uploadTemaServlet" method="post" enctype="multipart/form-data"
+		    <form id="uploadForm" method="post" enctype="multipart/form-data"
 		          style="background:#1d102d; padding:20px; border-radius:12px; color:white; display:flex; flex-direction:column; gap:10px; width:300px;">
 		        <h3 style="text-align:center;">배경 업로드</h3>
 		        <input type="text" name="tema_title" placeholder="제목" required>
@@ -838,11 +838,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (backgroundWrapper) {
                         backgroundWrapper.style.display = "none"; 
+          
 						//최신으로 업데이트
                         fetch("Background.jsp")
                             .then(res => res.text())
                             .then(html => {
                                 backgroundWrapper.innerHTML = html;
+                                
+                                rebindSortAndSearchEvents();
                               
                             });
                     }
@@ -993,6 +996,51 @@ function switchToTimer() {
     // 타이머 설정 보이기
     const timerWrapper = document.getElementById("timerWrapper1");
     if (timerWrapper) timerWrapper.style.display = "flex";
+}
+
+function rebindSortAndSearchEvents() {
+    const searchInput = document.querySelector(".bg-title-search");
+    const searchButton = document.getElementById("searchButton");
+    const sortButton = document.getElementById("sortButton");
+
+    if (searchInput && searchButton) {
+        searchInput.addEventListener("input", function () {
+            const keyword = this.value.toLowerCase();
+            const items = document.querySelectorAll(".background-list-item");
+            items.forEach(item => {
+                const img = item.querySelector("img");
+                const title = img.getAttribute("alt").toLowerCase();
+                item.style.display = title.includes(keyword) ? "block" : "none";
+            });
+        });
+
+        searchButton.addEventListener("click", function () {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const items = document.querySelectorAll(".background-list-item");
+
+            items.forEach(item => {
+                const img = item.querySelector("img");
+                const title = img.getAttribute("alt").toLowerCase();
+
+                item.style.display = (title === keyword || title === `${keyword}.gif`) ? "block" : "none";
+            });
+        });
+    }
+
+    if (sortButton) {
+        sortButton.addEventListener("click", function () {
+            const listContainer = document.getElementById("backgroundList");
+            const items = Array.from(listContainer.querySelectorAll(".background-list-item"));
+
+            items.sort((a, b) => {
+                const titleA = a.querySelector("button").getAttribute("data-title").toLowerCase();
+                const titleB = b.querySelector("button").getAttribute("data-title").toLowerCase();
+                return titleA.localeCompare(titleB, 'ko');
+            });
+
+            items.forEach(item => listContainer.appendChild(item));
+        });
+    }
 }
 
 </script>
