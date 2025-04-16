@@ -17,7 +17,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 public class BgmMgr {
     private DBConnectionMgr pool;
-    public static final String SAVEFOLDER = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/img";
+    public static final String SAVEFOLDER = "C:/Users/dita_806/git/2025_JspProject_dtada11/myapp/src/main/webapp/jspproject/img";
     public static final String ENCTYPE = "UTF-8";
     public static int MAXSIZE = 10 * 1024 * 1024;
 
@@ -187,8 +187,8 @@ public class BgmMgr {
         PreparedStatement pstmt = null;
         MultipartRequest multi = null;
 
-        String imagePath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/musicImg";
-        String musicPath = "C:/Users/dita_810/git/2025_JspProject/myapp/src/main/webapp/jspproject/music";
+        String imagePath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/musicImg";
+        String musicPath = "C:/Users/dita_810/git/2025_JspProject_Jangton/myapp/src/main/webapp/jspproject/music";
         int maxSize = 10 * 1024 * 1024;
 
         try {
@@ -355,7 +355,21 @@ public class BgmMgr {
 
         return bean;
     }
-
-
+    
+    // BgmMgr.java에 추가
+    public void resetAllBgmOnOff() {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try {
+            con = pool.getConnection();
+            String sql = "UPDATE bgm SET bgm_onoff = 0";
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.freeConnection(con, pstmt);
+        }
+    }
 
 }

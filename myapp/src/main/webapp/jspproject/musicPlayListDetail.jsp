@@ -682,7 +682,6 @@
 		    	<!-- 상단 타이틀 -->
 			    <div class="header-title2">
 			        <span id="headerMplistName">재생 목록 이름</span>
-			        <img class="iconMusicList3" src="icon/아이콘_수정_1.png" alt="수정" >
 			    </div>
 			    
 		    	<!-- 재생 목록 탭 -->    
@@ -841,36 +840,39 @@
 	
 	    // ✅ 재생목록 클릭 이벤트
 	    musicLeft.addEventListener("click", function (e) {
-		    const box = e.target.closest(".playlist-box2");
-		    if (!box || e.target.classList.contains("iconDelete2")) return;
-		
-		    document.querySelectorAll(".playlist-box2").forEach(el => el.classList.remove("selected"));
-		    box.classList.add("selected");
-		
-		    const id = box.dataset.mplistId;
-		    const name = box.dataset.mplistName;
-		    const img = box.dataset.mplistImg || "default.png";
-		    const cnt = box.dataset.mplistCnt;
-		
-		    // 🔥 복원
-		    document.getElementById("playlistPreview").style.display = "block";
-		    document.getElementById("musicPreview").style.display = "none";
-		    document.getElementById("musicPreview").innerHTML = "";
-		
-		    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + img;
-		    document.getElementById("mplistName_detail").innerText = name;
-		    document.getElementById("mplistCnt_detail").innerText = cnt;
-		
-		    document.getElementById("hiddenMplistId_detail").value = id;
-		    document.getElementById("hiddenMplistName_detail").value = name;
-		    document.getElementById("hiddenMplistCnt_detail").value = cnt;
-		    document.getElementById("originalImgInput_detail").value = img;
-		
-		    previewIcons.style.display = 'flex';
-		    rightButtons.style.display = 'flex';
-		
-		    loadMusicListByMplistId(id); // 중앙 리스트도 갱신
-		});
+	    const box = e.target.closest(".playlist-box2");
+	    if (!box || e.target.classList.contains("iconDelete2")) return;
+	
+	    document.querySelectorAll(".playlist-box2").forEach(el => el.classList.remove("selected"));
+	    box.classList.add("selected");
+	
+	    const id = box.dataset.mplistId;
+	    const name = box.dataset.mplistName;
+	    const img = box.dataset.mplistImg || "default.png";
+	    const cnt = box.dataset.mplistCnt;
+	
+	    // ✅ 여기에 추가!
+	    document.getElementById("headerMplistName").innerText = name;
+	
+	    // 🔥 복원
+	    document.getElementById("playlistPreview").style.display = "block";
+	    document.getElementById("musicPreview").style.display = "none";
+	    document.getElementById("musicPreview").innerHTML = "";
+	
+	    document.getElementById("mplistImg").src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + img;
+	    document.getElementById("mplistName_detail").innerText = name;
+	    document.getElementById("mplistCnt_detail").innerText = cnt;
+	
+	    document.getElementById("hiddenMplistId_detail").value = id;
+	    document.getElementById("hiddenMplistName_detail").value = name;
+	    document.getElementById("hiddenMplistCnt_detail").value = cnt;
+	    document.getElementById("originalImgInput_detail").value = img;
+	
+	    previewIcons.style.display = 'flex';
+	    rightButtons.style.display = 'flex';
+	
+	    loadMusicListByMplistId(id); // 중앙 리스트도 갱신
+	});
 
 	    // ✅ 수정 아이콘
 	    if (editIcon) {

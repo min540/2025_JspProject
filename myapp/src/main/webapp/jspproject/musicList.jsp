@@ -1111,5 +1111,52 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	        isSorted = false; // 정렬 취소 상태로 설정
 	    }
 	}
+	
+	document.querySelector(".music-right-buttons .btn-purple").addEventListener("click", function () {
+	    const bgmId = document.getElementById("hiddenBgmId").value;
+	    const bgmName = document.getElementById("hiddenBgmName").value;
+	    const bgmMusic = document.getElementById("playAudioPlayer").src.split("/").pop();
+	    const context = document.body.dataset.context;
+
+	    if (!bgmId) return alert("적용할 음악이 선택되지 않았습니다.");
+
+	    fetch(context + "/jspproject/resetBgmOnOff", {
+	        method: "POST"
+	    })
+	    .then(() => {
+	        return fetch(context + "/jspproject/bgmOnOff", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify({ bgm_id: parseInt(bgmId), bgm_onoff: 1 })
+	        });
+	    })
+	    .then(res => res.json())
+	    .then(data => {
+	        if (data.success) {
+	            alert("적용 완료!");
+
+	            // ✅ 부모 창의 DOM 요소 갱신
+	            const parentDoc = window.parent.document;
+	            const mainTitle = parentDoc.querySelector(".musicTitle");
+	            const mainAudio = parentDoc.getElementById("mainAudioPlayer");
+	            const mainPlayBtn = parentDoc.getElementById("mainPlayToggleBtn");
+
+	            if (mainTitle) mainTitle.innerText = bgmName;
+	            if (mainAudio) {
+	                mainAudio.src = context + "/jspproject/music/" + bgmMusic;
+	                mainAudio.load();
+	                mainAudio.play();
+	            }
+
+	            if (mainPlayBtn) {
+	                mainPlayBtn.src = "icon/아이콘_일시정지_1.png";
+	                mainPlayBtn.setAttribute("data-state", "playing");
+	            }
+
+	        } else {
+	            alert("적용 실패: " + data.message);
+	        }
+	    });
+	});
 
 </script>

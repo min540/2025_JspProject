@@ -11,11 +11,20 @@
 <head>
 <title>오늘, 내일</title>
 <style>
+
+@font-face {
+	font-family: 'PFStarDust';
+	src: url('fonts/PFStarDust-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
 body, html {
   	margin: 0;
     padding: 0;
     height: 100%;
     background-color:#372358;
+    font-family: 'PFStarDust', sans-serif;
 }
  
 header{
@@ -26,10 +35,20 @@ header{
   	padding-right: 370px; 
 }
 
-header h3, header h4 {
+header h3 {
 	color: white;
 	margin: 0 12px; /* 좌우 여백만 */
 	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 25px;
+}
+
+header h4 {
+	color: white;
+	margin: 0 12px; /* 좌우 여백만 */
+	margin-top: 25px;
+	font-family: 'PFStarDust', sans-serif;
+	font-size: 18px;
 }
 
 .image-wrapper {
@@ -79,7 +98,7 @@ header h3, header h4 {
 	height: 950px;
 	background-color: #4A3C6E;
 	margin: 0 auto;
-	top: -200px;
+	top: -140px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 	position: relative;
 	z-index: 10;
@@ -199,6 +218,10 @@ color: white;
 /* 호버 효과(optional) */
 .complete-btn:hover {
   background-color: #301C4A;
+}
+
+a {
+	text-decoration: none;
 }
 
 </style>
