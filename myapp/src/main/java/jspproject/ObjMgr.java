@@ -340,8 +340,9 @@ public class ObjMgr {
 	    Vector<ObjBean> vlist = new Vector<>();
 	    try {
 	        con = pool.getConnection();
-	        String sql = "SELECT obj_id, obj_title, obj_check, obj_regdate, obj_edate " +
+	        String sql = "SELECT obj_id, obj_title, obj_check, obj_regdate, obj_sdate, obj_edate, objgroup_id " +
 	                     "FROM obj WHERE user_id = ? AND obj_check = 1";
+
 	        pstmt = con.prepareStatement(sql);      
 	        pstmt.setString(1, user_id);
 	        rs = pstmt.executeQuery();
@@ -351,7 +352,9 @@ public class ObjMgr {
 	            bean.setObj_title(rs.getString("obj_title"));
 	            bean.setObj_check(rs.getInt("obj_check"));
 	            bean.setObj_regdate(rs.getString("obj_regdate"));
+	            bean.setObj_sdate(rs.getString("obj_sdate"));    
 	            bean.setObj_edate(rs.getString("obj_edate"));
+	            bean.setObjgroup_id(rs.getInt("objgroup_id"));
 	            vlist.add(bean);
 	        }
 	    } catch (Exception e) {
@@ -361,6 +364,7 @@ public class ObjMgr {
 	    }
 	    return vlist;
 	}
+
 	
 	//작업 목록 카테고리 리스트 받아오기
 	public Vector<ObjGroupBean> getObjGroupList(String user_id) {
