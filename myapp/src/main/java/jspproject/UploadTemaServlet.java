@@ -1,5 +1,6 @@
 package jspproject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/jspproject/uploadTemaServlet")
 @MultipartConfig
 public class UploadTemaServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,7 +46,24 @@ public class UploadTemaServlet extends HttpServlet {
         String tema_title = resultMap.get("tema_title");
         String tema_cnt = resultMap.get("tema_cnt");
 
-        if (tema_img != null) {
+        // ✅ 이미지 저장 경로 (서버 기준 실제 경로로 변환)
+        String saveFolder = getServletContext().getRealPath("/jspproject/backgroundImg/");
+        File imageFile = new File(saveFolder, tema_img);
+
+        // ✅ 이미지 파일이 실제로 생성될 때까지 최대 2초(20회) 대기
+        int retry = 0;
+        while (!imageFile.exists() && retry < 20) {
+            try {
+                Thread.sleep(100); // 100ms 대기
+                retry++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        // ✅ 파일이 존재하면 정상 응답
+        if (tema_img != null && imageFile.exists()) {
             out.print("{");
             out.print("\"status\":\"ok\",");
             out.print("\"tema_img\":\"" + tema_img + "\",");
@@ -51,7 +71,7 @@ public class UploadTemaServlet extends HttpServlet {
             out.print("\"tema_cnt\":\"" + tema_cnt + "\"");
             out.print("}");
         } else {
-            out.print("{\"status\":\"fail\", \"message\":\"DB 저장 실패\"}");
+            out.print("{\"status\":\"fail\", \"message\":\"이미지 파일이 존재하지 않습니다.\"}");
         }
 
         out.close();
