@@ -897,7 +897,7 @@ Vector<BgmBean> bgm = bmgr.getBgmList(user_id);
 	    .then(res => res.json())
 	    .then(data => {
 	        if (data.success) {
-	            document.getElementById("bgmImg").src = "img/" + data.filename + "?t=" + new Date().getTime();
+	            document.getElementById("bgmImg").src = "musicImg/" + data.filename + "?t=" + new Date().getTime();
 	            alert("이미지가 성공적으로 변경되었습니다.");
 	        } else {
 	            alert("업로드 실패: " + data.message);
