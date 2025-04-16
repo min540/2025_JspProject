@@ -28,71 +28,67 @@ public class TemaMgr {
 	}
 	
 	//테마업로드
-		public Map<String, String> uploadFile(HttpServletRequest req, String user_id) {
-		    Map<String, String> resultMap = new HashMap<>();
-		    Connection con = null;
-		    PreparedStatement pstmt = null;
-		    String sql = null;
+	public Map<String, String> uploadFile(HttpServletRequest req, String userId) {
+	    Map<String, String> result = new HashMap<>();
 
-		    try {
-		        MultipartRequest multi = new MultipartRequest(
-		            req,
-		            SAVEFOLDER,
-		            MAXSIZE,
-		            ENCODING,
-		            new DefaultFileRenamePolicy()
-		        );
+	    try {
+	        String savePath = req.getServletContext().getRealPath("/jspproject/backgroundImg/");
+	        File uploadDir = new File(savePath);
+	        if (!uploadDir.exists()) {
+	            uploadDir.mkdirs();
+	        }
 
-		        String tema_title = multi.getParameter("tema_title");
-		        String tema_cnt = multi.getParameter("tema_cnt");
-		        String tema_img = multi.getFilesystemName("tema_img");
-		        
-		        if (tema_img != null) {
-		            tema_img = tema_img.replaceAll("\\s+", "_")
-		                               .replaceAll("[^a-zA-Z0-9._-]", "")
-		                               .toLowerCase();
-		        }
-		        
-		        // 2. 실제 저장된 원본 파일
-	            File uploadedFile = multi.getFile("tema_img");
+	        MultipartRequest multi = new MultipartRequest(
+	            req,
+	            savePath,
+	            5 * 1024 * 1024,
+	            "UTF-8",
+	            new DefaultFileRenamePolicy()
+	        );
 
-	            // 3. 정제된 이름으로 저장할 경로
-	            File renamedFile = new File(uploadedFile.getParent(), tema_img);
-	            
-	         // 4. 이름 변경
-	            if (!uploadedFile.getName().equals(tema_img)) {
-	                boolean renamed = uploadedFile.renameTo(renamedFile);
-	                System.out.println("✅ 파일명 변경됨: " + renamed);
-	            } else {
-	                System.out.println("⚠️ 이미 동일 이름입니다. rename 생략");
-	            }
-	        
-		        int tema_dark = 0;
-		        int tema_onoff = 0;
+	        String tema_title = multi.getParameter("tema_title");
+	        String tema_cnt = multi.getParameter("tema_cnt");
+	        String originalFile = multi.getFilesystemName("tema_img");
 
-		        con = pool.getConnection();
-		        sql = "INSERT INTO tema(user_id, tema_title, tema_cnt, tema_img, tema_dark, tema_onoff) VALUES (?, ?, ?, ?, ?, ?)";
-		        pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		        pstmt.setString(1, user_id);  // ← 여기!
-		        pstmt.setString(2, tema_title);
-		        pstmt.setString(3, tema_cnt);
-		        pstmt.setString(4, tema_img);
-		        pstmt.setInt(5, tema_dark);
-		        pstmt.setInt(6, tema_onoff);
-		        pstmt.executeUpdate();
+	        if (originalFile == null) {
+	            result.put("tema_img", null);
+	            return result;
+	        }
 
-		        resultMap.put("tema_title", tema_title);
-		        resultMap.put("tema_cnt", tema_cnt);
-		        resultMap.put("tema_img", tema_img);
+	        // 확장자 분리
+	        String ext = originalFile.substring(originalFile.lastIndexOf("."));
+	        // 고유한 파일명 생성 (예: user1_1652345245245.jpg)
+	        String uniqueFileName = userId + "_" + System.currentTimeMillis() + ext;
 
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    } finally {
-		        pool.freeConnection(con, pstmt);
-		    }
+	        // 파일명 변경
+	        File oldFile = new File(savePath + "/" + originalFile);
+	        File newFile = new File(savePath + "/" + uniqueFileName);
+	        oldFile.renameTo(newFile);
 
-		    return resultMap;
-		}
+	        // DB에 저장
+	        Connection con = null;
+	        PreparedStatement pstmt = null;
+	        String sql = "INSERT INTO tema (user_id, tema_img, tema_title, tema_cnt, tema_onoff) VALUES (?, ?, ?, ?, 0)";
+
+	        con = pool.getConnection();
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, uniqueFileName);
+	        pstmt.setString(3, tema_title);
+	        pstmt.setString(4, tema_cnt);
+	        pstmt.executeUpdate();
+
+	        result.put("tema_img", uniqueFileName);
+	        result.put("tema_title", tema_title);
+	        result.put("tema_cnt", tema_cnt);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+
 
 	//테마리스트
 	public Vector<TemaBean> listTema(String userId) {
