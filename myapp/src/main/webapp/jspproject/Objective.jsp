@@ -888,7 +888,7 @@ confirmDateBtn.addEventListener('click', () => {
             	        const safeTitle = task.obj_title?.trim() || "제목 없음";
             	        const sdate = task.obj_sdate || "";
             	        const edate = task.obj_edate || "";
-            	        const dateLabel = sdate && edate ? `${sdate} ~ ${edate}` : "기간을 설정해주세요";
+            	        const dateLabel = sdate && edate ? `${sdate}  ${edate}` : "";
 
             	        // ✅ task-left
             	        const taskLeft = document.createElement("div");

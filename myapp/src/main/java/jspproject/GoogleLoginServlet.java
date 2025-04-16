@@ -16,7 +16,8 @@ import org.json.JSONObject;
 public class GoogleLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 request.setCharacterEncoding("UTF-8");
+		 	request.setCharacterEncoding("UTF-8");
+		 
 		    BufferedReader reader = request.getReader();
 		    StringBuilder sb = new StringBuilder();
 		    String line;
@@ -33,10 +34,24 @@ public class GoogleLoginServlet extends HttpServlet {
 
 		    LoginMgr mgr = new LoginMgr();
 		    boolean exists = mgr.emailChk(user_email);
-
+		    
+		    boolean insertSuccess = true;
+		    
 		    if (!exists) {
-		      mgr.insertGoogleUser(user_id, user_pwd, user_name, user_email, "", 0, user_icon);
+		    	// 기본값 보완
+				String defaultPhone = "01000000000";
+				int defaultGrade = 0;
+
+				insertSuccess = mgr.insertGoogleUser(user_id, user_pwd, user_name, user_email, defaultPhone, defaultGrade, user_icon);
 		    }
+		    
+		 // 삽입 실패 시
+			if (!insertSuccess) {
+				System.err.println("❌ 사용자 삽입 실패: " + user_id);
+				response.setContentType("application/json");
+				response.getWriter().write("{\"status\":\"fail\"}");
+				return;
+			}
 
 		    // 세션 처리
 		    HttpSession session = request.getSession();
