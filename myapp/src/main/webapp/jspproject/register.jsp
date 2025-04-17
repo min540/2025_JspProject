@@ -169,27 +169,39 @@ let isPhoneValid = false;
 let isPwdMatched = false;
 let isEmailValid = false;
 
-function checkId() {	//중복확인
-	  const userId = document.querySelector('[name="user_id"]').value;
+function checkId() {	// 중복확인
+    const userId = document.querySelector('[name="user_id"]').value;
+    const idMsgDiv = document.getElementById("id-check-msg");
 
-	  if (!userId.trim()) {
-	    alert("아이디를 입력해주세요.");
-	    return;
-	  }
+    if (!userId.trim()) {
+        idMsgDiv.innerText = "아이디를 입력해주세요.";
+        idMsgDiv.style.color = "#dc3545"; // 빨강색
+        isIdValid = false;
+        updateSubmitButton();
+        return;
+    }
 
-	  fetch("idCheckServlet?user_id=" + encodeURIComponent(userId))
-	    .then(res => res.text())
-	    .then(result => {
-	      if (result === "true") {
-	        alert("사용 가능한 아이디입니다!");
-	        isIdValid = true;
-	      } else {
-	        alert("이미 사용중인 아이디입니다.");
-	        isIdValid = false;
-	      }
-	      updateSubmitButton();
-	    });
-	}
+    fetch("idCheckServlet?user_id=" + encodeURIComponent(userId))
+        .then(res => res.text())
+        .then(result => {
+            if (result === "true") {
+                idMsgDiv.innerText = "사용 가능한 아이디입니다!";
+                idMsgDiv.style.color = "#28a745"; // 초록색
+                isIdValid = true;
+
+                // 4초 후 자동 제거
+                setTimeout(() => {
+                    idMsgDiv.innerText = "";
+                }, 4000);
+            } else {
+                idMsgDiv.innerText = "이미 사용중인 아이디입니다.";
+                idMsgDiv.style.color = "#dc3545"; // 빨강색
+                isIdValid = false;
+            }
+            updateSubmitButton();
+        });
+}
+
 
 let phoneCheckTimer;
 let phoneMsgTimer;
@@ -386,9 +398,10 @@ function verifyCallback(success) {
 			
 <form action="userPost" method="post" enctype="multipart/form-data">
     <div class="input-row form-item">
-    <input type="text" name="user_id" placeholder="아이디" class="input-field " required  style="width: 290px;" autocomplete="username" value="<%= request.getParameter("user_id") != null ? request.getParameter("user_id") : "" %>">
+    <input type="text" name="user_id" placeholder="아이디" class="input-field" required style="width: 290px;" autocomplete="username" value="<%= request.getParameter("user_id") != null ? request.getParameter("user_id") : "" %>">
     <button type="button" onclick="checkId()" class="check-btn" style="width: 100px; height: 50px; font-size: 14px;">중복확인</button>
     </div>
+    <div id="id-check-msg" class="check-msg"></div> <!-- ✅ 여기를 밖으로 빼기 -->
     <input type="password" name="user_pwd" id="user_pwd" oninput="checkPwd()" placeholder="비밀번호" class="input-field form-item" required autocomplete="new-password">
     <input type="password" name="user_pwd_confirm" id="user_pwd_confirm" oninput="checkPwd()" placeholder="비밀번호 확인" class="input-field form-item" required autocomplete="new-password">
     <div id="pwd-check-msg" class="check-msg"></div>
