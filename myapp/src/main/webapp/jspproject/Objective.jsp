@@ -358,8 +358,7 @@
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarPicker = document.getElementById('calendarPicker'); 
         const confirmDateBtn = document.getElementById('confirmDateBtn');
-       <%--  const user_id = "<%= userId %>";
-	    sessionStorage.setItem("user_id", user_id);  --%>
+  
         
         let currentTargetTask = null;
         let isDragging = false, offsetX = 0, offsetY = 0;
@@ -401,6 +400,33 @@
             document.getElementById('completedNum').textContent = completed;
             document.getElementById('totalNum').textContent = total;
         }
+        
+     // 실시간 카운트 업데이트 함수
+        function updateCount() {
+          fetch("objCountServlet")
+            .then(res => res.json())
+            .then(data => {
+              console.log("📊 카운트 응답:", data);
+
+              if (data.status === "success") {
+                const { total, completed } = data;
+
+                // HTML 요소에 값 적용
+                document.getElementById("completedNum").textContent = completed;
+                document.getElementById("totalNum").textContent = total;
+
+                // 로그 출력
+                console.log(`✅ 현재 상태: ${completed} / ${total}`);
+              } else {
+                console.error("❌ 카운트 오류:", data.message);
+              }
+            })
+            .catch(err => {
+              console.error("❌ 카운트 fetch 실패:", err);
+            });
+        }
+
+
         
         //기본 1개의 리스트를 제공
         function createDefaultGroupOnce() {
@@ -521,7 +547,8 @@
                 taskItem.dataset.objId = objId;
                 
                 taskList.appendChild(taskItem);
-                updateCompleteCount();
+                
+                updateCount();
                 
                 titleInput.focus();
                 
@@ -564,11 +591,11 @@
                     if (!confirmed) return;
 
                     taskItem.remove();
-                    updateCompleteCount();
+                    
 
                     deleteTaskImmediately(objId); // objId 확보됐기 때문에 이제 가능!
                 });
-                updateCompleteCount();
+               
             });
             
 			//여기??
@@ -593,7 +620,8 @@
                     console.error("❌ 체크 상태 업데이트 실패", err);
                 });
 
-                updateCompleteCount();
+                
+                updateCount();
             });
         });
 
@@ -707,8 +735,8 @@ confirmDateBtn.addEventListener('click', () => {
                     if (!confirmed) return;
 
                     taskItem.remove(); // UI 반영
-                    updateCompleteCount();
-
+                   
+                    updateCount();
                     deleteTaskImmediately(objId); // 서버 요청
                 });
             }
@@ -848,13 +876,6 @@ confirmDateBtn.addEventListener('click', () => {
             	    });
             	}
 
-            
-            
-            
-            
-            
-            
-            
             function renderArchiveTasks() {
             	  fetch("objArchivedListServlet")
             	    .then(res => res.json())
@@ -950,6 +971,7 @@ confirmDateBtn.addEventListener('click', () => {
             	              } else {
             	                renderArchiveTasks(); // 재랜더링
             	              }
+            	             
             	            });
             	        });
 
@@ -967,6 +989,7 @@ confirmDateBtn.addEventListener('click', () => {
             	            .then(() => {
             	              taskItem.remove();
             	              updateCompleteCount();
+            	              
             	            });
             	        });
             	      });
@@ -1085,10 +1108,10 @@ confirmDateBtn.addEventListener('click', () => {
 		                        
 		                        if (checked === 1) {
 		                            taskItem.remove(); // 즉시 제거
-		                            updateCompleteCount();
+		                            updateCount();
 		                          }
+		                        updateCount();
 		                        
-		                        updateCompleteCount();
 		                    })
 		                    .catch(err => console.error("❌ 체크 상태 업데이트 실패:", err));
 		            });
@@ -1130,7 +1153,8 @@ confirmDateBtn.addEventListener('click', () => {
 		        });
 		       
 		        // 12. 완료 체크 수 업데이트
-		        updateCompleteCount();
+		        
+		        updateCount();
 		        isRendering = false;
 
 		    } catch (err) {

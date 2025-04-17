@@ -18,6 +18,8 @@
 	UserBean user = lmgr.getUser(user_id);                // 유저 정보 (필요시)
 	Vector<MplistBean> mplist = pmgr.getMplist(user_id); // 유저의 재생목록 가져오기
 	Vector<BgmBean> bgm = bmgr.getBgmList(user_id); //유저의 음악 가져오기
+	
+	String savePath = request.getServletContext().getRealPath("/jspproject/mplistImg");
 %>
  <style>
     .music-container3 {
@@ -1168,16 +1170,27 @@
 	    .then(res => res.json())
 	    .then(data => {
 	        if (data.success) {
-	        	document.getElementById("mplistImg").src = "mplistImg/" + data.filename + "?t=" + new Date().getTime();
+	        	// ✅ 우측 상세 이미지 변경
+	        	const previewImg = document.getElementById("mplistImg");
+	        	previewImg.src = ""; // 먼저 초기화
+	        	previewImg.src = "<%= request.getContextPath() %>/jspproject/mplistImg/" + data.filename + "?t=" + new Date().getTime();
+
+	        	// ✅ 좌측 썸네일도 변경
+	        	const selectedBox = document.querySelector(".playlist-box2.selected");
+	        	if (selectedBox) {
+	        	    const imgEl = selectedBox.querySelector("img");
+	        	    if (imgEl) {
+	        	        imgEl.src = ""; // 먼저 초기화
+	        	        imgEl.src = "mplistImg/" + data.filename + "?t=" + new Date().getTime();
+	        	    }
+	        	    selectedBox.dataset.mplistImg = data.filename;
+	        	}
+
 	            alert("이미지가 성공적으로 변경되었습니다.");
 	        } else {
 	            alert("업로드 실패: " + data.message);
 	        }
 	    })
-	    .catch(err => {
-	        console.error(err);
-	        alert("이미지 업로드 중 오류 발생");
-	    });
 	}
 	
 	function loadMusicListByMplistId(mplistId) {

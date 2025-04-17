@@ -33,16 +33,14 @@ public class GoogleLoginServlet extends HttpServlet {
 		    String user_pwd = json.getString("user_pwd");
 
 		    LoginMgr mgr = new LoginMgr();
-		    boolean exists = mgr.emailChk(user_email);
-		    
-		    boolean insertSuccess = true;
-		    
-		    if (!exists) {
-		    	// 기본값 보완
-				String defaultPhone = "01000000000";
-				int defaultGrade = 0;
+		    UserBean existingUser = mgr.getUser(user_id);
 
-				insertSuccess = mgr.insertGoogleUser(user_id, user_pwd, user_name, user_email, defaultPhone, defaultGrade, user_icon);
+		    boolean insertSuccess = true;
+
+		    if (existingUser == null) {
+		        String defaultPhone = "01000000000";
+		        int defaultGrade = 0;
+		        insertSuccess = mgr.insertGoogleUser(user_id, user_pwd, user_name, user_email, defaultPhone, defaultGrade, user_icon);
 		    }
 		    
 		 // 삽입 실패 시
