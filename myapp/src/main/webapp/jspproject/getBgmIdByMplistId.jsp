@@ -25,7 +25,7 @@ MplistBgmView view = mgr.getViewByBgmId(bgm_id);
 </div>
 
 <div class="music-preview3">
-    <img class="musicImg2" src="img/<%= b.getBgm_image() != null ? b.getBgm_image() : "default.png" %>" alt="음악 이미지">
+    <img class="musicImg2" src="musicImg/<%= b.getBgm_image() != null ? b.getBgm_image() : "default.png" %>" alt="음악 이미지">
     <h2 class="editable-title"><%= b.getBgm_name() %></h2>
 </div>
 
@@ -44,7 +44,7 @@ MplistBgmView view = mgr.getViewByBgmId(bgm_id);
 </div>
 
 <div class="music-description3">
-    <textarea readonly><%= b.getBgm_cnt() %></textarea>
+    <textarea readonly><%= b.getBgm_cnt() == null ? "❌ null" : b.getBgm_cnt() %></textarea>
 </div>
 
 <div class="music-cancel-button3">

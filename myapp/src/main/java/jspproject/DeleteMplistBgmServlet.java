@@ -1,10 +1,17 @@
 // 🔧 DeleteMplistBgmServlet.java
 package jspproject;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;  // 꼭 import!
+
+@WebServlet("/jspproject/deleteMplistBgm")
 public class DeleteMplistBgmServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
@@ -17,12 +24,10 @@ public class DeleteMplistBgmServlet extends HttpServlet {
             json.append(line);
         }
 
-        int mplistmgr_id = -1;
+        int mplistmgr_id;
         try {
-            // 🔎 JSON 파싱
-            String body = json.toString();
-            body = body.replaceAll("[^0-9]", ""); // 숫자만 추출
-            mplistmgr_id = Integer.parseInt(body);
+            JSONObject obj = new JSONObject(json.toString());
+            mplistmgr_id = obj.getInt("mplistmgr_id");
         } catch (Exception e) {
             response.getWriter().write("{\"success\":false, \"message\":\"ID 파싱 오류\"}");
             return;

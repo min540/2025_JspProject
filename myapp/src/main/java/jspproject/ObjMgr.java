@@ -353,7 +353,7 @@ public class ObjMgr {
 	            bean.setObj_check(rs.getInt("obj_check"));
 	            bean.setObj_regdate(rs.getString("obj_regdate"));
 	            bean.setObj_sdate(rs.getString("obj_sdate"));    
-	            bean.setObj_edate(rs.getString("obj_edate"));
+	            bean.setObj_edate(rs.getString("obj_edate"));          
 	            bean.setObjgroup_id(rs.getInt("objgroup_id"));
 	            vlist.add(bean);
 	        }
@@ -393,4 +393,54 @@ public class ObjMgr {
 		}
 		return vlist;
 	}
+	
+	// 특정 그룹의 전체 과제 수 반환
+	public int getTotalCountByGroup(int objgroup_id, String user_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int count = 0;
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT COUNT(*) FROM obj WHERE objgroup_id = ? AND user_id = ?";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, objgroup_id);
+	        pstmt.setString(2, user_id);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            count = rs.getInt(1);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return count;
+	}
+
+	// 특정 그룹의 완료된 과제 수 반환
+	public int getCompletedCountByGroup(int objgroup_id, String user_id) {
+	    Connection con = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    int count = 0;
+	    try {
+	        con = pool.getConnection();
+	        String sql = "SELECT COUNT(*) FROM obj WHERE objgroup_id = ? AND user_id = ? AND obj_check = 1";
+	        pstmt = con.prepareStatement(sql);
+	        pstmt.setInt(1, objgroup_id);
+	        pstmt.setString(2, user_id);
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            count = rs.getInt(1);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.freeConnection(con, pstmt, rs);
+	    }
+	    return count;
+	}
+
+	
 }
